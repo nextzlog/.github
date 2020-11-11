@@ -1,0 +1,6 @@
+.*
+*.dat
+*.eps
+*.svg
+build/
+!.gitignore
