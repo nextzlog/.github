@@ -18,8 +18,11 @@ text = text.gsub('\\hfill', '')
 text = text.gsub('\\bm', '\\boldsymbol')
 text = text.gsub('\\coloneqq', ':=')
 
+data = text.lines
+head = data.index{|v| v.start_with?("===")}
+data.insert(head + 1, sprintf('[PDF版](%s.pdf)', name))
+
 # output Markdown body
 File.open(sprintf('%s.md', name), mode='w') do |file|
-	file.puts text
-	file
+	data.each &file.method(:puts)
 end
