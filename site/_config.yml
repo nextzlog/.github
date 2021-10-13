@@ -1,7 +1,6 @@
 lang: ja
 title: 無線部開発班
 description: アマチュア無線のコンテスト主催者向け自動集計システムから並列計算フレームワーク、プログラミング言語処理系、機械学習まで、ソフトウェア開発の記事を公開.
-theme: jekyll-theme-cayman
 markdown: GFM
 google_analytics: UA-75073167-1
 github:
