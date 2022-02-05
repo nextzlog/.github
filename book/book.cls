@@ -105,7 +105,7 @@
 \draw[azure, line width=5mm] (-.09\PW,-.40\PH)--(+.09\PW,-.40\PH);
 \draw[azure, line width=3mm] (-.06\PW,-.42\PH)--(+.06\PW,-.42\PH);
 \draw[azure, line width=3mm] (-.03\PW,-.44\PH)--(+.03\PW,-.44\PH);
-\draw[black, fill=black] (0,0) circle (.21\PW);
+\draw[black, fill=black] (0,0) circle (.20\PW);
 \draw[black, fill=white] (0,0) circle (.15\PW);
 \begin{scope}
 \clip (-.00\PW,+.00\PW) circle (.145\PW);
@@ -115,13 +115,12 @@
 \draw[azure, line width=3mm] (+.00\PW,-.03\PH)--(-.08\PW,+.04\PH)--(+.08\PW,+.04\PH)--cycle;
 \end{scope}
 \draw[black] (0,0) circle(.145\PW);
-\draw[black] (0,0) circle(.215\PW);
-\NewDocumentCommand\flogo{}{\fontsize{.04\PW}{0pt}\selectfont}
+\draw[black] (0,0) circle(.205\PW);
+\NewDocumentCommand\lfont{}{\fontsize{.02\PW}{0pt}\selectfont}
+\NewDocumentCommand\ltext{}{JOURNAL OF HAMRADIO INFORMATICS LETTERS THE UNIVERSITY OF TOKYO AMATEUR RADIO CLUB}
 \tikzset{logos/.style={decoration={text align=center, text along path, reverse path, text color=spark}}}
-\tikzset{eidos/.style={decoration={text align=center, text along path, reverse path, text color=black}}}
-\path[decorate, logos, decoration={text=|\flogo|JOURNAL OF HAMRADIO}] (+.166\PW,0) arc (0:+180:.166\PW);
-\path[decorate, logos, decoration={text=|\flogo|INFORMATICS LETTERS}] (-.166\PW,0) arc (-180:0:.166\PW);
-\path[decorate, eidos, decoration={text=|\Large|\@volume~\@subtitle}] (+.220\PW,0) arc (0:+180:.220\PW);
+\path[decorate, logos, decoration={text=|\lfont|\ltext}] (-.168\PW,0) arc (-180:+180:.168\PW);
+\node[black] at (0,+.06\PH) {\Large\textbf{\textrm{\@volume}}};
 \node[black] at (0,+.25\PH) {\Huge\textbf{\textsf{\@maintitle}}};
 \node[black] at (0,-.30\PH) {\huge\textbf{\textsf{\@author\hspace*{1em}\@date}}};
 \node[spark] at (0,-.40\PH) {\texttt{\href{\@homepage/\jobname.pdf}{\@homepage}}};
@@ -154,8 +153,10 @@
 \NewDocumentCommand\Algref{m}{\ALG@name{}~\ref{alg:#1}}
 \NewDocumentCommand\tabref{m}{\tablename{}~\ref{tab:#1}}
 \NewDocumentCommand\figref{m}{\figurename{}~\ref{fig:#1}}
-\NewDocumentCommand\subtabref{m m}{\tabref{#1}\subref{tab:#1:#2}}
-\NewDocumentCommand\subfigref{m m}{\figref{#1}\subref{fig:#1:#2}}
+\NewDocumentCommand\tabsubref{m m}{\subref{tab:#1:#2}}
+\NewDocumentCommand\figsubref{m m}{\subref{fig:#1:#2}}
+\NewDocumentCommand\subtabref{m m}{\tabref{#1}\tabsubref{#1}{#2}}
+\NewDocumentCommand\subfigref{m m}{\figref{#1}\figsubref{#1}{#2}}
 
 %##############################################################################################################%
 % chapter head                                                                                                 %
@@ -253,6 +254,10 @@
 %##############################################################################################################%
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\sinc}{sinc}
+\DeclareMathOperator*{\rect}{rect}
+
+\NewDocumentCommand\sign{m}{\mathrm{sign}\left(#1\right)}
 
 \LetLtxMacro\SUM\sum
 \LetLtxMacro\PROD\prod
@@ -262,19 +267,16 @@
 \RenewDocumentCommand\prod{}{\displaystyle\PROD}
 \RenewDocumentCommand\frac{m m}{\displaystyle\FRAC{#1}{#2}}
 
-\NewDocumentCommand\seq{m}{\mathchoice{\left\{#1\right\}}{\{#1\}}{\left\{#1\right\}}{\left\{#1\right\}}}
-
 %##############################################################################################################%
 % linear algebra commands                                                                                      %
 %##############################################################################################################%
 \NewDocumentCommand\dprod{m m}{#1 \cdot #2}
 \NewDocumentCommand\iprod{m m}{\left\langle #1,#2\right\rangle}
 \NewDocumentCommand\pdiff{m m}{\frac{\partial #1}{\partial #2}}
-\NewDocumentCommand\trans{m}{{}^t\!#1\ }
+\NewDocumentCommand\trans{m}{{}^t#1}
+\NewDocumentCommand\trace{m}{\mathrm{tr}\left(#1\right)}
 \NewDocumentCommand\where{}{\enspace\mathrm{where}\enspace}
 \NewDocumentCommand\normal{m m m}{\frac{\hfill #3}{\sum_{#1}^{#2} #3}}
-\NewDocumentCommand\Ii{m}{\mathbb{I}\left(#1\right)}
-\NewDocumentCommand\Ik{m m}{\mathbb{I}_{#1}\!\left({#2}\right)}
 
 %##############################################################################################################%
 % statistical commands                                                                                         %
@@ -291,15 +293,71 @@
 \NewDocumentCommand\KL{m m}{D\!\left(#1\|#2\right)}
 \NewDocumentCommand\smax{}{f_\mathrm{smax}}
 \NewDocumentCommand\sigm{}{f_\mathrm{sigm}}
+\NewDocumentCommand\relu{}{f_\mathrm{ReLU}}
 
 %##############################################################################################################%
 % probability distribution commands                                                                            %
 %##############################################################################################################%
-\NewDocumentCommand\Gd{m}{\Gamma\left(#1\right)}
-\NewDocumentCommand\Nd{m}{\mathcal{N}\left(#1\right)}
-\NewDocumentCommand\Md{m}{\mathrm{Mul}\left(#1\right)}
-\NewDocumentCommand\Dd{m}{\mathrm{Dir}\left(#1\right)}
-\NewDocumentCommand\Lk{m}{\mathcal{L}\left(#1\right)}
+\NewDocumentCommand\Prob{m o}{P\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+\NewDocumentCommand\prob{m o}{p\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+\NewDocumentCommand\qrob{m o}{q\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+
+\NewDocumentCommand\hatProb{m o}{\hat{P}\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+\NewDocumentCommand\hatprob{m o}{\hat{p}\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+
+\NewDocumentCommand\Lp{}{\mathcal{L}}
+\NewDocumentCommand\Up{}{\mathrm{Uniform}}
+\NewDocumentCommand\Mp{}{\mathrm{Mul}}
+\NewDocumentCommand\Bp{}{\mathrm{B}}
+\NewDocumentCommand\Gp{}{\Gamma}
+\NewDocumentCommand\Pp{}{\psi}
+
+\NewDocumentCommand\Nt{}{\tilde{\Np}}
+\NewDocumentCommand\Wt{}{\tilde{\Wp}}
+
+\NewDocumentCommand\Np{}{\mathcal{N}}
+\NewDocumentCommand\Dp{}{\mathrm{Dir}}
+\NewDocumentCommand\Wp{}{\mathcal{W}}
+
+\NewDocumentCommand\Lk{m}{\Lp\left(#1\right)}
+\NewDocumentCommand\Ud{m}{\Up\left(#1\right)}
+\NewDocumentCommand\Md{m}{\Mp\left(#1\right)}
+\NewDocumentCommand\Bd{m}{\Bp\left(#1\right)}
+\NewDocumentCommand\Gd{m}{\Gp\left(#1\right)}
+\NewDocumentCommand\Pd{m}{\Pp\left(#1\right)}
+
+\NewDocumentCommand\Nn{m}{\Nt\left(#1\right)}
+\NewDocumentCommand\Wn{m}{\Wt\left(#1\right)}
+
+\NewDocumentCommand\Nd{m m}{\Np\left(#1\,\middle|\,#2\right)}
+\NewDocumentCommand\Dd{m m}{\Dp\left(#1\,\middle|\,#2\right)}
+\NewDocumentCommand\Wd{m m}{\Wp\left(#1\,\middle|\,#2\right)}
+
+%##############################################################################################################%
+% dataset commands                                                                                             %
+%##############################################################################################################%
+\NewDocumentCommand\tup{m}{\mathchoice{\left(#1\right)}{(#1)}{\left(#1\right)}{\left(#1\right)}}
+\NewDocumentCommand\seq{m}{\mathchoice{\left\{#1\right\}}{\{#1\}}{\left\{#1\right\}}{\left\{#1\right\}}}
+\NewDocumentCommand\abs{m}{\mathchoice{\left|#1\right|}{|#1|}{\left|#1\right|}{\left|#1\right|}}
+\NewDocumentCommand\norm{m}{\mathchoice{\left\|#1\right\|}{\|#1\|}{\left\|#1\right\|}{\left\|#1\right\|}}
+\NewDocumentCommand\pair{m m}{\mathchoice{\left(#1,#2\right)}{(#1,#2)}{\left(#1,#2\right)}{\left(#1,#2\right)}}
+
+\NewDocumentCommand\DATA{}{\mathbb{D}}
+\NewDocumentCommand\TRAIN{}{\mathbb{T}}
+\NewDocumentCommand\xy{}{\pair{x}{y}}
+\NewDocumentCommand\xY{}{\pair{x}{\bm{y}}}
+\NewDocumentCommand\Xy{}{\pair{\bm{x}}{y}}
+\NewDocumentCommand\XY{}{\pair{\bm{x}}{\bm{y}}}
+\NewDocumentCommand\seqxy{}{\seq{x,y}}
+\NewDocumentCommand\seqxY{}{\seq{x,\bm{y}}}
+\NewDocumentCommand\seqXy{}{\seq{\bm{x},y}}
+\NewDocumentCommand\seqXY{}{\seq{\bm{x},\bm{y}}}
+
+%##############################################################################################################%
+% mapping function commands                                                                                    %
+%##############################################################################################################%
+\NewDocumentCommand\Phiz{}{\Phi_{\bm{x}}}
+\NewDocumentCommand\Phix{m}{\Phi_{\bm{x}_{#1}}}
 
 %##############################################################################################################%
 % lstlisting definition for Scala                                                                              %

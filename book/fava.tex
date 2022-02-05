@@ -1152,9 +1152,10 @@ case class BinST(op: String, e1: AST, e2: AST) extends AST {
 条件分岐の式は\texttt{IfST}型で表す。条件式と、真の場合に評価する式と、偽の場合に評価する式で、合計3個の引数を取る。
 
 \begin{Verbatim}{Scala}
-case class IfST(cond: AST, v1: AST, v2: AST) extends AST {
+case class IfST(cond: AST, vals: (AST, AST)) extends AST {
 	def code(implicit env: DefST) = {
-		val (code1, code2) = v1.code -> v2.code
+		val code1 = vals._1.code
+		val code2 = vals._2.code
 		val jmp1 = Skin(2 + code1.size) +: code1
 		val jmp2 = Skip(1 + code2.size) +: code2
 		cond.code ++ jmp1 ++ jmp2
@@ -1189,8 +1190,7 @@ object Root extends DefST(Seq(), null)
 \begin{Verbatim}{Scala}
 case class StIdST(val name: String) extends AST {
 	def search(env: DefST, nest: Int = 0): Load = {
-		val idx = env.pars.indexOf(name)
-		if(idx >= 0) return Load(nest, idx)
+		if(env.pars.contains(name)) return Load(nest, env.pars.indexOf(name))
 		if(env.out != null) search(env.out, nest + 1)
 		else sys.error(s"variable $name not defined")
 	}
@@ -1231,18 +1231,18 @@ case class CallST(f: AST, args: Seq[AST]) extends AST {
 \begin{Verbatim}{Scala}
 object FavaPEGs extends PEGs {
 	def expr: PEG[AST] = (cond / or) <~ ("//" ~ ".*$".r).?
-	def cond = (or <~ "?") ~ expr ~ (":" ~> expr) ^ (c->y->n => IfST(c, y, n))
+	def cond = (or <~ "?") ~ (expr ~ (":" ~> expr)) ^ IfST
 	def or   = new Fold(and, "|" ^ (op => BinST(op, _, _)))
 	def and  = new Fold(eql, "&" ^ (op => BinST(op, _, _)))
 	def eql  = new Fold(rel, """(!|=)=""".r ^ (op => BinST(op, _, _)))
 	def rel  = new Fold(add, """[<>]=?""".r ^ (op => BinST(op, _, _)))
 	def add  = new Fold(mul, """[\+\-]""".r ^ (op => BinST(op, _, _)))
 	def mul  = new Fold(unr, """[\*/%]""".r ^ (op => BinST(op, _, _)))
-	def unr  = ("+" / "-" / "!").* ~ call ^ (o->e => o.foldRight(e)(UnST))
-	def call = fact ~ args.* ^ (f->a => a.foldLeft(f)(CallST))
+	def unr  = ("+" / "-" / "!").* ~ call ^ ((o,e) => o.foldRight(e)(UnST))
+	def call = fact ~ args.* ^ ((f,a) => a.foldLeft(f)(CallST))
 	def args = "(" ~> new Sep(expr ^ LzArgST, ",") <~")"
 	def fact = func / bool / text / real / int / name / ("(" ~> expr <~ ")")
-	def func = pars ~ ("=>" ~> expr) ^ (p->e => DefST(p, e))
+	def func = pars ~ ("=>" ~> expr) ^ ((p,e) => DefST(p, e))
 	def pars = "(" ~> new Sep(name, ",") <~ ")" ^ (_.map(_.name.name))
 	def bool = ("true" / "false") ^ (_.toBoolean) ^ LitST
 	def text = ("\"" ~> """([^"\\]|\\[\\'"bfnrt])*""".r <~ "\"") ^ StrST

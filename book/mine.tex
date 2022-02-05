@@ -41,7 +41,7 @@ y = f(\bm{x}) = w_0 + \sum_{k=1}^K w_k x_k
 y = f(\bm{x}) = \sum_{k=0}^K w_k \phi_k(\bm{x}) = \trans{\bm{w}}\bm{\phi}(\bm{x}).
 \end{equation}
 
-\figref{reg.cubic}は$y\!\sim\!\Nd{y|x^3\!-\!3x,2500}$に従う$\seq{x_n,y_n}$に$\phi_k(x)\!=\!x^k$の線型基底関数モデルを適用した例である。
+\figref{reg.cubic}は$y\!\sim\!\Nd{y}{x^3\!-\!3x,2500}$に従う$\seq{x_n,y_n}$に$\phi_k(x)\!=\!x^k$の線型基底関数モデルを適用した例である。
 
 \begin{figure}[h]
 \centering
@@ -50,7 +50,7 @@ y = f(\bm{x}) = \sum_{k=0}^K w_k \phi_k(\bm{x}) = \trans{\bm{w}}\bm{\phi}(\bm{x}
 \caption{linear basis function model.\label{fig:reg.cubic}}
 \end{figure}
 
-線型基底関数モデルでは、他にも$\phi_k(x)\!=\!\Nd{x|\mu_k,\sigma_k^2}$を採用すれば、$\mu_k$近傍の局所的な曲線を表現できる。
+線型基底関数モデルでは、他にも$\phi_k(x)\!=\!\Nd{x}{\mu_k,\sigma_k^2}$を採用すれば、$\mu_k$近傍の局所的な曲線を表現できる。
 %
 \begin{equation}
 y = f(\bm{x}) = \left\{
@@ -58,7 +58,7 @@ y = f(\bm{x}) = \left\{
 &\sum_{k=0}^K w_k x^k&
 &\where \phi_k(x)=x^k,\\
 &\sum_{k=0}^K \frac{w_k}{\sqrt{2\pi\sigma_k^2}}\exp\left\{-\frac{(x-\mu_k)^2}{2\sigma_k^2}\right\}&
-&\where \phi_k(x)=\Nd{x|\mu_k,\sigma_k^2}.
+&\where \phi_k(x)=\Nd{x}{\mu_k,\sigma_k^2}.
 \end{aligned}
 \right.
 \end{equation}
@@ -67,14 +67,14 @@ y = f(\bm{x}) = \left\{
 %
 \begin{equation}
 \label{eq:reg.noise}
-y = f(\bm{x}) + \varepsilon \sim p(y|\bm{x},\bm{w},\beta) = \Nd{y|f(\bm{x}),\beta^{-1}}.
+y = f(\bm{x}) + \varepsilon \sim p(y|\bm{x},\bm{w},\beta) = \Nd{y}{f(\bm{x}),\beta^{-1}}.
 \end{equation}
 
 なお、$\beta$は分散の逆数で、ノイズの\textbf{精度}である。観測された標本$\seq{\bm{x}_n,y_n}$の出現確率は、\eqref{reg.like}で求まる。
 %
 \begin{equation}
 \label{eq:reg.like}
-p(\seq{y_n}|\seq{\bm{x}_n},\bm{w},\beta) = \prod_{n=1}^N \Nd{y_n|\trans{\bm{w}}\bm{\phi}(\bm{x}_n), \beta^{-1}}.
+p(\seq{y_n}|\seq{\bm{x}_n},\bm{w},\beta) = \prod_{n=1}^N \Nd{y_n}{\trans{\bm{w}}\bm{\phi}(\bm{x}_n), \beta^{-1}}.
 \end{equation}
 
 \eqref{reg.like}を\textbf{尤度}と呼ぶ。尤度は、与えられた訓練データを良く表現する\textbf{母数}としての加重$\bm{w}$の妥当性を示す。
@@ -233,7 +233,7 @@ I(y) = \log_2 \frac{1}{P(y)} = - \log_2 P(y) \geq 0.
 %
 \begin{equation}
 \label{eq:dec.ent}
-H(Y) = \sum_{y \in Y} P(y) I(y) = - \sum_{y \in Y} P(y) \log_2 P(y) \geq 0. 
+H(Y) = \sum_{y \in Y} P(y) I(y) = - \sum_{y \in Y} P(y) \log_2 P(y) \geq 0.
 \end{equation}
 
 なお、エントロピー$H(Y)$が$0$になる状況は、情報源$Y$が常に同じ記号$y$のみを出力する場合に限られる。
@@ -699,18 +699,18 @@ $ xxd -b -g 1 -c 8 bob.rz
 \caption{Gaussian mixture model.\label{fig:gmm.model}}
 \end{figure}
 
-混合正規分布は$K$個の正規分布の線型和である。変数$\bm{x}\!\in\!\mathbb{R}^D$は、確率$w_k$で正規分布$\Nd{\bm{x}|\bm{\mu}_k,S_k}$に従う。
+混合正規分布は$K$個の正規分布の線型和である。変数$\bm{x}\!\in\!\mathbb{R}^D$は、確率$w_k$で正規分布$\Nd{\bm{x}}{\bm{\mu}_k,S_k}$に従う。
 %
 \begin{equation}
 \label{eq:gmm}
-P(\bm{x}) = \sum_{k=1}^K w_k \Nd{\bm{x}|\bm{\mu}_k,S_k} \where\sum_{k=1}^K w_k = 1.
+P(\bm{x}) = \sum_{k=1}^K w_k \Nd{\bm{x}}{\bm{\mu}_k,S_k} \where\sum_{k=1}^K w_k = 1.
 \end{equation}
 
-$\bm{\mu}_k$と$S_k$は$k$番目の正規分布の平均と\textbf{分散共分散行列}である。正規分布$\Nd{\bm{x}|\bm{\mu},S}$は\eqref{gmm.gauss}で定義される。
+$\bm{\mu}_k$と$S_k$は$k$番目の正規分布の平均と\textbf{分散共分散行列}である。正規分布$\Nd{\bm{x}}{\bm{\mu},S}$は\eqref{gmm.gauss}で定義される。
 %
 \begin{equation}
 \label{eq:gmm.gauss}
-\Nd{\bm{x}|\bm{\mu},S} = \frac{1}{(\sqrt{2\pi})^D\sqrt{|S|}} \exp \left\{-\frac{1}{2} \trans{(\bm{x}-\bm{\mu})} S^{-1} (\bm{x}-\bm{\mu})\right\}.
+\Nd{\bm{x}}{\bm{\mu},S} = \frac{1}{(\sqrt{2\pi})^D\sqrt{|S|}} \exp \left\{-\frac{1}{2} \trans{(\bm{x}-\bm{\mu})} S^{-1} (\bm{x}-\bm{\mu})\right\}.
 \end{equation}
 
 母数$\seq{w_k,\bm{\mu}_k,S_k}$の値を推定する前に、標本$\seq{\bm{x}_n}$を$K$個の部分集合に分類する問題を\sectref{gmm.km}で検討する。
@@ -804,7 +804,7 @@ class Kmeans(X: Seq[Seq[Double]], K: Int, d: (Seq[Double],Seq[Double])=>Double) 
 %
 \begin{equation}
 \label{eq:gmm.estep}
-P(z_{nk}=1|\bm{x}_n) = \normal{k=1}{K}{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}} = \gamma_{nk}.
+P(z_{nk}=1|\bm{x}_n) = \normal{k=1}{K}{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}} = \gamma_{nk}.
 \end{equation}
 
 \eqref{gmm.estep}に定義した$\gamma_{nk}$は、観測$\bm{x}_n$を得た後の潜在変数$z_{nk}$の確率分布を表すため、\textbf{事後確率}と呼ばれる。
@@ -820,8 +820,8 @@ P(z_{nk}=1|\bm{x}_n) = \normal{k=1}{K}{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}} = \gamm
 \begin{equation}
 \label{eq:gmm.L.log}
 \log \Lk{\seq{w_k,\bm{\mu}_k,S_k}}
-= \log\prod_{n=1}^N \sum_{k=1}^K w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}
-= \sum_{n=1}^N \log \sum_{k=1}^K w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}.
+= \log\prod_{n=1}^N \sum_{k=1}^K w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}
+= \sum_{n=1}^N \log \sum_{k=1}^K w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}.
 \end{equation}
 
 以後、尤度$\mathcal{L}$の最大化を目指す。しかし、解析的な求解は困難である。\eqref{gmm.L.m}に$\bm{\mu}_k$の偏微分の例を示す。
@@ -829,7 +829,7 @@ P(z_{nk}=1|\bm{x}_n) = \normal{k=1}{K}{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}} = \gamm
 \begin{equation}
 \label{eq:gmm.L.m}
 \pdiff{}{\bm{\mu}_k}\log\mathcal{L} =
-\pdiff{}{\bm{\mu}_k}\sum_{n=1}^N \log\sum_{k=1}^K w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k} =
+\pdiff{}{\bm{\mu}_k}\sum_{n=1}^N \log\sum_{k=1}^K w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k} =
 \sum_{n=1}^N \gamma_{nk} S_k^{-1} (\bm{x}_n - \bm{\mu}_k).
 \end{equation}
 
@@ -892,7 +892,7 @@ $\log$が凹関数である点に注意して、\eqref{jensen}に\eqref{gmm.L.lo
 \begin{equation}
 \label{eq:gmm.jensen}
 \log \Lk{\bm{\theta}}
-\geq \sum_{n=1}^N \sum_{k=1}^K \gamma_{nk} \log \frac{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}}{\gamma_{nk}} = Q(\bm{\gamma}, \bm{\theta}).
+\geq \sum_{n=1}^N \sum_{k=1}^K \gamma_{nk} \log \frac{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}}{\gamma_{nk}} = Q(\bm{\gamma}, \bm{\theta}).
 \end{equation}
 
 期待値最大化法には別の解釈もある。仮に変数$\seq{z_{nk}}$が観測可能ならば、対数尤度は\eqref{gmm.L.compl}で定義される。
@@ -900,7 +900,7 @@ $\log$が凹関数である点に注意して、\eqref{jensen}に\eqref{gmm.L.lo
 %
 \begin{equation}
 \label{eq:gmm.L.compl}
-\log P(\seq{\bm{x}_n,z_{nk}}|\bm{\theta}) = \sum_{n=1}^N \sum_{k=1}^K z_{nk} \log \seq{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}}.
+\log P(\seq{\bm{x}_n,z_{nk}}|\bm{\theta}) = \sum_{n=1}^N \sum_{k=1}^K z_{nk} \log \seq{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}}.
 \end{equation}
 
 \eqref{gmm.Q}や\eqref{gmm.estep}で$\bm{\gamma}$を求める操作は、\eqref{gmm.L.exp}に示す\textbf{期待対数尤度}の最新値を求める操作と等価であり、
@@ -908,7 +908,7 @@ $\log$が凹関数である点に注意して、\eqref{jensen}に\eqref{gmm.L.lo
 %
 \begin{equation}
 \label{eq:gmm.L.exp}
-\E[\bm{z}]{\log P(\seq{\bm{x}_n,z_{nk}}|\bm{\theta})} = \sum_{n=1}^N \sum_{k=1}^K \gamma_{nk} \log \seq{w_k \Nd{\bm{x}_n|\bm{\mu}_k,S_k}}.
+\E[\bm{z}]{\log P(\seq{\bm{x}_n,z_{nk}}|\bm{\theta})} = \sum_{n=1}^N \sum_{k=1}^K \gamma_{nk} \log \seq{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}}.
 \end{equation}
 
 これが期待値最大化法の名の由来である。
@@ -916,7 +916,7 @@ $\log$が凹関数である点に注意して、\eqref{jensen}に\eqref{gmm.L.lo
 %
 \begin{equation}
 \label{eq:gmm.km.elog}
-\lim_{\varepsilon\to0} \varepsilon\log \seq{w \Nd{\bm{x}|\bm{\mu},\varepsilon E}} =
+\lim_{\varepsilon\to0} \varepsilon\log \seq{w \Nd{\bm{x}}{\bm{\mu},\varepsilon E}} =
 \lim_{\varepsilon\to0} \seq{\varepsilon\log w - \varepsilon\frac{D}{2} \log (2\pi\varepsilon) - \frac{1}{2} \|\bm{x}-\bm{\mu}\|^2} =
 -\frac{1}{2} \|\bm{x}-\bm{\mu}\|^2.
 \end{equation}
@@ -928,7 +928,7 @@ $\log$が凹関数である点に注意して、\eqref{jensen}に\eqref{gmm.L.lo
 \varepsilon \E[\bm{z}]{\log P(\seq{\bm{x}_n,z_{nk}}|\bm{\theta})} \to -\frac{1}{2} \sum_{n=1}^N \sum_{k=1}^K z_{nk} \|\bm{x}_n-\bm{\mu}_k\|^2 + C.
 \end{equation}
 
-期待値最大化法を実装する前に$K$個の正規分布$\seq{\Nd{\bm{x}|\bm{\mu}_k,S_k}}$の混合分布を下記の\texttt{GMM}クラスに実装する。
+期待値最大化法を実装する前に$K$個の正規分布$\seq{\Nd{\bm{x}}{\bm{\mu}_k,S_k}}$の混合分布を下記の\texttt{GMM}クラスに実装する。
 
 \begin{Verbatim}{Scala}
 class GMM(val D: Int, val K: Int) {
@@ -1205,7 +1205,7 @@ P(\phi_z,\theta_1,...,\theta_D|\bm{w}) \propto P(\phi_z,\theta_1,...,\theta_D) \
 %
 \begin{equation}
 \label{eq:lda.dir}
-\Dd{\bm{\theta}|\bm{\alpha}} = \frac{\Gd{\sum_{k=1}^K \alpha_k}}{\prod_{k=1}^K \Gd{\alpha_k}} \prod_{k=1}^K \theta_k^{\alpha_k-1}\;
+\Dd{\bm{\theta}}{\bm{\alpha}} = \frac{\Gd{\sum_{k=1}^K \alpha_k}}{\prod_{k=1}^K \Gd{\alpha_k}} \prod_{k=1}^K \theta_k^{\alpha_k-1}\;
 \where \Gd{z} = \int_0^\infty t^{z-1} e^{-t} dt.
 \end{equation}
 %
@@ -1213,7 +1213,7 @@ P(\phi_z,\theta_1,...,\theta_D|\bm{w}) \propto P(\phi_z,\theta_1,...,\theta_D) \
 %
 \begin{equation}
 \label{eq:lda.conj}
-\Dd{\bm{\theta}|\bm{n}+\bm{\alpha}} \propto \Md{\bm{n}|\bm{\theta}} \Dd{\bm{\theta}|\bm{\alpha}}.
+\Dd{\bm{\theta}}{\bm{n}+\bm{\alpha}} \propto \Md{\bm{n}|\bm{\theta}} \Dd{\bm{\theta}}{\bm{\alpha}}.
 \end{equation}
 %
 \eqref{lda.conj}の性質により、事前確率は事後確率と共通の確率密度関数で定義でき、これを\textbf{共役事前分布}と呼ぶ。
@@ -1221,8 +1221,8 @@ P(\phi_z,\theta_1,...,\theta_D|\bm{w}) \propto P(\phi_z,\theta_1,...,\theta_D) \
 \begin{equation}
 \label{eq:lda.pri}
 \begin{aligned}
-\phi_k & \sim \Dd{\phi|\bm{\beta}},\\
-\theta_d & \sim \Dd{\theta|\bm{\alpha}}.
+\phi_k & \sim \Dd{\phi}{\bm{\beta}},\\
+\theta_d & \sim \Dd{\theta}{\bm{\alpha}}.
 \end{aligned}
 \end{equation}
 %
@@ -1231,9 +1231,9 @@ P(\phi_z,\theta_1,...,\theta_D|\bm{w}) \propto P(\phi_z,\theta_1,...,\theta_D) \
 \begin{equation}
 \label{eq:lda.B.2}
 P(\bm{\phi},\bm{\theta}|\bm{w},\bm{\alpha},\bm{\beta})
-\propto 
-\prod_{k=1}^K \Dd{\phi_k|\bm{\beta}} 
-\prod_{d=1}^D \Dd{\theta_d|\bm{\alpha}} 
+\propto
+\prod_{k=1}^K \Dd{\phi_k}{\bm{\beta}}
+\prod_{d=1}^D \Dd{\theta_d}{\bm{\alpha}}
 \prod_{n=1}^{N_d} \int_z \phi_z(w_{dn}) \theta_d(z) dz.
 \end{equation}
 
@@ -1261,8 +1261,8 @@ P(\bm{\phi},\bm{\theta}|\bm{w},\bm{\alpha},\bm{\beta})
 \begin{equation}
 \label{eq:lda.col}
 P(\bm{z},\bm{w}|\bm{\alpha},\bm{\beta}) =
-\left(\prod_{k=1}^K \int \Dd{\phi_k|\bm{\beta}} \prod_{d=1}^D \prod_{n=1}^{N_d} \phi_{z_{dn}}\!(w_{dn})\;d\phi_k\right)\!
-\left(\prod_{d=1}^D \int \Dd{\theta_d|\bm{\alpha}} \prod_{n=1}^{N_d} \theta_d(z_{dn})\;d\theta_d\right).
+\left(\prod_{k=1}^K \int \Dd{\phi_k}{\bm{\beta}} \prod_{d=1}^D \prod_{n=1}^{N_d} \phi_{z_{dn}}\!(w_{dn})\;d\phi_k\right)\!
+\left(\prod_{d=1}^D \int \Dd{\theta_d}{\bm{\alpha}} \prod_{n=1}^{N_d} \theta_d(z_{dn})\;d\theta_d\right).
 \end{equation}
 %
 詳細は省略するが、\textbf{ベータ関数}の積分が出現する点に注目しつつ、\eqref{lda.col}を変形すると、\eqref{lda.pz}を得る。
