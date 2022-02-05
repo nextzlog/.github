@@ -14,13 +14,23 @@ object TeXPEGs extends RegexParsers with PackratParsers {
 	lazy val env = ("\\begin{" ~> id <~ "}") ~ arg ~ doc <~ ("\\end{" ~> id <~ "}") ^^ {
 		case name ~ args ~ body => EnvAppTeX(name, args, body)
 	}
-	lazy val cmd = not("\\end{") ~> yen ~ arg ^^ {
+	lazy val cmd = defApp | (not("\\end{") ~> yen ~ arg ^^ {
 		case name ~ args => CmdAppTeX(name, args)
-	}
+	})
 	lazy val mat = "$" ~> (esc | cmd | bra | sqb | str).* <~ "$" ^^ DocTeX ^^ MatTeX
-	lazy val arg: Parser[DocTeX] = (yen.+ ~ (sqb | bra).*) ^^ {
-		case y ~ args => DocTeX(y ++ args)
-	} | ((sqb | bra).* ^^ DocTeX)
+	lazy val defCmd = "\\" ~> (
+		"NewDocumentCommand" |
+		"RenewDocumentCommand" |
+		"newcommand" |
+		"renewcommand" |
+		"def" |
+		"let" |
+		"gdef" |
+		"LetLtxMacro" |
+		"DeclareMathOperator*")
+	lazy val defApp = defCmd ~ defArg ^^ {case name ~ args => CmdAppTeX(YenTeX(name), args)}
+	lazy val defArg = (yen.+ ~ (sqb | bra).*) ^^ {case y ~ args => DocTeX(y ++ args)} | ((sqb | bra).+ ^^ DocTeX)
+	lazy val arg: Parser[DocTeX] = ((sqb | bra).* ^^ DocTeX)
 	lazy val doc: Parser[DocTeX] = (cmt | esc | tim | env | vrb | cmd | bra | sqb | str | mat).* ^^ DocTeX
 	lazy val vrb = vrb1 | vrb2
 	lazy val vrb1 = ("\\verb#" ~> "[^#]*".r <~ "#") ^^ {
@@ -42,9 +52,10 @@ object TeXPEGs extends RegexParsers with PackratParsers {
 
 object ParamPEGs extends RegexParsers with PackratParsers {
 	lazy val m = "m" ^^ ParamM
+	lazy val o = "o" ^^ (_ => ParamO(StrTeX("")))
 	lazy val O = "O" ~> ("{" ~> str <~ "}") ^^ ParamO
 	lazy val str = """[^\}]*""".r ^^ StrTeX
-	lazy val params = (m | O).*
+	lazy val params = (m | o | O).*
 	def parseAll(str: String): Seq[Param] = parseAll(params, str) match {
 		case Success(ast, _) => ast
 		case fail: NoSuccess => sys.error(fail.msg)
@@ -55,6 +66,10 @@ object ParamPEGs extends RegexParsers with PackratParsers {
 object Binds {
 	val binds = MutableMap[String, DefCmdTeX]()
 	def get(name: YenTeX) = binds.get(name.view)
+}
+
+object MacroExpandMode {
+	var isFinal = false
 }
 
 trait TeX {
@@ -89,7 +104,7 @@ trait TeX {
 	final override def toString() = eval
 }
 
-case class CmdAppTeX(name: YenTeX, args: DocTeX) extends TeX {
+case class CmdAppTeX(name: YenTeX, args: DocTeX = DocTeX()) extends TeX {
 	def eval = (Binds.get(name) match {
 		case Some(cmd) => cmd.expand(this)
 		case None => name.text match {
@@ -97,14 +112,25 @@ case class CmdAppTeX(name: YenTeX, args: DocTeX) extends TeX {
 			case "let" => NewCmdTeX(name, args)
 			case "gdef" => NewCmdTeX(name, args)
 			case "newcommand" => NewCmdTeX(name, args)
+			case "renewcommand" => NewCmdTeX(name, args)
 			case "NewDocumentCommand" => DocCmdTeX(name, args)
-			case "DeclareMathOperator*" => NewCmdTeX(name, args)
+			case "RenewDocumentCommand" if ok => DocCmdTeX(name, args)
+			case "LetLtxMacro" => OldCmdTeX(name, args)
+			case "DeclareMathOperator*" => NewCmdTeX(name, DocTeX(args.body.take(1) :+ ArgTeX(CmdAppTeX(YenTeX("mathrm"), DocTeX(args.body.drop(1))))))
 			case "mathchoice" => args.body.head.asArg.peel
+			case "IfValueTF" => args.body(if(args.body.head.asArg.peel.trim.nonEmpty) 1 else 2).asArg.peel
 			case name => "%s%s".format(YenTeX(name), args)
 		}
 	}).toString()
-	def view = "%s%s".format(name.view, args.view)
+	def view = name.text match {
+		case "label" => ""
+		case _ => "%s%s".format(name.view, args.view)
+	}
 	def toST = middle.CmdAppST(name.toST, args.toST)
+	def ok = args.body.head.peel match {
+		case "\\chapter" => false
+		case _ => true
+	}
 }
 
 trait Param
@@ -113,12 +139,17 @@ case class ParamM(partype: String) extends Param
 case class ParamO(default: StrTeX) extends Param
 
 abstract class DefCmdTeX(cmd: YenTeX, args: DocTeX) extends TeX {
-	Binds.binds(args.body.head.peel) = this
+	def name = args.body.head.peel
+
+	Binds.binds(name) = this
 
 	/**
 	 * command body
 	 */
-	def body = args.body.last.asArg.view.tail.init
+	def body = args.body.last match {
+		case arg: ArgTeX => arg.view.tail.init
+		case yen: YenTeX => yen.view
+	}
 
 	/**
 	 * command body that can be used as a formatted String
@@ -155,11 +186,11 @@ abstract class DefCmdTeX(cmd: YenTeX, args: DocTeX) extends TeX {
 	 */
 	def expand(app: CmdAppTeX): String = {
 		var tex = expandOnce(app)
-		var exp = ""
+		var exp = Seq[String]().toBuffer
 		do {
-			exp = tex
+			exp.prepend(tex)
 			tex = TeXPEGs.parseTeX(tex).eval
-		} while(tex != exp)
+		} while(!MacroExpandMode.isFinal && !exp.contains(tex))
 		tex
 	}
 
@@ -185,6 +216,17 @@ case class NewCmdTeX(cmd: YenTeX, args: DocTeX) extends DefCmdTeX(cmd, args) {
 	def pars = Seq.fill(args.body.tail.init.headOption.map(_.peel.toInt).getOrElse(0))(ParamM("M"))
 }
 
+case class OldCmdTeX(cmd: YenTeX, args: DocTeX) extends DefCmdTeX(cmd, args) {
+	def pars = Seq()
+	def renameTo = args.body.tail.head.view.replace("{", "").replace("}", "")
+	override def expand(app: CmdAppTeX) = expandOnce(app)
+	override def expandOnce(app: CmdAppTeX) = MacroExpandMode.isFinal match {
+		case false => app.view
+		case true => "%s%s".format(renameTo, app.args)
+	}
+	override def eval = view
+}
+
 case class EnvAppTeX(name: String, args: DocTeX, body: TeX) extends TeX {
 	def eval = """\begin{%1$s}%2$s%3$s\end{%1$s}""".format(name, args.eval, body.eval)
 	def view = """\begin{%1$s}%2$s%3$s\end{%1$s}""".format(name, args.view, body.view)
@@ -192,8 +234,11 @@ case class EnvAppTeX(name: String, args: DocTeX, body: TeX) extends TeX {
 }
 
 case class YenTeX(text: String) extends TeX {
-	def eval = """\""".concat(text)
-	def view = eval
+	def eval = (Binds.get(this) match {
+		case Some(cmd) if cmd.pars.isEmpty => cmd.expand(CmdAppTeX(this))
+		case _ => view
+	}).toString()
+	def view = """\""".concat(text)
 	def toST = middle.YenST(text)
 }
 
@@ -241,7 +286,7 @@ case class MatTeX(body: TeX) extends TeX {
 	def toST = middle.MatST(body)
 }
 
-case class DocTeX(body: Seq[TeX]) extends TeX {
+case class DocTeX(body: Seq[TeX] = Seq()) extends TeX {
 	def eval = body.map(_.eval).mkString
 	def view = body.map(_.view).mkString
 	def toST = middle.DocST(body.map(_.toST))

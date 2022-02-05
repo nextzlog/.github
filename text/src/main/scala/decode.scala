@@ -1,6 +1,7 @@
 package decode
 
 import encode.TeX
+import scala.collection.mutable.{Map => MutableMap}
 
 trait MD {
 	def str(scope: MD): String
@@ -37,7 +38,7 @@ case class ArgMD(body: MD) extends TreeMD(body) {
 }
 
 case class StrMD(text: String) extends LeafMD {
-	override def str(scope: MD) = text.replace('~', ' ')
+	override def str(scope: MD) = text.replace('~', ' ').replace("|", "\\|")
 }
 
 case class EscMD(char: String) extends LeafMD {
@@ -52,69 +53,70 @@ object EmptyMD extends LeafMD {
 }
 
 case class VrbMD(body: String) extends LeafMD {
-	override def str(scope: MD) = "`%s`".format(body.replace("|", "\\|"))
+	override def str(scope: MD) = "`%s`".format(body)
 }
 
 case class LstMD(lang: MD, body: String) extends LeafMD {
-	override def str(scope: MD) = s"```${lang.str(scope)}${body}```"
+	override def str(scope: MD) = s"```${lang.str(scope).toLowerCase}${body}```"
 }
 
 case class MatMD(body: TeX) extends LeafMD {
-	override def str(scope: MD) = s"$$${body}$$"
+	override def str(scope: MD) = s"$$$$${body}$$$$".replace("|", " \\vert ")
 }
 
 case class DocMD(body: Seq[MD]) extends TreeMD(body: _*) {
 	override def str(scope: MD) = body.map(_.str(scope)).mkString
 }
 
-trait Labels {
-	def format(label: String) = label.split(":", 2).toSeq match {
-		case Seq("chap", lab) => "sec:".concat(lab)
-		case Seq("sect", lab) => "sec:".concat(lab)
-		case Seq("fig",  lab) => "fig:".concat(lab)
-		case Seq("tab",  lab) => "tbl:".concat(lab)
-		case Seq("eq",   lab) => "eq:" .concat(lab)
-		case other => other.mkString(":")
+object Counter {
+	val counter = MutableMap[String, Int]().withDefaultValue(0)
+	val labeled = MutableMap[String, String]()
+	def next(label: String) = {
+		counter(label.split(":", 2).head) += 1
+		counter(label.split(":", 2).head)
 	}
-	def label(args: DocMD, scope: MD) = format(args.body.head.str(scope))
+	def reset(label: String) = {
+		counter(label.split(":", 2).head) = 0
+	}
+	def now(label: String) = {
+		counter(label.split(":", 2).head)
+	}
+	def clear() = counter.clear()
 }
 
-case class Label(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def lab(scope: MD) = Seq(label(args, scope))
+case class Label(args: DocMD) extends CmdBodyMD(args) {
+	override def lab(scope: MD) = Seq(args.body.head.str(scope))
 	override def str(scope: MD) = ""
 }
 
-case class Ref(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def str(scope: MD) = "[@%s]".format(label(args, scope))
-}
-
-case class EqRef(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def str(scope: MD) = "[@eq:%s]".format(label(args, scope))
-}
-
-case class TabRef(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def str(scope: MD) = "[@%s]".format(label(args, scope))
-}
-
-case class SubRef(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def str(scope: MD) = "[@%s]".format(label(args, scope))
-}
-
-case class SubFigRef(args: DocMD) extends CmdBodyMD(args) with Labels {
-	override def str(scope: MD) = "[@fig:%s]".format(label(args, scope))
+case class Ref(args: DocMD) extends CmdBodyMD(args) {
+	override def str(scope: MD) = Counter.labeled.getOrElse(Label(args).lab(scope).head, "?")
 }
 
 case class Caption(args: DocMD) extends CmdBodyMD(args) {
-	override def cap(scope: MD) = Seq(args.body.head.str(scope))
-	override def str(scope: MD) = ""
+	override def cap(scope: MD) = Seq(str(scope))
+	override def str(scope: MD) = {
+		val chap = Counter.now("chap")
+		val fig = Counter.now("fig")
+		val tab = Counter.now("tab")
+		scope match {
+			case Figure(_,_,_) => s"Fig. $chap.$fig " + args.body.head.str(scope)
+			case Table(_,_,_) => s"Table $chap.$tab " + args.body.head.str(scope)
+		}
+	}
 }
 
 case class IncludeGraphics(args: DocMD) extends CmdBodyMD(args) {
 	override def str(scope: MD) = {
+		val sub = Counter.next("subfig")
+		scope.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"($sub)")
 		val path = args.body.last.str(scope).replaceAll(".eps$", ".svg")
 		val cap = scope.cap(scope).headOption.getOrElse("")
-		val lab = scope.lab(scope).headOption.map("{#%s}".format(_)).getOrElse("")
-		"![%s](%s)%s".format(cap, path, lab)
+		val paren = scope match {
+			case SubFloat(_) => s"($sub) $cap"
+			case _ => ""
+		}
+		"![%s](%s)\n\n%s\n".format(path, path, paren)
 	}
 }
 
@@ -125,25 +127,22 @@ case class SubFloat(args: DocMD) extends CmdBodyMD(args) {
 
 case class Chapter(args: DocMD) extends CmdBodyMD(args) {
 	override def str(scope: MD) = {
-		val tag = s"# ${args.str(scope)}"
-		val lab = this.lab(scope).headOption.map(" {#%s}".format(_)).getOrElse("")
-		tag.concat(lab)
+		Counter.reset("eq")
+		Counter.reset("fig")
+		Counter.reset("sect")
+		Counter.reset("tab")
+		val chap = Counter.next("chap")
+		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap")
+		s"# $chap ${args.str(scope)}"
 	}
 }
 
 case class Section(args: DocMD) extends CmdBodyMD(args) {
 	override def str(scope: MD) = {
-		val tag = s"## ${args.str(scope)}"
-		val lab = this.lab(scope).headOption.map(" {#%s}".format(_)).getOrElse("")
-		tag.concat(lab)
-	}
-}
-
-case class SubSection(args: DocMD) extends CmdBodyMD(args) {
-	override def str(scope: MD) = {
-		val tag = s"### ${args.str(scope)}"
-		val lab = this.lab(scope).headOption.map(" {#%s}".format(_)).getOrElse("")
-		tag.concat(lab)
+		val chap = Counter.now("chap")
+		val sect = Counter.next(this.lab(scope).headOption.getOrElse("sect"))
+		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$sect")
+		s"## $chap.$sect ${args.str(scope)}"
 	}
 }
 
@@ -185,32 +184,50 @@ case class Document(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 
 case class Equation(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 	override def str(scope: MD) = {
-		val lab = this.lab(scope).headOption.map(" {#%s}".format(_)).getOrElse("")
-		s"$$$$${tex.view}$$$$${lab}"
+		val chap = Counter.now("chap")
+		val idx = Counter.next(this.lab(scope).headOption.getOrElse("eq"))
+		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$idx")
+		s"$$$$${tex.view} \\qquad($chap.$idx)$$$$"
 	}
 }
 
 case class Figure(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
-	override def str(scope: MD) = body.str(this).trim match {
-		case body if cap(scope).size > 1 => s"<div id='${lab(scope).last}'>\n$body\n\n${cap(scope).last}\n</div>"
-		case body => body
+	override def str(scope: MD) = {
+		val chap = Counter.now("chap")
+		val fig = Counter.next(this.lab(scope).headOption.getOrElse("fig"))
+		this.lab(scope).lastOption.foreach(lab => Counter.labeled(lab) = s"$chap.$fig")
+		Counter.reset("subfig")
+		body.str(this).trim
 	}
 }
 
 case class Table(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
-	override def str(scope: MD) = body.str(this).trim
+	override def str(scope: MD) = {
+		val chap = Counter.now("chap")
+		val tab = Counter.next(this.lab(scope).headOption.getOrElse("tab"))
+		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$tab")
+		Counter.reset("subtab")
+		body.str(this).trim
+	}
 }
 
 case class Tabular(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 	override def str(scope: MD) = {
+		val chap = Counter.now("chap")
+		val tab = Counter.now("tab")
+		val sub = Counter.next("subtab")
+		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$tab($sub)")
 		val ncol = args.body.head.str(scope).count(_.toChar.isLetter)
 		val rows = body.str(scope).replace(" & ", " | ").replace("\\\\", "").trim.linesIterator.toSeq
 		val head = Seq(if(body.mid) rows.head else Seq.fill(ncol)("-").mkString("|"))
 		val rule = Seq.fill(ncol)("---").mkString("|")
 		val tail = if(body.mid) rows.tail else rows
 		val cap = scope.cap(scope).headOption.getOrElse("")
-		val lab = scope.lab(scope).headOption.map("{#%s}".format(_)).getOrElse("")
 		val data = (head :+ rule) ++ tail.filterNot(_.trim.isEmpty)
-		(data.map("|%s|".format(_)) :+ ": %s %s".format(cap, lab)).mkString("\n")
+		val paren = scope match {
+			case SubFloat(_) => s"($sub)"
+			case _ => ""
+		}
+		(s"\n$paren$cap\n\n" +: data.map("|%s|".format(_))).mkString("\n")
 	}
 }

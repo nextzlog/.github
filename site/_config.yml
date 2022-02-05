@@ -1,9 +1,13 @@
 lang: ja
 title: 無線部開発班
+header_text: Journal of Hamradio Informatics
+footer_text: Copyright (C) The University of Tokyo Amateur Radio Club System Development Taskforce
 description: アマチュア無線のコンテスト主催者向け自動集計システムから並列計算フレームワーク、プログラミング言語処理系、機械学習まで、ソフトウェア開発の記事を公開.
-markdown: GFM
+url: https://pafelog.net
 google_analytics: UA-75073167-1
 github:
   is_project_page: false
 plugins:
-  - jekyll-redirect-from
+- jekyll-redirect-from
+katex: true
+remote_theme: sylhare/Type-on-Strap
