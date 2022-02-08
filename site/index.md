@@ -50,14 +50,36 @@ hide: true
 	</div>
 </div>
 
+```golang
+package main
+
+func init() {
+	OnLaunchEvent = onLaunchEvent
+}
+
+func onLaunchEvent() {
+	HandleButton("MainForm.CWPlayButton", onButton)
+	HandleEditor("MainForm.CallsignEdit", onEditor)
+}
+
+func onButton(num int) {
+	DisplayToast("click CWPlayButton")
+}
+
+func onEditor(key int) {
+	DisplayToast(Query("QSO with $B"))
+}
+```
+
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/SoftwareApplication">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="https://github.com/nextzlog/ats4" itemprop="url">
+			<a class="card-link" href="ats4" itemprop="url">
 				<span itemprop="name">ATS-4</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">アマチュア無線のコンテスト運営を支援。集計結果をリアルタイムに把握し、作業効率を高めます。</p>
+		<a class="card-link" href="ats4.pdf">記事</a>
 		<a class="card-link" href="https://allja1.org">ALLJA1コンテスト</a>
 		<a class="card-link" href="https://realtime.allja1.org">リアルタイムコンテスト</a>
 	</div>
