@@ -75,6 +75,7 @@ object Cmds extends BaseCmds(
 	Cmd("Chapter", Chapter(_)),
 	Cmd("DocumentClass", OutputNothingCmd(_)),
 	Cmd("EqRef", Ref(_)),
+	Cmd("HRef", HRef(_)),
 	Cmd("IfPackageLoaded", OutputNothingCmd(_)),
 	Cmd("IncludeGraphics", IncludeGraphics(_)),
 	Cmd("Label", Label(_)),
@@ -95,10 +96,12 @@ object Cmds extends BaseCmds(
 	Cmd("SubRef", Ref(_)),
 	Cmd("TableOfContents", OutputNothingCmd(_)),
 	Cmd("TextBf", TextBf(_)),
+	Cmd("TextGt", TextBf(_)),
 	Cmd("TextIt", TextIt(_)),
 	Cmd("TextTt", TextTt(_)),
 	Cmd("Title", Title(_)),
 	Cmd("TopRule", OutputNothingCmd(_)),
+	Cmd("URL", URL(_)),
 	Cmd("UsePackage", OutputNothingCmd(_))
 )
 
@@ -106,6 +109,7 @@ object Envs extends BaseEnvs(
 	Env("Document", Document(_, _, _)),
 	Env("Equation", Equation(_, _, _)),
 	Env("Figure", Figure(_, _, _)),
+	Env("MiniPage", MiniPage(_, _, _)),
 	Env("Table", Table(_, _, _)),
 	Env("Tabular", Tabular(_, _, _))
 )

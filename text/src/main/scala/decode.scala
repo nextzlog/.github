@@ -109,14 +109,16 @@ case class Caption(args: DocMD) extends CmdBodyMD(args) {
 case class IncludeGraphics(args: DocMD) extends CmdBodyMD(args) {
 	override def str(scope: MD) = {
 		val sub = Counter.next("subfig")
-		scope.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"($sub)")
 		val path = args.body.last.str(scope).replaceAll(".eps$", ".svg")
 		val cap = scope.cap(scope).headOption.getOrElse("")
 		val paren = scope match {
-			case SubFloat(_) => s"($sub) $cap"
+			case SubFloat(_) => {
+				scope.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"($sub)")
+				s"\n\n($sub) $cap"
+			}
 			case _ => ""
 		}
-		"![%s](%s)\n\n%s\n".format(path, path, paren)
+		"![%s](%s)%s\n".format(path, path, paren)
 	}
 }
 
@@ -144,6 +146,14 @@ case class Section(args: DocMD) extends CmdBodyMD(args) {
 		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$sect")
 		s"## $chap.$sect ${args.str(scope)}"
 	}
+}
+
+case class HRef(args: DocMD) extends CmdBodyMD(args) {
+	override def str(scope: MD) = s"[${args.body.tail.head.str(scope)}](${args.body.head.str(scope)})"
+}
+
+case class URL(args: DocMD) extends CmdBodyMD(args) {
+	override def str(scope: MD) = s"[${args.body.head.str(scope)}](${args.body.head.str(scope)})"
 }
 
 case class TextBf(args: DocMD) extends CmdBodyMD(args) {
@@ -216,7 +226,6 @@ case class Tabular(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 		val chap = Counter.now("chap")
 		val tab = Counter.now("tab")
 		val sub = Counter.next("subtab")
-		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$tab($sub)")
 		val ncol = args.body.head.str(scope).count(_.toChar.isLetter)
 		val rows = body.str(scope).replace(" & ", " | ").replace("\\\\", "").trim.linesIterator.toSeq
 		val head = Seq(if(body.mid) rows.head else Seq.fill(ncol)("-").mkString("|"))
@@ -225,9 +234,16 @@ case class Tabular(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 		val cap = scope.cap(scope).headOption.getOrElse("")
 		val data = (head :+ rule) ++ tail.filterNot(_.trim.isEmpty)
 		val paren = scope match {
-			case SubFloat(_) => s"($sub)"
+			case SubFloat(_) => {
+				this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$tab($sub)")
+				s"($sub) $cap\n"
+			}
 			case _ => ""
 		}
-		(s"\n$paren$cap\n\n" +: data.map("|%s|".format(_))).mkString("\n")
+		(s"$paren" +: data.map("|%s|".format(_))).mkString("\n")
 	}
+}
+
+case class MiniPage(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
+	override def str(scope: MD) = body.str(scope)
 }
