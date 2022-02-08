@@ -11,12 +11,12 @@ hide: true
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="fava" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/fava" itemprop="url">
 				<span itemprop="name">Computation Models &amp; Compilers on <i>Scala</i></span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">関数型言語を自作します。パーサコンビネータも手作り。計算論の基礎とチューリング機械を学ぶ。</p>
-		<a class="card-link" href="fava.pdf">記事</a>
+		<a class="card-link" href="https://pafelog.net/fava.pdf">記事</a>
 		<a class="card-link" href="https://github.com/nextzlog/fava">実装</a>
 	</div>
 </div>
@@ -45,7 +45,7 @@ hide: true
 		</h4>
 		<p class="card-text" itemprop="headline">アマチュア無線家を納得させる使い勝手はそのままに数多の拡張機能でzLogをカスタマイズします。</p>
 		<a class="card-link" href="https://zylo.pafelog.net/market">マーケットプレイス</a>
-		<a class="card-link" href="zylo.pdf">発表資料</a>
+		<a class="card-link" href="https://pafelog.net/zylo.pdf">発表資料</a>
 		<a class="card-link" href="https://github.com/nextzlog/zylo">実装</a>
 	</div>
 </div>
@@ -74,12 +74,12 @@ func onEditor(key int) {
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/SoftwareApplication">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="ats4" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/ats4" itemprop="url">
 				<span itemprop="name">ATS-4</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">アマチュア無線のコンテスト運営を支援。集計結果をリアルタイムに把握し、作業効率を高めます。</p>
-		<a class="card-link" href="ats4.pdf">記事</a>
+		<a class="card-link" href="https://pafelog.net/ats4.pdf">記事</a>
 		<a class="card-link" href="https://allja1.org">ALLJA1コンテスト</a>
 		<a class="card-link" href="https://realtime.allja1.org">リアルタイムコンテスト</a>
 	</div>
@@ -123,12 +123,12 @@ func onEditor(key int) {
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="mine" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/mine" itemprop="url">
 				<span itemprop="name"><i>Scala's</i> Pattern Recognition &amp; Machine Learning</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">線型回帰からサポートベクターマシンまで主要な機械学習を手作りします。情報科学を究める喜び。</p>
-		<a class="card-link" href="mine.pdf">記事</a>
+		<a class="card-link" href="https://pafelog.net/mine.pdf">記事</a>
 		<a class="card-link" href="https://github.com/nextzlog/book">実装</a>
 	</div>
 </div>
@@ -148,7 +148,7 @@ class AdaDelta(r: Double = 0.95, e: Double = 1e-8) extends SGD {
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="dusk.pdf" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/dusk.pdf" itemprop="url">
 				<span itemprop="name">Parallel Work-Stealing Scheduler on <i>D</i></span>
 			</a>
 		</h4>
@@ -185,11 +185,11 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2) {
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="chpl" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/chpl" itemprop="url">
 				<span itemprop="name"><i class="mx-1">Chapel</i> the Parallel Programming Language</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">クレイ社が贈る最高に洗練された並列プログラミング言語を網羅的に解説する日本語初の資料です。</p>
-		<a class="card-link" href="chpl.pdf">記事</a>
+		<a class="card-link" href="https://pafelog.net/chpl.pdf">記事</a>
 	</div>
 </div>

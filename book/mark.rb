@@ -1,7 +1,7 @@
 name = ARGV[0]
 
 require './text/build/libs/text.jar'
-import 'engine.TeXt'
+java_import 'engine.TeXt'
 
 # source files
 path = File.dirname(__FILE__)

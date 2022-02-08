@@ -3,4 +3,5 @@
 *.eps
 *.svg
 build/
+!.github
 !.gitignore

@@ -1,0 +1,46 @@
+name: 'markdown'
+on:
+  push:
+    branches:
+    - 'master'
+jobs:
+  Compile:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        book:
+        - ats4
+        - chpl
+        - fava
+        - mine
+    steps:
+    - uses: actions/checkout@v2
+    - uses: eskatos/gradle-command-action@v1
+      with:
+        arguments: build
+        gradle-version: 6.7
+        build-root-directory: text
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: jruby
+    - run: jruby book/mark.rb ${{matrix.book}}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{matrix.book}}
+        path: ${{matrix.book}}.md
+  Publish:
+    needs: Compile
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        path: pages
+    - run: cp pages/*/*.md site
+    - uses: peaceiris/actions-gh-pages@v3
+      with:
+        cname: pafelog.net
+        enable_jekyll: true
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        publish_dir: site
+        keep_files: true
