@@ -1,11 +1,10 @@
 \documentclass[10pt,a4paper]{book}
 
+\NewDocumentCommand\esp{}{\;}
+\NewDocumentCommand\noise{}{\varepsilon}
 \NewDocumentCommand\Estep{}{\textit{E-step}}
 \NewDocumentCommand\Mstep{}{\textit{M-step}}
-
-\NewDocumentCommand\esp{}{\;}
-
-\NewDocumentCommand\noise{}{\varepsilon}
+\NewDocumentCommand\kmean{}{$k$-\textit{means}}
 
 % 今後の方向性
 % 強化学習
@@ -51,7 +50,7 @@
 0 \leq d(\bm{x},\bm{y}) = d(\bm{y},\bm{x}) \leq d(\bm{x},\bm{z}) + d(\bm{z},\bm{y}),\esp
 \bm{x} = \bm{y} \Leftrightarrow d(\bm{x},\bm{y}) = 0.
 \end{equation}
-
+%
 最近傍法は、他の著名な教師あり学習の手法と比較して、事前の学習が不要である点が特徴的で、\textbf{遅延学習}と呼ばれる。
 以上の議論に基づき、最近傍法を実装しよう。引数は、参照する近傍点の個数$K$と、集合$\seq{\bm{x},y}$と、距離関数$d$である。
 
@@ -84,7 +83,9 @@ val manhattan = new KNN(5, samples2d, (a,b) => a.zip(b).map(_-_).map(_.abs).sum)
 %
 \begin{equation}
 \label{eq:lbf:noise}
-y \sim \prob{y}[\bm{x},f] =
+y \sim
+\Lk{f} =
+\prob{y}[\bm{x},f] =
 \Nd{y}{f(\bm{x}),\sigma^2} =
 \frac{1}{\sqrt{2\pi}\sigma}\exp\left\{-\frac{(y-f(\bm{x}))^2}{2\sigma^2}\right\}.
 \end{equation}
@@ -132,8 +133,8 @@ class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], 
 
 \section{単純ベイズ分類器}
 
-自然言語で記述された文書の話題を分類する問題を考える。文書$d$は単語$w_n$の列であり、単語は話題$c$から生成される。
-文書$d$の内容を、話題$c$とする。この仮説の尤度$\Lp$は、\eqref{nbc:pdc}の条件付き確率で定義される。単語の\textbf{共起}を無視した。
+自然言語で記述された記事の話題を分類する問題を考える。記事$d$は単語$w_n$の列であり、単語は話題$c$から生成される。
+記事$d$の内容を話題$c$と仮定する。この仮説の尤度は、単語の共起を無視すれば、\eqref{nbc:pdc}の条件付き確率で定義される。
 %
 \begin{equation}
 \label{eq:nbc:pdc}
@@ -144,8 +145,8 @@ class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], 
 \prod_{n=1}^{N_d} \Prob{w_n}[c].
 \end{equation}
 %
-最適な話題$\hat{c}$は、\eqref{nbc:pcd}の条件付き確率を最大化する。確率$\Prob{c}$は文書$d$とは独立した確率で、\textbf{事前確率}と呼ばれる。
-確率$\Prob{c}[d]$は、文書$d$を得た後の話題$c$の確率で、\textbf{事後確率}と呼ばれる。\eqref{nbc:pcd}の変形には、\textbf{ベイズの定理}を使った。
+最適な話題$\hat{c}$は、\eqref{nbc:pcd}の条件付き確率を最大化する。確率$\Prob{c}$は記事$d$とは独立した確率で、\textbf{事前確率}と呼ばれる。
+\eqref{nbc:pcd}は、記事$d$を観測した後の話題$c$の確率で、これを\textbf{事後確率}と呼ぶ。\eqref{nbc:pcd}の変形は、\textbf{ベイズの定理}を使った。
 %
 \begin{equation}
 \label{eq:nbc:pcd}
@@ -156,17 +157,21 @@ class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], 
 \argmax_c \Prob{c} \prod_{n=1}^{N_d} \Prob{w_n}[c].
 \end{equation}
 %
-単語$w$と話題$c$は、同時に発生する頻度が未知の組も存在する。確率$\Prob{w,c}$を\eqref{nbc:smooth}の\textbf{ラプラス平滑化}で補正する。
+ただし、初めて出現した単語$w$に対して、\eqref{nbc:pcd}の確率が$0$になる事態を防ぐため、\eqref{nbc:smooth}の\textbf{ラプラス平滑化}を行う。
 %
 \begin{equation}
 \label{eq:nbc:smooth}
 \Prob{w}[c] =
 \frac{\Prob{w,c}}{\Prob{c}} \simeq
-\frac{\Prob{w,c}+1}{\Prob{c}+1} > 0,
-\Leftarrow w \in V \sim \Prob{w} = \Ud{V} = \frac{1}{\abs{V}}.
+\frac{N_{wc}+1}{N_c+1} > 0,
+\Leftarrow
+\Prob{w} = \frac{1}{\abs{V}},
+\where
+N_c = \sum_{w \in V} N_{wc}.
 \end{equation}
 %
-\eqref{nbc:smooth}の確率$\Prob{w}$は、単語$w$の事前確率である。\eqref{nbc:pcd}の分類器を\textbf{単純ベイズ分類器}と呼ぶ。さて、実装しよう。
+変数$N_{wc}$は、組$\pair{w}{c}$の頻度である。\eqref{nbc:smooth}は、単語$w$の事前確率を\chapref{lda}で学ぶディリクレ分布と仮定して導かれる。
+\eqref{nbc:pcd}の分類器を\textbf{単純ベイズ分類器}と呼ぶ。以下に実装を示す。引数は、既知の記事の列と、対応する話題の列である。
 
 \begin{Verbatim}{Scala}
 class NaiveBayes[D<:Seq[W],W,C](texts: Seq[D], classes: Seq[C]) {
@@ -192,24 +197,24 @@ class NaiveBayes[D<:Seq[W],W,C](texts: Seq[D], classes: Seq[C]) {
 
 \chapter{ニューラルネットワーク\label{chap:nn}}
 
-\textbf{ニューラルネットワーク}は、線型回帰に似た\textbf{ニューロン}と呼ばれる関数を連結して、多層構造にした複雑な関数である。
-単独のニューロンは、線型回帰の後に、\textbf{活性化関数}と呼ばれる非線型な関数$f$を適用した関数で、\eqref{nn:neuron}で定義される。
+\textbf{ニューラルネットワーク}は、線型回帰に似た\textbf{ニューロン}と呼ばれる関数を連結して、連鎖構造にした複雑な関数である。
+単体のニューロンは、線型回帰の後に、\textbf{活性化関数}と呼ばれる非線型な関数$f$を適用した関数で、\eqref{nn:neuron}で定義される。
 %
 \begin{equation}
 \label{eq:nn:neuron}
-y \simeq f(z) = f(\bm{w} \cdot \bm{x}).
+\bm{y} \simeq f(\bm{z}) = f(W\bm{x}).
 \end{equation}
 %
-単独では、線型回帰と同じ程度の表現能力だが、何層も重ねることで、任意の\textbf{滑らかな関数}を任意の精度で近似できる。
-循環構造がなく、計$m$個の層で構成される\textbf{順伝播型}のニューラルネットワークは、\eqref{mlp:fp}に示す漸化式で定義できる。
+単体では、線型回帰と同じ程度の表現能力だが、何層も重ねることで、任意の\textbf{滑らかな関数}を任意の精度で近似できる。
+循環構造がなく、直線的な構造の\textbf{順伝播型}の動作は、\eqref{mlp:fp}の漸化式で定義できる。循環構造の場合は\sectref{rnn}で扱う。
 %
 \begin{equation}
 \label{eq:mlp:fp}
-\bm{y}_m = \bm{x}_{m+1} = f_m(\bm{z}_m) = f_m(W_m\bm{x}_m).
+\bm{y}_n = \bm{x}_{n+1} = f_n(\bm{z}_n) = f_n(W_n\bm{x}_n).
 \end{equation}
 %
-なお、組$\pair{\bm{x}_m}{\bm{y}_m}$は第$m$層の入力と出力の組であり、また、関数$f_m$と行列$W_m$は第$m$層の活性化関数と加重である。
-活性化関数には、\eqref{nn:sigm}に定義する\textbf{シグモイド関数}が広く利用される。これは、$y\in\seq{0,1}$の分類器のように振る舞う。
+\eqref{mlp:fp}で、第$n$層は前の層から値$\bm{x}_n$を受容し、行列$W_n$で加重して活性化関数$f_n$を適用し、後続の層に値$\bm{y}_n$を渡す。
+活性化関数には、\textbf{シグモイド関数}が広く利用される。\eqref{nn:sigm}に定義する。これは、2クラスの分類器のように振る舞う。
 %
 \begin{equation}
 \label{eq:nn:sigm}
@@ -220,7 +225,7 @@ y \simeq f(z) = f(\bm{w} \cdot \bm{x}).
 %
 \begin{equation}
 \label{eq:slp:smax}
-y \sim \qrob{y} = \smax(\bm{z}) =
+y \sim \hatprob{y} = \smax(\bm{z}) =
 \frac{1}{e^{z_1}+\cdots+e^{z_K}}
 \begin{pmatrix}
 e^{z_1}\\
@@ -229,7 +234,7 @@ e^{z_K}
 \end{pmatrix}.
 \end{equation}
 %
-最終層の活性化関数を適切に選ぶと、回帰や分類など、様々な問題に対応できる。\textbf{多クラス分類}の例は\sectref{nn.mcp}に述べる。
+最終層の活性化関数を適切に選ぶと、回帰や分類など、様々な問題に対応できる。特に分類問題の例は\sectref{smax}に述べる。
 \subfigref{slp}{class}は、活性化関数にシグモイド関数を利用し、論理和を求める例である。直線$f(\bm{x})=0.5$は分類の境界を表す。
 
 \begin{figure}[h]
@@ -240,29 +245,29 @@ e^{z_K}
 \end{figure}
 
 論理和や論理積は、分類の境界が直線や超平面となる単純な問題で、これを\textbf{線型分離可能}と呼び、単層でも表現できる。
-\chapref{nn}で学ぶ\textbf{誤差逆伝搬法}は、多数の層を訓練して、線型分離が困難な問題に適合させる\textbf{深層学習}を支える技法である。
+\chapref{nn}で学ぶ誤差逆伝搬法は、多数の層を訓練して、線型分離が困難な問題に適合させる\textbf{深層学習}を支える技法である。
 
 \section{誤差逆伝播法の理論\label{sect:mlp}}
 
 深層学習では、多数の層の加重を最適化して、誤差$E$を最小化する。最適解の計算は困難なので、逐次的に最適化する。
-具体的な手順は、以下の通りである。まず、第$m$層の加重$W_m$だけに着目し、\eqref{mlp:sgd}に示す勾配法で、最適化を行う。
+具体的な手順は、以下の通りである。まず、第$n$層の加重$W_n$を最適化の対象とし、\eqref{mlp:sgd}に示す勾配法で最適化する。
 %
 \begin{equation}
 \label{eq:mlp:sgd}
-w_m'^{ij}
-= w_m^{ij}-\eta \pdiff{E}{w_m^{ij}}
-= w_m^{ij}-\eta \pdiff{z_m^j}{w_m^{ij}} \pdiff{x_{m+1}^j}{z_m^j} \pdiff{E}{x_{m+1}^j}
-= w_m^{ij}-\eta x_m^i \pdiff{f}{z_m^j}(z_m^j) \pdiff{E}{x_{m+1}^j}.
+w_n'^{ij}
+= w_n^{ij}-\eta \pdiff{E}{w_n^{ij}}
+= w_n^{ij}-\eta \pdiff{z_n^j}{w_n^{ij}} \pdiff{x_{n+1}^j}{z_n^j} \pdiff{E}{x_{n+1}^j}
+= w_n^{ij}-\eta x_n^i \pdiff{f}{z_n^j}(z_n^j) \pdiff{E}{x_{n+1}^j}.
 \end{equation}
 %
-定数$\eta$は学習率で、変数$x_m^i,z_m^j$はベクトル$\bm{x}_m,\bm{z}_m$の行である。\eqref{mlp:fp}の漸化式から、誤差$E$にも漸化式が成立する。
+定数$\eta$は学習率で、変数$x_n^i,z_n^j$は、変数$\bm{x}_n,\bm{z}_n$の第$i,j$成分である。さて、\eqref{mlp:fp}から\eqref{mlp:bp}の漸化式が導出される。
 \eqref{mlp:bp}の漸化式を利用して、誤差$E$を逆方向に伝播させ、\eqref{mlp:sgd}の最適化を各層で行う。これを\textbf{誤差逆伝播法}と呼ぶ。
 %
 \begin{equation}
 \label{eq:mlp:bp}
-\pdiff{E}{x_m^i}
-= \sum_{j=1}^J \pdiff{z_m^j}{x_m^i} \pdiff{x_{m+1}^j}{z_m^j} \pdiff{E}{x_{m+1}^j}
-= \sum_{j=1}^J w_m^{ij} \pdiff{f}{z_m^j}(z_m^j) \pdiff{E}{x_{m+1}^j}.
+\pdiff{E}{x_n^i}
+= \sum_{j=1}^J \pdiff{z_n^j}{x_n^i} \pdiff{x_{n+1}^j}{z_n^j} \pdiff{E}{x_{n+1}^j}
+= \sum_{j=1}^J w_n^{ij} \pdiff{f}{z_n^j}(z_n^j) \pdiff{E}{x_{n+1}^j}.
 \end{equation}
 %
 漸化式の初期値を考える。2乗誤差関数$\Esq$を仮定すると、最終層の値$\hat{\bm{y}}$と目的変数$\bm{y}$に対し、導関数は\eqref{mlp:gE:sq}になる。
@@ -278,7 +283,7 @@ w_m'^{ij}
 %
 \begin{equation}
 \label{eq:nn:sigm:d}
-\pdiff{\sigm}{z_m^j}(z_m^j) = \frac{e^{-z_m^j}}{(1+e^{-z_m^j})^2} = x_{m+1}^j(1-x_{m+1}^j).
+\pdiff{\sigm}{z_n^j}(z_n^j) = \frac{e^{-z_n^j}}{(1+e^{-z_n^j})^2} = x_{n+1}^j(1-x_{n+1}^j).
 \end{equation}
 %
 \sectref{chain}では、誤差逆伝播法を備えると同時に、自在に層構造を定義可能な深層学習を実装する。利用方法を以下に示す。
@@ -291,7 +296,7 @@ for(n <- 1 to 1000000; x <- 0 to 1; y <- 0 to 1) model1.bp(Seq(x,y), Seq(x^y))
 \end{Verbatim}
 
 複数の非線型変換を持つ恩恵で、線型分離が困難な分類問題にも対応できる。具体例として、排他的論理和を学習する。
-\subfigref{mlp.split}{class}に定数項なしの、\subref{fig:mlp.split:const}に定数項を含む場合の結果を示す。定数項の有無で境界が変化する点にも要注目である。
+通常の結果を\subfigref{mlp.split}{class}に、各層の変数$\bm{x}$に定数項を含む場合の結果を\subref{fig:mlp.split:const}に示す。定数項の有無で、境界が変化した。
 
 \begin{figure}[h]
 \centering
@@ -318,7 +323,7 @@ class PlainSGD(e: Double = 0.01) extends SGD {
 }
 \end{Verbatim}
 
-引数は、学習率$\eta$である。学習時は、誤差$E$の勾配$\nabla E$を受け取り、加重$w$を更新する。次に、活性化関数を定義する。
+引数は、学習率$\eta$である。学習時は、誤差$E$の勾配$\nabla E$を受け取り、加重$w$を修正する。次に、活性化関数を定義する。
 
 \begin{Verbatim}{Scala}
 trait Act {
@@ -379,40 +384,40 @@ class Offset(dim: Int, act: Act, weight: ()=>SGD, next: Neuron) extends Neuron(d
 }
 \end{Verbatim}
 
-\section{ソフトマックス関数\label{sect:nn.mcp}}
+\section{ソフトマックス関数\label{sect:smax}}
 
-\textbf{多クラス分類}の場合は、最終層の活性化関数は\eqref{slp:smax}のソフトマックス関数とし、クラス毎に確率$\prob{y}[\bm{x}]$を学習する。
-誤差関数には、\eqref{mlp:E:ce}の\textbf{交差エントロピー}を使う。式を変形すると、確率分布$p,q$間の差を表す量$\KL{p}{q}$が出現する。
+\textbf{多クラス分類}の問題では、最終層の活性化関数に\eqref{slp:smax}のソフトマックス関数とし、各クラスの確率分布$p$を学習する。
+誤差関数には、\eqref{smax:ce}の\textbf{交差エントロピー}を使う。\eqref{smax:ce}の$H(p)$は、確率分布$p$の不偏性を表す\textbf{平均情報量}である。
 %
 \begin{equation}
-\label{eq:mlp:E:ce}
-\Ece(p,q) =
--\int \prob{\bm{y}} \log \qrob{\bm{y}} d\bm{y} =
--\int \prob{\bm{y}} \left\{\log \prob{\bm{y}} - \log\frac{\prob{\bm{y}}}{\qrob{\bm{y}}}\right\} d\bm{y} =
-H(p) + \KL{p}{q} \geq
-\KL{p}{q}.
+\label{eq:smax:ce}
+\Ece(p,\hatp) =
+-\int \prob{\bm{y}} \log \hatprob{\bm{y}} d\bm{y} =
+-\int \prob{\bm{y}} \left\{\log \prob{\bm{y}} - \log\frac{\prob{\bm{y}}}{\hatprob{\bm{y}}}\right\} d\bm{y} =
+H(p) + \KL{p}{\hatp} \geq
+\KL{p}{\hatp}.
 \end{equation}
 %
-なお、$H(p)$は分布$p$の\textbf{平均情報量}で、$\KL{p}{q}$は\textbf{カルバック・ライブラー情報量}である。分布$q$は、分類器の出力である。
-$\KL{p}{q}$は非負で、\eqref{mcc:KL}に示す\textbf{ギブスの不等式}により、条件$q=p$が成立する場合に限って、$\KL{p}{q}=0$が成立する。
+\eqref{smax:KL}の$\KL{p}{\hatp}$を\textbf{カルバック・ライブラー情報量}と呼ぶ。これは非負で、確率分布$p,\hatp$が等価な場合に限り$0$になる。
+\eqref{smax:KL}から確率分布$\hatp$の項を抽出すると、分布$\hatp$の対数の期待値である。また、分布$\hatp$は各層の加重$W_n$の尤度である。
 %
 \begin{equation}
-\label{eq:mcc:KL}
-\KL{p}{q} = \int_K \prob{y} \log \frac{\prob{y}}{\qrob{y}} dy \geq \int_K \prob{y} \tup{1-\frac{\qrob{y}}{\prob{y}}} dy = 0,
-\Leftarrow \log x \leq x-1.
+\label{eq:smax:KL}
+\KL{p}{\hatp} =
+\int_K \prob{y} \log \frac{\prob{y}}{\hatprob{y}} dy \geq \int_K \prob{y} \tup{1-\frac{\hatprob{y}}{\prob{y}}} dy = 0.
 \end{equation}
 %
-最尤推定では$\KL{p}{q}$を最小化し、分布$q$を真の分布$p$に近付ける。この議論は、\chapref{intro}の線型回帰の議論にも成立する。
-実際には、\eqref{mcc:gE:ce}で勾配を計算可能な$\Ece(p,q)$の最小化を通じて、間接的に$\KL{p}{q}$を最小化する方法が普通である。
+分類器が推定する確率分布$\hatp$を真の確率分布$p$に近付けるには、\eqref{smax:ce}を最小化し、間接的に\eqref{smax:KL}を最小化する。
+これは、尤度$\hatp$の対数の期待値の最大化に相当し、即ち最尤推定である。例えば、最終層では\eqref{smax:gE}の勾配法を行う。
 %
 \begin{equation}
-\label{eq:mcc:gE:ce}
+\label{eq:smax:gE}
 \pdiff{\Ece}{z^k}
 = - \pdiff{}{z^k} \sum_{i=1}^K y^i \tup{\log e^{z^i} - \log \sum_{j=1}^K e^{z^j}}
 = - y^k + \sum_{i=1}^K y^i \hat{y}^k = -y^k + \hat{y}^k.
 \end{equation}
 %
-以上の議論を踏まえ、\eqref{slp:smax}の順伝播と\eqref{mcc:gE:ce}の勾配計算を実装する。この活性化関数は、最終層でのみ使用できる。
+以上の議論を踏まえ、\eqref{slp:smax}の順伝播と\eqref{smax:gE}の勾配計算を実装する。この活性化関数は、最終層でのみ使用できる。
 
 \begin{Verbatim}{Scala}
 class Softmax extends Act {
@@ -440,7 +445,7 @@ val model = new Offset(3, new Softmax, ()=>new PlainSGD, new Output(4, _-_))
 
 \section{鞍点と学習率の調整\label{sect:nn.sgd}}
 
-勾配法には、\textbf{鞍点}で最適化が停滞し、最適解に到達せずに終わる弱点がある。\eqref{sgd:saddle}の関数$E$の最小化の例で考える。
+勾配法には、最適解に到達する前に\textbf{鞍点}で最適化が停滞する場合がある。\eqref{sgd:saddle}に示す関数$E$の最小化の例で考える。
 鞍点とは、ある方向では極大値だが、別の方向では極小値となる停留点である。関数$E$の場合は、原点$\bm{O}$が鞍点である。
 %
 \begin{equation}
@@ -504,7 +509,7 @@ class AdaDelta(r: Double = 0.95, e: Double = 1e-8) extends SGD {
 }
 \end{Verbatim}
 
-\section{通時的誤差逆伝播法}
+\section{通時的誤差逆伝播法\label{sect:rnn}}
 
 自然言語や信号など、時系列の未来を予測するには、状態を記憶し、時系列を逐次的に順伝播させる機能が必要である。
 \textbf{再帰型ニューラルネットワーク}が代表的で、中間層の状態$\bm{y}$を、次の時刻の入力$\bm{x}$の順伝播に合流させ、中間層に戻す。
@@ -603,7 +608,7 @@ d(\TRAIN) = \min\frac{\abs{\dprod{\bm{w}}{\bm{x}} + c}}{\norm{\bm{w}}} = \frac{1
 \bm{x}\in\TRAIN.
 \end{equation}
 %
-現実には、\eqref{svm:hard}の\textbf{ハードマージン}は、誤分類に対して厳しすぎるため、\eqref{svm:soft}に示す\textbf{ソフトマージン}が利用される。
+現実には、\eqref{svm:hard}の\textbf{ハードマージン}は、誤分類に対して過剰に敏感なので、\eqref{svm:soft}に示す\textbf{ソフトマージン}を利用する。
 %
 \begin{equation}
 \label{eq:svm:soft}
@@ -1028,17 +1033,17 @@ G(Q) = H(X) - H(X|Q) = H(X) - \sum_{k=0}^{K-1} \Prob{X_k}[X] H(X_k) \geq 0.
 \end{equation}
 %
 同様に、部分集合$X_k$に対し、情報量が最大の質問を選び、次の質問とする。この操作を繰り返し、最適な決定木を得る。
-質問の回数は整数なので、決定木が表す分布$q$は、分布$p$と異なる。その様子を表す$H(p,q)$を\textbf{交差エントロピー}と呼ぶ。
+質問の回数は整数なので、決定木が表す分布$\hatp$は、分布$p$と異なる。その様子を表す$H(p,\hatp)$を\textbf{交差エントロピー}と呼ぶ。
 %
 \begin{equation}
 \label{eq:dt:KL}
 \overline{L(C)} = H(p,q) =
--\sum_{\bm{x}} \prob{\bm{x}} \log \qrob{\bm{x}} =
--\sum_{\bm{x}} \prob{\bm{x}} \left\{\log \prob{\bm{x}} - \log\frac{\prob{\bm{x}}}{\qrob{\bm{x}}}\right\} =
+-\sum_{\bm{x}} \prob{\bm{x}} \log \hatprob{\bm{x}} =
+-\sum_{\bm{x}} \prob{\bm{x}} \left\{\log \prob{\bm{x}} - \log\frac{\prob{\bm{x}}}{\hatprob{\bm{x}}}\right\} =
 H(p) + \KL{p}{q} \geq H(p).
 \end{equation}
 %
-余分な質問の回数を表す$\KL{p}{q}$を\textbf{カルバック・ライブラー情報量}と呼ぶ。これは、確率分布$p,q$の差を表す量でもある。
+余分な質問の回数を表す$\KL{p}{\hatp}$を\textbf{カルバック・ライブラー情報量}と呼ぶ。これは、確率分布$p,\hatp$の差を表す量でもある。
 
 \section{条件分岐の最適化}
 
@@ -1090,7 +1095,7 @@ case class Division[T](x: Seq[(Seq[Int], T)], axis: Int, value: Int) extends Nod
 \section{アンサンブル学習\label{sect:dt:ensem}}
 
 決定木に限らず、機械学習では、真の関係$f$と、習得した関係$\hat{f}$の間に若干の差があり、それが過学習として顕在化する。
-過学習は、教師データの少なさや、関数$\hat{f}$の過剰な表現能力に起因する。関数$f,\hat{f}$の差を2乗誤差関数で定式化しよう。
+過学習の原因は、教師データの偏りや、関数$\hat{f}$の過剰な表現能力にある。関数$f,\hat{f}$の差を2乗誤差関数で定式化しよう。
 %
 \begin{equation}
 \label{eq:dt:bag:E}
@@ -1172,7 +1177,7 @@ f(\bm{x},k) =
 \end{cases}
 \end{equation}
 %
-\eqref{dt:ada:E}を分解すると、\eqref{dt:ada}が得られる。この関数$q_T$を確率分布として、弱学習器$f_T$が学習する集合$\seq{\bm{x}}$を選ぶ。
+\eqref{dt:ada:E}を分解すると、\eqref{dt:ada}を得る。この関数$q_T$を確率分布として、弱学習器$f_T$が学習する集合を無作為に選ぶ。
 %
 \begin{equation}
 \label{eq:dt:ada}
@@ -1319,7 +1324,7 @@ println(decoded)
 lorem
 \end{Verbatim}
 
-\chapter{潜在的ディリクレ配分法}
+\chapter{潜在的ディリクレ配分法\label{chap:lda}}
 
 自然言語の機械学習には、特有の困難がある。特定の形態素が出現する確率は低く、その確率も話題に応じて変化する。
 話題も曖昧で多岐に渡り、教師あり学習が困難なので、単語$w$の背後にある話題$z$を、教師なし学習する方法を考える。
@@ -1387,8 +1392,8 @@ N! \frac{\Bd{\hat{\alpha}}}{\Bd{\alpha}} \prod_{k=1}^K \frac{1}{N_k!},
 \hat{\alpha}_k = \alpha_k + N_k.
 \end{equation}
 %
-記事を学習すると、確率$\theta_k$の最適値は\eqref{lda:post}に従う。これを\textbf{事後確率}と呼ぶ。また、\eqref{lda:mul}を確率$\theta_k$の尤度と呼ぶ。
-学習前では、どの話題の出現も均等と仮定し、\eqref{lda:dir}に従って、確率$\theta_k$に初期値を設定できる。これを\textbf{事前確率}と呼ぶ。
+記事を学習すると、確率$\theta_k$の最適値は\eqref{lda:post}に従う。これを事後確率と呼ぶ。また、\eqref{lda:mul}を確率$\theta_k$の尤度と呼ぶ。
+学習前では、どの話題の出現も均等と仮定し、\eqref{lda:dir}に従って、確率$\theta_k$に初期値を設定できる。これを事前確率と呼ぶ。
 %
 \begin{equation}
 \label{eq:lda:post}
@@ -1412,11 +1417,11 @@ N! \frac{\Bd{\hat{\alpha}}}{\Bd{\alpha}} \prod_{k=1}^K \frac{1}{N_k!},
 \end{equation}
 %
 \eqref{lda:gibbs}に従う乱数により、変数$z$を何度も選び直すと、最終的に真の分布$\theta$に収束する。これを\textbf{モンテカルロ法}と呼ぶ。
-\chapref{gmm}で学ぶ\textbf{変分ベイズ推定}と比較して、収束に時間を要するが、複雑な確率分布に適用でき、並列処理も容易である。
+\chapref{gmm}で学ぶ変分ベイズ法と比較して、収束に時間を要するが、複雑な確率分布にも適用でき、並列処理も容易である。
 
 \section{潜在的な話題の学習}
 
-\sectref{lda}の潜在的ディリクレ配分法を実装する。まず、単語と話題の組$\seq{w,z}$を実装する。話題$z$は乱数で初期化する。
+\sectref{lda}の潜在的ディリクレ配分法を実装する。まず、単語と話題の組$\pair{w}{z}$を実装する。話題$z$は無作為に初期化する。
 
 \begin{Verbatim}{scala}
 case class Word[W](v: W, k: Int) {
@@ -1438,8 +1443,8 @@ class LDA[D,W](texts: Map[D,Seq[W]], val k: Int, a: Double = 0.1, n: Double = 0.
 }
 \end{Verbatim}
 
-以上の実装を継承して、モンテカルロ法を実装する。まず、適当な組$\seq{w,z}$を選び、その分を変数$\alpha_k,\nu_k$から除去する。
-次に、\eqref{lda:gibbs}に従う乱数を\textbf{ノイマンの棄却法}で生成し、話題$z$を選び直し、母数$\alpha_k,\nu_k$に加える。この手順を繰り返す。
+以上の実装を継承して、モンテカルロ法を実装する。まず、適当な組$\pair{w}{z}$を選び、その分を変数$\alpha_z,\nu_z$から除去する。
+次に、\eqref{lda:gibbs}に従う乱数を\textbf{ノイマンの棄却法}で生成し、話題$z$を選び直し、母数$\alpha_z,\nu_z$に加える。この手順を繰り返す。
 
 \begin{Verbatim}{scala}
 class Gibbs[D,W](texts: Map[D,Seq[W]], k: Int, epochs: Int = 500) extends LDA(texts, k) {
@@ -1468,7 +1473,7 @@ val gibbs = new Gibbs(texts.indices.zip(texts).toMap, bases.size)
 
 \section{単語の類似度の推定}
 
-確率$\phi$を単語の意味を表す変数と考え、その距離に従って、単語を分類しよう。\chapref{gmm}で実装する\textit{k-means}を利用する。
+確率$\phi$を単語の意味を表す変数と考え、その距離に従って、単語を分類しよう。\chapref{gmm}で実装する\kmean{}を利用する。
 
 \begin{Verbatim}{Scala}
 val kmeans = new Kmeans(gibbs.nv.values.map(_.toList).toSeq, gibbs.k)
@@ -1487,7 +1492,7 @@ for(topic <- topics.values) println(topic.toSeq.sorted.mkString(","))
 
 \chapter{混合正規分布と最尤推定\label{chap:gmm}}
 
-適当な観測量$\bm{x}$から、それが従う確率分布$p$を推定する手法を\textbf{最尤推定}と呼ぶ。具体的には、分布$p$の\textbf{母数}を推定する。
+適当な観測量$\bm{x}$から、それが従う確率分布$p$を推定する手法が最尤推定である。具体的には、分布$p$の母数を推定する。
 %
 \begin{equation}
 \forall\bm{x}\colon \bm{x} =
@@ -1500,7 +1505,7 @@ x_D
 \sim \prob{\bm{x}}.
 \end{equation}
 %
-例えば、正規分布$\mathcal{N}$を仮定する場合は、平均$\bm{\mu}$と分散$S$が母数に該当する。ただし、分散$S$とは\textbf{分散共分散行列}を指す。
+例えば、正規分布$\mathcal{N}$を仮定する場合は、平均$\bm{\mu}$と分散$S$が母数に該当する。ただし、分散$S$とは分散共分散行列を指す。
 %
 \begin{equation}
 \label{eq:gmm:n}
@@ -1541,7 +1546,7 @@ x_D
 
 \section{クラスタリングの実装\label{sect:km}}
 
-\sectref{km}では、混合正規分布や最尤推定の議論は棚に上げて、最適なクラスタを推定する、素朴な方法論を検討しよう。
+\sectref{km}では、混合正規分布や最尤推定の議論は忘れて、集合を最適なクラスタに分割する、素朴な方法を検討しよう。
 理想的な集合$C_k$では、その要素$\bm{x}$と、集合$C_k$の重心$\bm{\mu}_k$の距離が最短となる。この命題を定式化して、\eqref{km:D}を得る。
 %
 \begin{equation}
@@ -1556,7 +1561,7 @@ x_D
 \end{cases}
 \end{equation}
 %
-\eqref{km:D}の最適化は、逐次的に行う。まず、重心$\bm{\mu}_k$を乱数で初期化する。次に、\eqref{km:Z}に従って、変数$z_{nk}$を更新する。
+\eqref{km:D}の最適化は、逐次的に行う。まず、重心$\bm{\mu}_k$を乱数で初期化する。次に、\eqref{km:Z}に従って、変数$z_{nk}$を修正する。
 %
 \begin{equation}
 \label{eq:km:Z}
@@ -1567,7 +1572,7 @@ x_D
 \end{cases}
 \end{equation}
 %
-最後に、\eqref{km:M}により、重心$\bm{\mu}_k$を更新する。\eqref{km:M}は、変数$z_{nk}$を固定し、\eqref{km:D}を重心$\bm{\mu}_k$で微分すれば得られる。
+最後に、\eqref{km:M}により、重心$\bm{\mu}_k$を修正する。\eqref{km:M}は、変数$z_{nk}$を固定して、\eqref{km:D}を重心$\bm{\mu}_k$で微分すると導ける。
 %
 \begin{equation}
 \label{eq:km:M}
@@ -1578,7 +1583,7 @@ N_k = \sum_{n=1}^N z_{nk},
 \pdiff{\mathcal{D}}{\bm{\mu}_k} = 0.
 \end{equation}
 %
-以上の手順を繰り返し、最適解を得る。この手法を$k$-\textit{means}と呼ぶ。混合正規分布を仮定した考察は、\sectref{em}で行う。
+以上の手順を繰り返し、最適解を得る。この手法を\kmean{}と呼ぶ。混合正規分布を仮定した考察は、\sectref{em}で行う。
 以下に実装する。引数は、分割を行う点$\bm{x}$の集合と、分割後に得られる集団$C_k$の個数と、操作を繰り返す回数である。
 
 \begin{Verbatim}{Scala}
@@ -1591,7 +1596,7 @@ class Kmeans(x: Seq[Seq[Double]], k: Int, epochs: Int = 100) {
 }
 \end{Verbatim}
 
-\figref{kmean}は、2個の正規分布の混合分布に従う点$\bm{x}$の散布図を、$K$個の集団に分割した様子で、星型の2点は重心を表す。
+\figref{kmean}は、2個の正規分布の混合分布に従う\figref{gmm}の散布図を$K$個の集団に分割した様子で、星型の点は重心を表す。
 
 \begin{figure}[h]
 \centering
@@ -1605,14 +1610,14 @@ class Kmeans(x: Seq[Seq[Double]], k: Int, epochs: Int = 100) {
 \section{期待値最大化法の理論\label{sect:em}}
 
 \sectref{em}では、潜在変数$z$を、その値が確率的に決まる\textbf{確率変数}と考え、分散を含む、混合正規分布の母数を推定しよう。
-観測変数$\bm{x}$に対し、潜在変数$z$の確率は、\eqref{em:estep}で求まる。観測量に基づき推定した確率なので、\textbf{事後確率}と呼ばれる。
+観測変数$\bm{x}$に対し、潜在変数$z$の確率は、\eqref{em:estep}で求まる。観測に基づき推定した確率なので、これを事後確率と呼ぶ。
 %
 \begin{equation}
 \label{eq:em:estep}
 \Prob{z_{nk}}[\bm{x}_n,\theta] = \frac{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}}{\prob{\bm{x}_n}} = \gamma_{nk}.
 \end{equation}
 %
-次に、混合正規分布の\textbf{尤度}を定義する。尤度$\Lk{\theta}$は母数$\theta$の妥当性を表し、尤度の最大値を探す操作を\textbf{最尤推定}と呼ぶ。
+次に、混合正規分布の尤度を定義する。尤度$\Lk{\theta}$は母数$\theta$の妥当性を表し、尤度の最大値を探す操作が最尤推定である。
 %
 \begin{equation}
 \label{eq:em:L}
@@ -1665,7 +1670,7 @@ N_k = \sum_{n=1}^N \gamma_{nk}.
 Q(\gamma,\theta).
 \end{equation}
 %
-補助関数$Q$は、\eqref{em:Q}に示す、変数$\gamma,\theta$の更新を交互に繰り返すと単調増加し、最終的に、有限な実数値に収束する。
+補助関数$Q$は、\eqref{em:Q}に示す、変数$\gamma,\theta$の修正を交互に繰り返すと単調増加し、最終的に、有限な実数値に収束する。
 %
 \begin{equation}
 \label{eq:em:Q}
@@ -1677,8 +1682,8 @@ Q(\gamma,\theta).
 \right.
 \end{equation}
 %
-\eqref{em:Q}で、変数$\gamma^t,\theta^t$の最適値を求めると、\eqref{em:estep}と\eqref{em:mstep}を得る。両者を交互に更新すると、尤度が最大化する。
-\eqref{em:estep}で変数$\gamma$を更新する操作は、\eqref{em:L:exp}に示す、対数尤度の期待値を計算する操作である。これを\Estep{}と呼ぶ。
+\eqref{em:Q}で、変数$\gamma^t,\theta^t$の最適値を求めると、\eqref{em:estep}と\eqref{em:mstep}を得る。両者を交互に修正すると、尤度が最大化する。
+\eqref{em:estep}で変数$\gamma$を修正する操作は、\eqref{em:L:exp}に示す、対数尤度の期待値を計算する操作である。これを\Estep{}と呼ぶ。
 %
 \begin{equation}
 \label{eq:em:L:exp}
@@ -1687,7 +1692,7 @@ Q(\gamma,\theta).
 \sum_{n=1}^N \sum_{k=1}^K \gamma_{nk} \log \seq{w_k \Nd{\bm{x}_n}{\bm{\mu}_k,S_k}}.
 \end{equation}
 %
-\eqref{em:mstep}で$\theta$を更新する操作は、\eqref{em:L:exp}を最大化する。これを\Mstep{}と呼び、両者を合わせて\textbf{期待値最大化法}と呼ぶ。
+\eqref{em:mstep}で変数$\theta$を修正する操作は、尤度を最大化する。これを\Mstep{}と呼び、両者を合わせて\textbf{期待値最大化法}と呼ぶ。
 なお、単位行列$E$と実数値$\lambda$を使って、分散を$\lambda E$と置くと、極限$\lambda\to0$で\eqref{km:elog}が成立し、変数$\gamma_{nk}$も$z_{nk}$になる。
 %
 \begin{equation}
@@ -1697,7 +1702,7 @@ Q(\gamma,\theta).
 -\frac{1}{2} \norm{\bm{x}-\bm{\mu}}^2.
 \end{equation}
 %
-即ち、\eqref{km:L}が成立し、その最大化は\eqref{km:D}の最小化に帰結する。\textit{k-means}は、期待値最大化法の特殊な例と言える。
+即ち、\eqref{km:L}が成立し、その最大化は\eqref{km:D}の最小化に帰結する。\kmean{}は、期待値最大化法の特殊な例と言える。
 %
 \begin{equation}
 \label{eq:km:L}
@@ -1705,7 +1710,7 @@ Q(\gamma,\theta).
 -\frac{1}{2} \sum_{n=1}^N \sum_{k=1}^K z_{nk} \norm{\bm{x}_n-\bm{\mu}_k}^2.
 \end{equation}
 %
-また、期待値最大化法も、\sectref{vb}で学ぶ\textbf{変分ベイズ法}の特殊な場合であり、\sectref{em}と酷似した式が、何度か登場する。
+また、期待値最大化法も、\sectref{vb}で学ぶ変分ベイズ法の特殊な場合であり、\sectref{em}と酷似した式が、何度か登場する。
 
 \section{期待値最大化法の実装}
 
@@ -1744,20 +1749,20 @@ class EM(val x: Seq[Seq[Double]], val mm: GMM, epochs: Int = 100) {
 }
 \end{Verbatim}
 
-\subfigref{em}{class}は、\figref{kmean}と同じ散布図を、期待値最大化法で学習した結果で、\figref{gmm}と同様に、確率密度を可視化した。
+\figref{em}は、\figref{gmm}と同じ散布図を、期待値最大化法で学習した結果で、\figref{gmm}と同様に、確率密度関数を可視化した。
 
 \begin{figure}[h]
 \centering
-\subfloat[$K=2$.\label{fig:em:class}]{\includegraphics[width=.5\linewidth]{images/gmm.em.k2.eps}}
-\subfloat[$K=3$.\label{fig:em:dense}]{\includegraphics[width=.5\linewidth]{images/gmm.em.k3.eps}}
+\subfloat[$K=2$.]{\includegraphics[width=.5\linewidth]{images/gmm.em.k2.eps}}
+\subfloat[$K=3$.]{\includegraphics[width=.5\linewidth]{images/gmm.em.k3.eps}}
 \caption{expectation maximization on a Gaussian mixture model.\label{fig:em}}
 \end{figure}
 
-期待値最大化法では、\figref{kmean}の\textit{k-means}と比較して、正規分布の密度の強弱を、境界付近の色分けに正しく反映できる。
+期待値最大化法では、\figref{kmean}の\kmean{}と比較して、正規分布の密度の強弱を、境界付近の色分けに正しく反映できる。
 
 \section{変分ベイズ推定の理論\label{sect:vb}}
 
-\sectref{em}の最尤推定では、母数の最適値を推定した。\sectref{vb}で議論する\textbf{ベイズ推定}では、母数の確率分布を推定できる。
+\sectref{em}の最尤推定では、母数の最適値を推定した。\sectref{vb}で議論するベイズ推定では、母数の確率分布を推定できる。
 特に、最適解が複数ある場合にも対応でき、過学習の抑制効果も期待できる。議論を始めるに当たり、尤度を定義しよう。
 %
 \begin{equation}
@@ -1778,31 +1783,31 @@ class EM(val x: Seq[Seq[Double]], val mm: GMM, epochs: Int = 100) {
 \iint \prob{\bm{x}}[z] \prob{z}[\theta] \prob{\theta}[\phi] dz d\theta.
 \end{equation}
 %
-\eqref{vb:L}に対し、\eqref{vb:Lm}を\textbf{周辺尤度}と呼ぶ。\sectref{em}と同様に、補助関数$F$を定義する。関数$\hat{p}$は、適当な分布である。
+\eqref{vb:L}に対し、\eqref{vb:Lm}を\textbf{周辺尤度}と呼ぶ。\sectref{em}と同様に、補助関数$F$を定義する。関数$\hatp$は、適当な分布である。
 %
 \begin{equation}
 \log \Lk{\phi} =
 \log \iint \hatprob{z,\theta} \frac{\prob{\bm{x},z,\theta}}{\hatprob{z,\theta}} dz d\theta \geq
-\iint \hatprob{z,\theta} \log \frac{\prob{\bm{x},z,\theta}}{\hatprob{z,\theta}} dz d\theta = F(\hat{p}).
+\iint \hatprob{z,\theta} \log \frac{\prob{\bm{x},z,\theta}}{\hatprob{z,\theta}} dz d\theta = F(\hatp).
 \end{equation}
 %
 補助関数$F$を最大化すると、尤度$\Lp$に収束する。その差は、\eqref{vb:KL}に示す\textbf{カルバック・ライブラー情報量}の形になる。
-\eqref{vb:KL}は、変数$z,\theta$が従う分布$\hat{p}$を仮定した場合の、分布$\hat{p},p$の\textbf{平均情報量}の差である。両者が同じ場合に$0$となる。
+\eqref{vb:KL}は、変数$z,\theta$が従う分布$\hatp$を仮定した場合の、分布$\hatp,p$の平均情報量の差である。両者が同じ場合に$0$となる。
 %
 \begin{equation}
 \label{eq:vb:KL}
-\log \Lk{\bm{x}} - F(\hat{p}) =
-\iint \hatprob{z,\theta} \log \prob{\bm{x}} dz d\theta - F(\hat{p}) =
+\log \Lk{\bm{x}} - F(\hatp) =
+\iint \hatprob{z,\theta} \log \prob{\bm{x}} dz d\theta - F(\hatp) =
 \iint \hatprob{z,\theta} \log \frac{\hatprob{z,\theta}}{\prob{z,\theta}[\bm{x}]} dz d\theta =
-\KL{\hat{p}}{p} \geq 0.
+\KL{\hatp}{p} \geq 0.
 \end{equation}
 %
-関数$\hat{p}$を引数に取る関数$F$を、\textbf{汎関数}と呼ぶ。汎関数$F$の極値を与える引数$\hat{p}$を探索する問題は、\textbf{変分問題}と呼ばれる。
-残念ながら、複数の引数を取る関数$\hat{p}$の探索は難しく、\eqref{vb:field}に示す\textbf{平均場近似}により、変数間の独立性を仮定する。
+関数$\hatp$を引数に取る関数$F$を、\textbf{汎関数}と呼ぶ。汎関数$F$の極値を与える引数$\hatp$を探索する問題は、\textbf{変分問題}と呼ばれる。
+残念ながら、複数の引数を取る関数$\hatp$の探索は難しく、\eqref{vb:field}に示す\textbf{平均場近似}により、変数間の独立性を仮定する。
 %
 \begin{equation}
 \label{eq:vb:field}
-\qrob{z,\theta} = f(z)g(\theta),
+\hatprob{z,\theta} = f(z)g(\theta),
 \where
 \left\{
 \begin{aligned}
@@ -1837,7 +1842,7 @@ class EM(val x: Seq[Seq[Double]], val mm: GMM, epochs: Int = 100) {
 \int g(\theta) \log f(z) d\theta.
 \end{equation}
 %
-関数$f,g$の最適値$\hat{f},\hat{g}$は、\eqref{vb:em}となる。関数$f,g$を交互に更新すると、補助関数$F$が増加し、周辺尤度に収束する。
+関数$f,g$の最適値$\hat{f},\hat{g}$は、\eqref{vb:em}となる。関数$f,g$を交互に修正すると、補助関数$F$が増加し、周辺尤度に収束する。
 \eqref{vb:em}は、\eqref{em:Q}の\Estep{}と\Mstep{}に対応し、\sectref{em}で学んだ期待値最大化法に対し、\textbf{変分ベイズ法}と呼ばれる。
 %
 \begin{equation}
@@ -1854,16 +1859,16 @@ class EM(val x: Seq[Seq[Double]], val mm: GMM, epochs: Int = 100) {
 %
 \begin{equation}
 \label{eq:vb:penalty}
-F(\hat{p}) =
+F(\hatp) =
 \iint f(z)g(\theta) \log \frac{\prob{\bm{x},z}[\theta]}{f(z)} \frac{\prob{\theta}}{g(\theta)} dz d\theta =
 \E[f,g]{\log \frac{\prob{\bm{x},z}[\theta]}{f(z)}} - \KL{g(\theta)}{\prob{\theta}}.
 \end{equation}
 %
-膨大な$N$個の点$\bm{x}_n$を学習した場合の尤度は、\textbf{ラプラス近似}で\eqref{vb:BIC}と近似でき、\textbf{ベイズ情報量基準}の形が出現する。
+無限の個数の点$\bm{x}_n$を学習した場合の尤度は、\textbf{ラプラス近似}で\eqref{vb:BIC}と近似でき、\textbf{ベイズ情報量基準}の形が出現する。
 %
 \begin{equation}
 \label{eq:vb:BIC}
-F(\hat{p}) \simeq
+F(\hatp) \simeq
 \E[f,g]{\log \frac{\prob{\bm{x},z}[\theta]}{f(z)}} - \frac{\hat{\abs{\theta}}}{2} \log N + \log \prob{\hat{\theta}}.
 \end{equation}
 %
@@ -1872,7 +1877,7 @@ F(\hat{p}) \simeq
 \section{母数の事前分布の設定\label{sect:vbgmm}}
 
 潜在変数$z$や母数$\theta$の事前分布を注意深く設定すると、事前分布と事後分布が同じ形の分布になり、計算が容易になる。
-これを\textbf{共役分布}と呼ぶ。混合正規分布の母数にも、共役分布が存在する。まず、潜在変数$z$が\textbf{多項分布}に従うと仮定する。
+これを\textbf{共役分布}と呼ぶ。混合正規分布の母数にも、共役分布が存在する。まず、潜在変数$z$が多項分布に従うと仮定する。
 %
 \begin{equation}
 \label{eq:vbgmm:p:z}
@@ -1882,7 +1887,7 @@ F(\hat{p}) \simeq
 \sum_{k=1}^K z_{nk} = 1.
 \end{equation}
 %
-\eqref{vbgmm:p:z}は、潜在変数$z$に対する加重$w$の尤度でもある。加重$w$の事前分布を、\eqref{vbgmm:p:w}の\textbf{ディリクレ分布}で定義する。
+\eqref{vbgmm:p:z}は、潜在変数$z$に対する加重$w$の尤度でもある。加重$w$の事前分布を、\eqref{vbgmm:p:w}のディリクレ分布で定義する。
 これは、$K$個の排反事象の反復試行で、事象$k$の出現が$\alpha_k-1$回だった場合に、事象$k$の確率が$w_k$である確率を表す。
 %
 \begin{equation}
@@ -1892,7 +1897,7 @@ F(\hat{p}) \simeq
 \frac{1}{\Bd{\alpha}} \prod_{k=1}^K w_k^{\alpha_k-1}.
 \end{equation}
 %
-関数$\Gp$は\textbf{ガンマ関数}で、階乗を拡張した複素関数である。関数$\Bp$は\textbf{ベータ関数}で、多項係数を拡張した複素関数である。
+関数$\Gp$はガンマ関数で、階乗を拡張した複素関数である。関数$\Bp$はベータ関数で、多項係数を拡張した複素関数である。
 平均$\bm{\mu}$の事前分布には、\eqref{vbgmm:p:m}の正規分布を仮定する。母数$\sigma$には、\eqref{vbgmm:p:m}の分散を徐々に減少させる効果がある。
 %
 \begin{equation}
@@ -1915,12 +1920,12 @@ F(\hat{p}) \simeq
 \Wn{W_k,\nu_k} = 2^{\FRAC{\nu_kD}{2}} \pi^{\FRAC{D(D-1)}{4}} \abs{W_k}^{\FRAC{\nu_k}{2}} \prod_{d=0}^{D-1} \Gd{\frac{\nu_k-d}{2}}.
 \end{equation}
 %
-\subfigref{em}{class}は、\figref{kmean}と同じ散布図を、変分ベイズ推定で学習した結果で、\figref{gmm}と同様に、確率密度を可視化した。
+\figref{vb}は、\figref{gmm}と同じ散布図を、変分ベイズ法で学習した結果で、\figref{gmm}と同様に、確率密度関数を可視化した。
 
 \begin{figure}[h]
 \centering
-\subfloat[$K=2$.\label{fig:vb:class}]{\includegraphics[width=.5\linewidth]{images/gmm.vb.k2.eps}}
-\subfloat[$K=3$.\label{fig:vb:dense}]{\includegraphics[width=.5\linewidth]{images/gmm.vb.k3.eps}}
+\subfloat[$K=2$.]{\includegraphics[width=.5\linewidth]{images/gmm.vb.k2.eps}}
+\subfloat[$K=3$.]{\includegraphics[width=.5\linewidth]{images/gmm.vb.k3.eps}}
 \caption{variational Bayesian inference on a Gaussian mixture model.\label{fig:vb}}
 \end{figure}
 

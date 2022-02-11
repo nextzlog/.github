@@ -298,12 +298,14 @@
 %##############################################################################################################%
 % probability distribution commands                                                                            %
 %##############################################################################################################%
+\NewDocumentCommand\hatP{}{\hat{P}}
+\NewDocumentCommand\hatp{}{\hat{p}}
+
 \NewDocumentCommand\Prob{m o}{P\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
 \NewDocumentCommand\prob{m o}{p\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
-\NewDocumentCommand\qrob{m o}{q\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
 
-\NewDocumentCommand\hatProb{m o}{\hat{P}\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
-\NewDocumentCommand\hatprob{m o}{\hat{p}\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+\NewDocumentCommand\hatProb{m o}{\hatP\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
+\NewDocumentCommand\hatprob{m o}{\hatp\left(\IfValueTF{#2}{#1\,\middle|\,#2}{#1}\right)}
 
 \NewDocumentCommand\Lp{}{\mathcal{L}}
 \NewDocumentCommand\Up{}{\mathrm{Uniform}}
