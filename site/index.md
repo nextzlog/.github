@@ -6,8 +6,6 @@ layout: page
 hide: true
 ---
 
-![WireWorld](https://raw.githubusercontent.com/nextzlog/book/master/wire/WIRE1.gif)
-
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
@@ -191,5 +189,16 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2) {
 		</h4>
 		<p class="card-text" itemprop="headline">クレイ社が贈る最高に洗練された並列プログラミング言語を網羅的に解説する日本語初の資料です。</p>
 		<a class="card-link" href="https://pafelog.net/chpl.pdf">記事</a>
+	</div>
+</div>
+
+<div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
+	<div class="card-body">
+		<h4 class="card-title">
+			<a class="card-link" href="https://pafelog.net/type" itemprop="url">
+				<span itemprop="name">Type Inference &amp; Garabage Collection on <i class="mx-1">C++</i></span>
+			</a>
+		</h4>
+		<p class="card-text" itemprop="headline">プログラミング言語処理系の自作で不可欠な型推論とガベージコレクションを手作りする予定です。</p>
 	</div>
 </div>
