@@ -4,7 +4,7 @@
 \NewDocumentCommand\Zc{}{\mathbb{Z}}
 \NewDocumentCommand\fava{}{\texttt{fava}}
 \DeclareMathOperator*{\app}{\enspace\xrightarrow[\beta]{}\enspace}
-\lstdefinelanguage{sample}{keywords={fava,true,false,compile,sudo,pacman,git,java},otherkeywords={=>},string=[b]{"},morecomment=[l]//}
+\lstdefinelanguage{sample}{keywords={fava,true,false,compile,git,gradle,java},otherkeywords={=>},string=[b]{"},morecomment=[l]//}
 
 \book{Scalaで自作するプログラミング言語処理系}{Computation Models {\&} Compilers on Scala}{2}{自作言語,パーサコンビネータ,構文解析,PEG}
 
@@ -15,60 +15,33 @@
 \chapter{言語処理系を作る}
 
 本書では、\textbf{ラムダ計算}を理論的背景に持つ独自のプログラミング言語の\textbf{インタプリタ}を自作して、\textbf{計算論}の基礎を学ぶ。
-実装は公開済みで気軽に閲覧できる。最低限の機能に留めた簡素な言語だが、改良次第では汎用的な言語に拡張できる。
+自作する言語の名前は\fava{}とする。最低限の機能に限定した簡素な言語だが、改良次第では高機能な言語に拡張できる。
 
-\begin{Verbatim}{bash}
-$ git clone https://github.com/nextzlog/fava
-\end{Verbatim}
+\section{サンプル}
 
-改良には開発環境が必要だが、殆どの場合は\textbf{パッケージリポジトリ}経由で、即座に調達できる。ArchLinuxの例を示す。
-
-\begin{Verbatim}{bash}
-$ sudo pacman -S jdk-openjdk scala
-\end{Verbatim}
-
-頒布版には、\textbf{対話環境}を同梱した。また、\chapref{automata}に述べる様々な計算モデルの実験機能も同梱した。起動時に機能を選ぶ。
-
-\begin{Verbatim}{sample}
-$ java -jar build/libs/fava.jar
-which language do you use?
-[0]: fava
-[1]: math
-select: 0
-fava$ "HELLO, WORLD!"
-HELLO, WORLD!
-\end{Verbatim}
-
-自作言語の名前は\fava{}とする。専用の命令を実装した仮想的な実行環境で動作する。算術演算や論理演算が実行できる。
-
-\begin{Verbatim}{sample}
-fava$ 11 + 4 * 5 - 14
-17
-\end{Verbatim}
-
-理念的には\textbf{純粋関数型言語}に分類できる。式に\textbf{副作用}がなく、式の値は定数で、式の構造から明確に求まる特徴を持つ。
-また、関数は関数の引数や返り値にできる。ただし、関数は名前も局所変数も定義できず、数学的な関数の概念に似る。
+理念的には\textbf{純粋関数型言語}に分類できる。状態の概念がなく、式の値は定数だが、理論的には任意の計算を実行できる。
+関数は関数の引数や返り値にできる。ただし、関数の名前も局所変数も定義できず、参照可能な変数は引数に限られる。
 
 \begin{Verbatim}{sample}
 fava$ ((x)=>(y)=>3*x+7*y)(2)(3)
 27
 \end{Verbatim}
 
-実用的な計算が困難な程の制約に思えるが、実際には\chapref{lambda}で解説する通り、優れた計算能力を持つ。階乗も計算できる。
+実用的な計算が困難な程の制約に思えるが、実際には\chapref{lambda}で述べる通り、任意の計算を実行できる。階乗も計算できる。
 
 \begin{Verbatim}{sample}
 fava$ ((f)=>((x)=>f(x(x)))((x)=>f(x(x))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)
 3628800
 \end{Verbatim}
 
-理論的には、\textbf{帰納的に枚挙可能}な集合に対する、任意の計算を実行できる。自然数を関数で表現する芸当も可能である。
+自然数を関数で定義する例を示す。この例題は、関数型言語が任意の計算を実行できる性質を示す際に、よく登場する。
 
 \begin{Verbatim}{sample}
 fava$ ((f,x)=>f(f(f(f(f(x))))))((x)=>x+1,0) // 0 + 1 + 1 + 1 + 1 + 1
 5
 \end{Verbatim}
 
-また、任意の\textbf{順序組}を定義して操作できる。順序組は構造体と等価である。理論的には複雑な\textbf{グラフ構造}も表現できる。
+任意の順序組も定義できる。端的に言えば構造体に相当し、複雑なグラフ構造も関数で表現できる性質を示す例である。
 
 \begin{Verbatim}{sample}
 fava$ ((pair)=>pair((car,cdr)=>car))(((car,cdr)=>(z)=>z(car,cdr))(12,34))
@@ -77,9 +50,27 @@ fava$ ((pair)=>pair((car,cdr)=>cdr))(((car,cdr)=>(z)=>z(car,cdr))(12,34))
 34
 \end{Verbatim}
 
-対話環境の拡張機能として、実行環境で実行される命令列を表示する機能も用意した。実行環境の動作の理解に役立つ。
+\section{開発環境}
+
+\fava{}の実装は公開済みで、以下の操作でビルドできる。実行環境としてJavaが、開発環境としてGradleが必要である。
 
 \begin{Verbatim}{sample}
+$ git clone https://github.com/nextzlog/fava
+$ gradle build -p fava
+\end{Verbatim}
+
+以下の操作で起動する。\fava{}以外にも、\chapref{automata}で実装する様々な計算モデルを実験する機能も含まれ、起動時に選べる。
+\fava{}は対話的に実行できる。\fava{}の内部で実行される命令列を表示する機能も用意した。内部的な動作の理解に役立つ。
+
+\begin{Verbatim}{sample}
+$ java -jar fava/build/libs/fava.jar
+which language do you use?
+[0]: fava
+[1]: lisp
+[2]: math
+select: 0
+fava$ "HELLO, WORLD!"
+HELLO, WORLD!
 fava$ compile(1 + 2)
 Push(1) Push(2) Add
 \end{Verbatim}
@@ -184,23 +175,21 @@ println(if(ZLO.test("ZLLLLLLLLLLLLLLLLO").isDefined) "OK" else "NO")
 \end{equation}
 %
 空間的な自由を得た恩恵で、再帰構造を持つ計算に対応する。例えば、\textbf{フラクタル図形}を描画する遷移規則が存在する。
-\figref{langton}に示す\textbf{ラングトンの環}の例では、仮足を伸ばして\eqref{loop}の遺伝子を注入し、分裂増殖する生物群集を模倣する。
-%
-\begin{equation}
-\label{eq:loop}
-0710710711111041041071071071.
-\end{equation}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\linewidth]{images/cell.loops.eps}
-\caption{Langton's loops in cellular automata.\label{fig:langton}}
-\end{figure}
-
-2次元の実装例を示す。遷移規則は引数で指定する。全てのセルが同時に更新される\textbf{同期型セルオートマトン}を採用した。
+さて、2次元のセルオートマトンの実装例を、以下に示す。引数は、遷移規則と、縦横に並んだセルの最初の状態である。
 
 \begin{Verbatim}{Scala}
-class CA2[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
+class Grid[S](rule: Rule[S], data: Array[Array[S]]) {
+	def update = {
+		val next = rule(data.map(_.toSeq).toSeq)
+		next.zip(data).foreach(_.copyToArray(_))
+	}
+}
+\end{Verbatim}
+
+全てのセルが同時に状態遷移する\textbf{同期型セルオートマトン}を以下に実装する。引数は、遷移規則と、近傍の距離である。
+
+\begin{Verbatim}{Scala}
+class Rule[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
 	def ROI[V](i: Int)(s: Seq[V]) = Range.inclusive(i - d, i + d).map(Math.floorMod(_, s.size)).map(s)
 	def apply(s: Seq[Seq[S]]) = s.indices.map(x => s(x).indices.map(y => rule(ROI(x)(s).map(ROI(y)))))
 }
@@ -211,22 +200,20 @@ class CA2[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
 
 \begin{figure}[h]
 \centering
-\subfloat[4bit counter.\label{fig:wire:count}]{\includegraphics[width=\linewidth]{images/wire.count.eps}}\\
-\subfloat[binary adder.\label{fig:wire:adder}]{\includegraphics[width=\linewidth]{images/wire.adder.eps}}
+\includegraphics[width=\linewidth]{images/wire.count.eps}
 \caption{Wireworld logic circuits.\label{fig:wire}}
 \end{figure}
 
-\subfigref{wire}{count}は\textbf{カウンタ}である。左側の\textbf{発振回路}から周期的に信号を送り込む度に、右側の配線4本の信号が切り替わる。
-\subfigref{wire}{adder}は\textbf{加算器}である。果ては、表示器を備えた計算機さえ実装可能な点が特徴だが、遷移規則は実に単純である。
+\figref{wire}は\textbf{カウンタ}である。左側の\textbf{発振回路}から周期的に信号を送る度に、右側の4本の配線を流れる信号が切り替わる。
 
 \begin{Verbatim}{Scala}
-object WireWorldRule extends CA2[Char](ROI => ROI(1)(1) match {
-	case 'W' if(ROI.flatten.count(_ == 'H') == 1) => 'H'
-	case 'W' if(ROI.flatten.count(_ == 'H') == 2) => 'H'
-	case 'W' => 'W'
-	case 'H' => 'T'
-	case 'T' => 'W'
-	case 'B' => 'B'
+object WireWorldRule extends Rule[Char](ROI => (ROI(1)(1), ROI.flatten.count(_ == 'H')) match {
+	case ('W', 1) => 'H'
+	case ('W', 2) => 'H'
+	case ('W', _) => 'W'
+	case ('H', _) => 'T'
+	case ('T', _) => 'W'
+	case ('B', _) => 'B'
 })
 \end{Verbatim}
 
@@ -239,6 +226,7 @@ object WireWorldRule extends CA2[Char](ROI => ROI(1)(1) match {
 \label{eq:tape}
 (q_{n+1},y_n,\lambda_n) = \delta(q_n,x_n),
 \where
+\where
 \left\{
 \begin{aligned}
 q_n &\in Q,\\
@@ -249,49 +237,49 @@ x_n,y_n &\in \Sigma,\\
 \end{equation}
 %
 この動作は、任意の逐次処理型の計算機と等価であり、並列処理型のセルオートマトンと並んで、計算機の頂点に立つ。
-特に、帰納的に枚挙可能な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、\figref{tape}に示す。
+特に、\textbf{帰納的に枚挙可能}な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、\figref{tape}に示す。
 
 \begin{figure}[h]
 \centering
-\subfloat[\texttt{100=011+001}.]{\includegraphics[width=.5\linewidth]{images/tape.plus1.eps}}
-\subfloat[\texttt{110=101+001}.]{\includegraphics[width=.5\linewidth]{images/tape.plus2.eps}}
+\subfloat[\texttt{100=011+001}.]{\includegraphics[width=.33\linewidth]{images/tape.plus1.eps}}
+\subfloat[\texttt{110=101+001}.]{\includegraphics[width=.33\linewidth]{images/tape.plus2.eps}}
+\subfloat[\texttt{111=110+001}.]{\includegraphics[width=.33\linewidth]{images/tape.plus3.eps}}
 \caption{numerical increment operation on a Turing machine ($k=1$).\label{fig:tape}}
 \end{figure}
 
 任意の遷移関数を読み取り、その遷移関数を忠実に実行する、言語処理系と等価な\textbf{万能チューリング機械}も実装できる。
-遷移関数と計算手順で、別々のテープを使用した例を\texttt{UTM}型に実装する。状態F0からF1にかけ、遷移規則を検索する。
+遷移関数と計算手順で、異なるテープを使用した例を\texttt{UTM}型に実装する。状態0から1にかけて、遷移規則を検索する。
 
 \begin{Verbatim}{Scala}
-class UTM[V](data1: Seq[V], data2: Seq[V], bk1: V, bk2: V, mvL: V, mvR: V, var st1: V) {
+class UTM[V](data1: Seq[V], data2: Seq[V], b1: V, b2: V, mL: V, mR: V, var s1: V, var s2: Int = 0) {
 	val tape1 = data1.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
 	val tape2 = data2.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
-	var (hd1, hd2) -> st2 = (0, 0) -> "F0"
-	def rd1 = tape1.getOrElse(hd1, bk1)
-	def rd2 = tape2.getOrElse(hd2, bk2)
-	def apply(stop: V) = Iterator.continually(st2 match {
-		case "F0" if rd2 == st1 => (st1 = st1, st2 = "F1", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F0" if rd2 != st1 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 5)
-		case "F1" if rd2 == rd1 => (st1 = st1, st2 = "F2", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F1" if rd2 != rd1 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 4)
-		case "F2" if rd2 != bk2 => (st1 = rd2, st2 = "F3", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F3" if rd2 != bk2 => (st1 = st1, st2 = "F4", tape1(hd1) = rd2, hd1 += 0, hd2 += 1)
-		case "F4" if rd2 == bk1 => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F4" if rd2 == mvL => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 -= 1, hd2 += 1)
-		case "F4" if rd2 == mvR => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 1, hd2 += 1)
-		case "F5" if rd2 == bk2 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F5" if rd2 != bk2 => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 0, hd2 -= 1)
-	}).takeWhile(t => st1 != stop || st2 != "F0").map(t => tape1.values.mkString)
+	var hd1, hd2 = 0
+	def r1 = tape1.getOrElse(hd1, b1) 
+	def r2 = tape2.getOrElse(hd2, b2)
+	def apply(sop: V) = Iterator.continually(s2 match {
+		case 0 if r2 == s1 => (s1 = s1, s2 = 1, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 0 if r2 != s1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 5) 
+		case 1 if r2 == r1 => (s1 = s1, s2 = 2, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 1 if r2 != r1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 4) 
+		case 2 if r2 != b2 => (s1 = r2, s2 = 3, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 3 if r2 != b2 => (s1 = s1, s2 = 4, tape1(hd1) = r2, hd1 += 0, hd2 += 1) 
+		case 4 if r2 == b1 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 4 if r2 == mL => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 -= 1, hd2 += 1) 
+		case 4 if r2 == mR => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 1, hd2 += 1) 
+		case 5 if r2 == b2 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 5 if r2 != b2 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 -= 1) 
+	}).takeWhile(t => s1 != sop || s2 != 0).map(t => tape1.values.mkString)
 }
 \end{Verbatim}
 
-状態F2からF4で、状態遷移と書き戻しと移動を行う。状態F5でテープの左端に戻り、状態F0に戻る。使用例を示す。
+状態2から4にかけて、状態遷移と書き戻しと移動を行う。状態5でテープの左端に戻り、状態0に戻る。使用例を示す。
+遷移規則は\eqref{tape}の通り、5個組で読み込ませる。初期状態\texttt{I}から状態\texttt{F}まで動かすと、\figref{tape}の計算が実行される。
 
 \begin{Verbatim}{Scala}
 case class CUTM(data1: String, data2: String) extends UTM(data1, data2, ' ', '*', 'L', 'R', 'I')
 CUTM("0111111", "I0a0RI1a1Ra0a0Ra1a1Ra b Lb0c1Lb1b0Lb F1 c0c0Lc1c1Lc F R")('F').foreach(println)
 \end{Verbatim}
-
-遷移規則は\eqref{tape}の通り、5個組で読み込ませる。初期状態\texttt{I}から状態\texttt{F}まで動かすと、\figref{tape}の計算が実行される。
 
 \section{逆ポーランド記法\label{sect:pola}}
 
@@ -312,7 +300,7 @@ y^*_n &\in \Gamma^*,\\
 \right.
 \end{equation}
 %
-記号$\sigma_n$を受け取ると、スタックの先頭の記号$x_n$を取り除き、先頭に記号列$y^*_n$を順番に積んで。状態$q_{n+1}$に遷移する。
+記号$\sigma_n$を受け取ると、スタックの先頭の記号$x_n$を取り除き、先頭に記号列$y^*_n$を順番に積んで、状態$q_{n+1}$に遷移する。
 再帰計算を活用した例として、\sectref{regex}で実装した正規表現の拡張を考える。以下の関数\texttt{ZLO}は、記号列$\texttt{Z}^n\texttt{L}\texttt{O}^n$を表す。
 
 \begin{Verbatim}{Scala}
@@ -337,6 +325,7 @@ println(ZLO.test("ZZZZZZZZZZZZZZZZZZZZZZZZZLOOOOOOOOOOOOOOOOOOOOOOOOO").isDefine
 \end{equation}
 %
 手順を\figref{math}に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
+その再帰計算や条件分岐も、指定された長さだけ記号列を遡る\textbf{分岐命令}があれば実現できる。詳細は\chapref{call}に解説する。
 
 \begin{figure}[h]
 \centering
@@ -344,8 +333,7 @@ println(ZLO.test("ZZZZZZZZZZZZZZZZZZZZZZZZZLOOOOOOOOOOOOOOOOOOOOOOOOO").isDefine
 \caption{\texttt{1 2 + 10 20 - *}.\label{fig:math}}
 \end{figure}
 
-その再帰計算や条件分岐も、指定された長さだけ記号列を遡る\textbf{分岐命令}があれば実現できる。詳細は\chapref{call}に解説する。
-逆ポーランド記法の数式を計算する実装例を示す。数式は、空白で区切る必要がある。この実装は、\chapref{math}で再び使う。
+逆ポーランド記法とスタック機械による四則演算の実装例を以下に示す。数式は、整数と演算子を空白で区切って渡す。
 
 \begin{Verbatim}{Scala}
 object ArithStackMachine extends collection.mutable.Stack[Int]() {
@@ -358,6 +346,15 @@ object ArithStackMachine extends collection.mutable.Stack[Int]() {
 	}.lastOption.map(_ => pop).last
 }
 \end{Verbatim}
+
+\figref{math}の手順で計算を行う。整数を読み取るとスタックに積み、演算子を読み取ると演算を行う。以下に使用例を示す。
+
+\begin{Verbatim}{Scala}
+println(ArithStackMachine("1 2 + 10 20 - *")) // -30
+println(ArithStackMachine("3 4 * 10 20 * +")) // 212
+\end{Verbatim}
+
+この実装は、\chapref{math}で再び使用する。\chapref{math}では、中置記法の数式を逆ポーランド記法に変換するコンパイラを実装する。
 
 \chapter{ラムダ計算の理論\label{chap:lambda}}
 
@@ -1107,7 +1104,7 @@ case class LitST(value: Any) extends AST {
 }
 \end{Verbatim}
 
-定数は単に\texttt{Push}命令に翻訳される。なお、文字列の場合は、特別に\texttt{StrST}型で扱う。特殊文字の処理を行う目的である。
+定数は単に\texttt{Push}命令に翻訳される。なお、文字列の場合は、特別に\texttt{StrST}型で扱う。ここで、特殊な文字の処理を行う。
 
 \begin{Verbatim}{Scala}
 case class StrST(string: String) extends AST {
@@ -1149,7 +1146,10 @@ case class BinST(op: String, e1: AST, e2: AST) extends AST {
 }
 \end{Verbatim}
 
+\section{分岐と関数の構文木\label{sect:CallST}}
+
 条件分岐の式は\texttt{IfST}型で表す。条件式と、真の場合に評価する式と、偽の場合に評価する式で、合計3個の引数を取る。
+条件分岐は、条件式の命令列の後に、\texttt{Skin}命令と、真の場合の命令列と、\texttt{Skip}命令と、偽の場合の命令列を配置する。
 
 \begin{Verbatim}{Scala}
 case class IfST(cond: AST, vals: (AST, AST)) extends AST {
@@ -1163,15 +1163,12 @@ case class IfST(cond: AST, vals: (AST, AST)) extends AST {
 }
 \end{Verbatim}
 
-条件分岐は、条件式の命令列の後に、\texttt{Skin}命令と、真の場合の命令列と、\texttt{Skip}命令と、偽の場合の命令列を出力する。
-
-\section{関数と引数の構文木\label{sect:CallST}}
-
-最初に、関数を表す\texttt{DefST}型を実装する。引数と、関数の内容を引数に取る。また、外側の関数を参照する変数を持つ。
-関数の内容の命令列を生成してから、その長さと引数の個数に対応した\texttt{Def}命令と、\texttt{Ret}命令を冒頭と最後に追加する。
+次に、関数を表す\texttt{DefST}型を実装する。引数は、関数の引数と内容である。また、外側の関数を参照する変数を定義する。
+関数は、内容の命令列を生成して、命令の個数と引数の個数を指定した\texttt{Def}命令と、\texttt{Ret}命令を冒頭と最後に配置する。
 
 \begin{Verbatim}{Scala}
-case class DefST(pars: Seq[String], body: AST, var out: DefST = null) extends AST {
+case class DefST(pars: Seq[String], body: AST) extends AST {
+	var out: DefST = null
 	def code(implicit env: DefST) = {
 		val codes = body.code((this.out = env, this)._2)
 		(Def(codes.size + 2, pars.size) +: codes :+ Ret)
@@ -1179,7 +1176,8 @@ case class DefST(pars: Seq[String], body: AST, var out: DefST = null) extends AS
 }
 \end{Verbatim}
 
-関数は、定義された際の関数の包含関係を保持する。最も外側の関数は、便宜的に架空の関数を表す\texttt{Root}型を参照する。
+関数は、関数が定義された場所での、関数の包含関係を保持する。関数の包含関係は、変数を参照できる範囲を決定する。
+外側の関数は、命令列を生成する際に、引数で渡される。また、最も外側の関数は、便宜的に以下の\texttt{Root}型を参照する。
 
 \begin{Verbatim}{Scala}
 object Root extends DefST(Seq(), null)
@@ -1190,9 +1188,9 @@ object Root extends DefST(Seq(), null)
 \begin{Verbatim}{Scala}
 case class StIdST(val name: String) extends AST {
 	def search(env: DefST, nest: Int = 0): Load = {
-		if(env.pars.contains(name)) return Load(nest, env.pars.indexOf(name))
-		if(env.out != null) search(env.out, nest + 1)
-		else sys.error(s"variable $name not defined")
+		if(env.pars.contains(name)) Load(nest, env.pars.indexOf(name))
+		else if(env.out != null) search(env.out, nest + 1)
+		else sys.error(s"parameter $name is not declared")
 	}
 	def code(implicit env: DefST) = Seq(search(env))
 }
