@@ -146,33 +146,34 @@ class AdaDelta(r: Double = 0.95, e: Double = 1e-8) extends SGD {
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
 		<h4 class="card-title">
-			<a class="card-link" href="https://pafelog.net/dusk.pdf" itemprop="url">
+			<a class="card-link" href="https://pafelog.net/dusk" itemprop="url">
 				<span itemprop="name">Parallel Work-Stealing Scheduler on <i>D</i></span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">並列処理系を自作。私たちの生活に浸透したメニーコアプロセッサを極限まで使い切る技術を学ぶ。</p>
+		<a class="card-link" href="https://pafelog.net/dusk.pdf">記事</a>
 		<a class="card-link" href="https://github.com/nextzlog/dusk">実装</a>
 	</div>
 </div>
 
 ```dlang
-int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2) {
+int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 	auto axes = [i2 - i1, j2 - j1, k2 - k1];
-	if(axes[axes.maxIndex] <= 128) {
+	if(axes.maxElement <= grain) {
 		dmm_leaf(i1, i2, j1, j2, k1, k2);
 	} else if(axes.maxIndex == 0) {
-		auto t1 = sched.fork!dmm_dawn(i1, (i1+i2)/2, j1, j2, k1, k2);
-		auto t2 = sched.fork!dmm_dawn((i1+i2)/2, i2, j1, j2, k1, k2);
+		auto t1 = sched.fork!dmm_dawn(i1, (i1+i2)/2, j1, j2, k1, k2, grain);
+		auto t2 = sched.fork!dmm_dawn((i1+i2)/2, i2, j1, j2, k1, k2, grain);
 		sched.join(t1);
 		sched.join(t2);
 	} else if(axes.maxIndex == 1) {
-		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, (j1+j2)/2, k1, k2);
-		auto t2 = sched.fork!dmm_dawn(i1, i2, (j1+j2)/2, j2, k1, k2);
+		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, (j1+j2)/2, k1, k2, grain);
+		auto t2 = sched.fork!dmm_dawn(i1, i2, (j1+j2)/2, j2, k1, k2, grain);
 		sched.join(t1);
 		sched.join(t2);
 	} else if(axes.maxIndex == 2) {
-		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, j2, k1, (k1+k2)/2);
-		auto t2 = sched.fork!dmm_dawn(i1, i2, j1, j2, (k1+k2)/2, k2);
+		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, j2, k1, (k1+k2)/2, grain);
+		auto t2 = sched.fork!dmm_dawn(i1, i2, j1, j2, (k1+k2)/2, k2, grain);
 		sched.join(t1);
 		sched.join(t2);
 	}
@@ -191,6 +192,8 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2) {
 		<a class="card-link" href="https://pafelog.net/chpl.pdf">記事</a>
 	</div>
 </div>
+
+![dusk](scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg)
 
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">

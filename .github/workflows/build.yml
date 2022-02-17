@@ -11,6 +11,7 @@ jobs:
         book:
         - ats4
         - chpl
+        - dusk
         - fava
         - mine
     steps:
