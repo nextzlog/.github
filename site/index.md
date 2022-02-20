@@ -10,7 +10,7 @@ hide: true
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://pafelog.net/fava" itemprop="url">
-				<span itemprop="name">Computation Models &amp; Compilers on <i>Scala</i></span>
+				<span itemprop="name">Computation Models &amp; Compilers on Scala</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">関数型言語を自作します。パーサコンビネータも手作り。計算論の基礎とチューリング機械を学ぶ。</p>
@@ -101,7 +101,7 @@ func onEditor(key int) {
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://github.com/nextzlog/qxsl" itemprop="url">
-				<span itemprop="name">Amateur-Radio Logging Library <i>QxSL</i></span>
+				<span itemprop="name">Amateur-Radio Logging Library QxSL</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">汎用的なドメイン特化言語であらゆる書式の交信記録の処理とコンテストの得点計算に対応します。</p>
@@ -122,7 +122,7 @@ func onEditor(key int) {
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://pafelog.net/mine" itemprop="url">
-				<span itemprop="name"><i>Scala's</i> Pattern Recognition &amp; Machine Learning</span>
+				<span itemprop="name">Scala's Pattern Recognition &amp; Machine Learning</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">線型回帰からサポートベクターマシンまで主要な機械学習を手作りします。情報科学を究める喜び。</p>
@@ -147,7 +147,7 @@ class AdaDelta(r: Double = 0.95, e: Double = 1e-8) extends SGD {
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://pafelog.net/dusk" itemprop="url">
-				<span itemprop="name">Parallel Work-Stealing Scheduler on <i>D</i></span>
+				<span itemprop="name">Parallel Work-Stealing Scheduler on D</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">並列処理系を自作。私たちの生活に浸透したメニーコアプロセッサを極限まで使い切る技術を学ぶ。</p>
@@ -185,7 +185,7 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://pafelog.net/chpl" itemprop="url">
-				<span itemprop="name"><i class="mx-1">Chapel</i> the Parallel Programming Language</span>
+				<span itemprop="name">Chapel the Parallel Programming Language</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">クレイ社が贈る最高に洗練された並列プログラミング言語を網羅的に解説する日本語初の資料です。</p>
@@ -199,7 +199,7 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 	<div class="card-body">
 		<h4 class="card-title">
 			<a class="card-link" href="https://pafelog.net/type" itemprop="url">
-				<span itemprop="name">Type Inference &amp; Garabage Collection on <i class="mx-1">C++</i></span>
+				<span itemprop="name">Type Inference &amp; Garabage Collection</span>
 			</a>
 		</h4>
 		<p class="card-text" itemprop="headline">プログラミング言語処理系の自作で不可欠な型推論とガベージコレクションを手作りする予定です。</p>
