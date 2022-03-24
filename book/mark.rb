@@ -19,9 +19,8 @@ data.insert(matter + 1, 'hide: true')
 
 header = data.index{|v| v.start_with?("#")}
 data.insert(header + 0, sprintf('[PDF版はこちら](%s.pdf)。', name))
-data.insert(header + 1, 'このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。')
-data.insert(header + 2, '* TOC')
-data.insert(header + 3, '{:toc}')
+data.insert(header + 1, '* TOC')
+data.insert(header + 2, '{:toc}')
 
 # output Markdown body
 File.open(sprintf('%s.md', name), mode='w') do |file|
