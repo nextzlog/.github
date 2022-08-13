@@ -1,13 +1,32 @@
-lang: ja
-title: 無線部開発班
-header_text: Journal of Hamradio Informatics
-footer_text: Copyright (C) <a href="https://ja1zlo.u-tokyo.org">The University of Tokyo Amateur Radio Club</a> System Development Taskforce
-description: アマチュア無線のコンテスト主催者向け自動集計システムから並列計算フレームワーク、プログラミング言語処理系、機械学習まで、ソフトウェア開発の記事を公開.
+remote_theme: nextzlog/pafe
 url: https://pafelog.net
+name: 無線部開発班
+icon: /assets/head.png
+lead: automatic tabulation system for hamradio contests, parallel computing framework, programming language processors, machine learning, etc.
+desc: アマチュア無線のコンテスト運営システムから, 並列計算フレームワーク, プログラミング言語処理系, 機械学習まで, ソフトウェア科学の記事を公開.
+items:
+- name: ATS-4
+  href: /ats4
+- name: 自作言語
+  href: /fava
+- name: 機械学習
+  href: /mine
+- name: 並列処理
+  href: /dusk
+- name: 並列言語
+  href: /chpl
+links:
+- name: ZyLO
+  href: https://zylo.pafelog.net
+- name: GitHub
+  href: https://github.com/nextzlog
+  icon: fab fa-github
+- name: Issues
+  href: https://github.com/nextzlog/todo/issues
+  icon: fas fa-comments
+- name: Twitter
+  href: https://twitter.com/nextzlog
+  icon: fab fa-twitter
+- name: 東大無線部
+  href: https://ja1zlo.u-tokyo.org
 google_analytics: UA-75073167-1
-github:
-  is_project_page: false
-plugins:
-- jekyll-redirect-from
-katex: true
-remote_theme: sylhare/Type-on-Strap

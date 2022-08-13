@@ -135,7 +135,7 @@ case class Chapter(args: DocMD) extends CmdBodyMD(args) {
 		Counter.reset("tab")
 		val chap = Counter.next("chap")
 		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap")
-		s"# $chap ${args.str(scope)}"
+		s"## $chap ${args.str(scope)}"
 	}
 }
 
@@ -144,7 +144,7 @@ case class Section(args: DocMD) extends CmdBodyMD(args) {
 		val chap = Counter.now("chap")
 		val sect = Counter.next(this.lab(scope).headOption.getOrElse("sect"))
 		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$sect")
-		s"## $chap.$sect ${args.str(scope)}"
+		s"### $chap.$sect ${args.str(scope)}"
 	}
 }
 

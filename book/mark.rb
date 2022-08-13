@@ -15,12 +15,11 @@ text = text.gsub('```chapel', '```')
 data = text.lines
 
 matter = data.index{|v| v.start_with?("---")}
-data.insert(matter + 1, 'hide: true')
+data.insert(matter + 1, "pdf: #{name}.pdf")
 
 header = data.index{|v| v.start_with?("#")}
-data.insert(header + 0, sprintf('[PDF版はこちら](%s.pdf)。', name))
-data.insert(header + 1, '* TOC')
-data.insert(header + 2, '{:toc}')
+data.insert(header + 0, '* TOC')
+data.insert(header + 1, '{:toc}')
 
 # output Markdown body
 File.open(sprintf('%s.md', name), mode='w') do |file|

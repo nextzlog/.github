@@ -16,10 +16,10 @@ jobs:
         - mine
     steps:
     - uses: actions/checkout@v2
-    - uses: eskatos/gradle-command-action@v1
+    - uses: gradle/gradle-build-action@v1
       with:
         arguments: build
-        gradle-version: 6.7
+        gradle-version: current
         build-root-directory: text
     - uses: ruby/setup-ruby@v1
       with:
