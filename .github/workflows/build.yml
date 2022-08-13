@@ -37,7 +37,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         path: pages
-    - run: cp pages/*/*.md site
+    - run: cp pages/*/*.md book/*.pdf site
     - uses: peaceiris/actions-gh-pages@v3
       with:
         cname: pafelog.net
