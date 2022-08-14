@@ -4,6 +4,7 @@ subtitle: アマチュア無線は次世代の体験へ
 cards:
 - fava.md
 - zlog.md
+- real.md
 - ats4.md
 - qxsl.md
 - mine.md

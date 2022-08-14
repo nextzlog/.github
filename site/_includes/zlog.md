@@ -2,8 +2,8 @@
 
 長年に渡り、コンテストを戦う数多の無線家に支持される。本格派が愛用するロギングソフトです。
 
-- [最新版](https://github.com/jr8ppg/zLog/releases/latest)
-- [プラグインで広がる可能性](https://pafelog.net/zylo.pdf)
+- [公式資料](https://zylo.pafelog.net)
+- [発表資料](zylo)
 
 ```golang
 package main

@@ -36,8 +36,16 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        path: pages
-    - run: cp pages/*/*.md book/*.pdf site
+        path: book
+    - run: cp book/*/*.md book/*.pdf site
+    - run: |
+        sudo apt install pdf2svg
+        for p in {01..35}
+        do
+          pdf2svg zylo.pdf images/zylo.$p.svg $p
+        done
+      working-directory:
+        site
     - uses: peaceiris/actions-gh-pages@v3
       with:
         cname: pafelog.net
