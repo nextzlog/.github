@@ -18,8 +18,10 @@ matter = data.index{|v| v.start_with?("---")}
 data.insert(matter + 1, "pdf: #{name}.pdf")
 
 header = data.index{|v| v.start_with?("#")}
-data.insert(header + 0, '* TOC')
-data.insert(header + 1, '{:toc}')
+unless header.nil?
+	data.insert(header + 0, '* TOC')
+	data.insert(header + 1, '{:toc}')
+end
 
 # output Markdown body
 File.open(sprintf('%s.md', name), mode='w') do |file|

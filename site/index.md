@@ -10,6 +10,7 @@ cards:
 - mine.md
 - dusk.md
 - chpl.md
+- wave.md
 ---
 
 {% for card in page.cards %}
