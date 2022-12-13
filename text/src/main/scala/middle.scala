@@ -108,6 +108,7 @@ object Cmds extends BaseCmds(
 object Envs extends BaseEnvs(
 	Env("Document", Document(_, _, _)),
 	Env("Equation", Equation(_, _, _)),
+	Env("AlignAt", AlignAt(_, _, _)),
 	Env("Figure", Figure(_, _, _)),
 	Env("MiniPage", MiniPage(_, _, _)),
 	Env("Table", Table(_, _, _)),

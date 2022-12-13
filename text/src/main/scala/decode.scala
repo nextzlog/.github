@@ -61,7 +61,7 @@ case class LstMD(lang: MD, body: String) extends LeafMD {
 }
 
 case class MatMD(body: TeX) extends LeafMD {
-	override def str(scope: MD) = s"$$$$${body}$$$$".replace("|", " \\vert ")
+	override def str(scope: MD) = s" $$${body.view}$$ ".replace("|", " \\vert ")
 }
 
 case class DocMD(body: Seq[MD]) extends TreeMD(body: _*) {
@@ -197,8 +197,13 @@ case class Equation(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
 		val chap = Counter.now("chap")
 		val idx = Counter.next(this.lab(scope).headOption.getOrElse("eq"))
 		this.lab(scope).headOption.foreach(lab => Counter.labeled(lab) = s"$chap.$idx")
-		s"$$$$${tex.view} \\qquad($chap.$idx)$$$$"
+		s"$$$$${tex.view.trim} \\qquad($chap.$idx)$$$$"
 	}
+}
+
+case class AlignAt(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
+	import encode._
+	override def str(scope: MD) = Equation(args, body, EnvAppTeX("alignedat", DocTeX(Seq(ArgTeX(StrTeX(args.str(scope))))), tex)).str(scope)
 }
 
 case class Figure(args: DocMD, body: MD, tex: TeX) extends EnvBodyMD(body) {
