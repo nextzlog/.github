@@ -19,6 +19,7 @@
 \RequirePackage{amssymb}
 \RequirePackage{bm}
 \RequirePackage{mathtools}
+\RequirePackage{proof}
 \RequirePackage{subfig}
 \RequirePackage{xcolor}
 \RequirePackage{xparse}
@@ -364,7 +365,6 @@
 %##############################################################################################################%
 % lstlisting definition for Scala                                                                              %
 %##############################################################################################################%
-
 \lstdefinelanguage{Scala}{
 	morekeywords=[1]{
 		abstract,
@@ -627,13 +627,39 @@
 		yield,
 		zip
 	},
- 	morekeywords=[2]{
+	morekeywords=[2]{
 		bool,
 		imag,
 		int,
 		real,
 		uint,
 		void
+	},
+	sensitive,
+	morecomment=[s]{/*}{*/},
+	morecomment=[l]//,
+	morestring=[b]",
+	morestring=[b]',
+}[keywords,comments,strings]
+
+%##############################################################################################################%
+% lstlisting definition for sample                                                                             %
+%##############################################################################################################%
+\lstdefinelanguage{sample}{
+	morekeywords=[1]{
+		compile,
+		defun,
+		eq,
+		false,
+		git,
+		gradle,
+		if,
+		java,
+		lambda,
+		true
+	},
+	otherkeywords={
+		=>
 	},
 	sensitive,
 	morecomment=[s]{/*}{*/},
