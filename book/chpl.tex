@@ -1,6 +1,6 @@
 \documentclass[10pt,a4paper]{book}
 
-\newcommand{\Cpp}{C\raisebox{0.5ex}{\tiny\textbf{++}}}
+\NewDocumentCommand\chpl{}{\texttt{chpl}}
 
 \book{うさぎさんでもわかる並列言語Chapel}{Chapel the Parallel Programming Language}{1}{並列プログラミング言語}
 
@@ -10,709 +10,298 @@
 
 \chapter{はじめに}
 
-本稿で紹介するChapelは、\textbf{型推論}と\textbf{テンプレート}と\textbf{区分化大域アドレス空間}を特徴とした並列言語である。
-概して並列処理は、プログラムの可読性と移植性を損ね、挙動が複雑で、所期の性能を得るのは困難を伴う。
-故にこそ、並列処理の詳細な実装を隠蔽し、自動的に高度な最適化を施す\textbf{高生産性並列言語}には価値がある。
-
-\section{環境の構築}
-
-Chapelのウェブサイト\footnote{\url{http://chapel.cray.com}}で頒布されているアーカイブを入手して展開し、下記のように\verb#make#でビルドする。
+\href{https://chapel-lang.org}{Chapel}は、\textbf{型推論}と\textbf{テンプレート}と\textbf{区分化大域アドレス空間}を特徴とし、高度に抽象化された\textbf{高生産性並列言語}である。
+NUMAや分散メモリ環境を得意とし、通常の共有メモリ環境と同様の記述性ながら、高度な並列分散処理を実装できる。
 
 \begin{Verbatim}{bash}
-$ tar xzf chapel-1.14.0.tar.gz
-$ make -C chapel-1.14.0
+$ VERSION=1.28.0
+$ wget https://github.com/chapel-lang/chapel/releases/download/$VERSION/chapel-$VERSION.tar.gz
+$ tar xzf chapel-$VERSION.tar.gz && cd chapel-$VERSION && ./configure && sudo make install
 \end{Verbatim}
 
-環境変数を設定して、コンパイラへのパスを通す。例えば\verb#bash#の場合、\verb#.bashrc#に以下の2行を追記する。
-
-\begin{Verbatim}{bash}
-export CHPL_HOME=~/.chapel-1.14.0
-cd $CHPL_HOME && source util/setchplenv.sh > /dev/null && cd - > /dev/null
-\end{Verbatim}
-
-\section{最初の例題}
-
-テキストエディタで下記の通りに1行だけのプログラムを打ち込み、\verb#hello.chpl#と名前を付けて保存する。
+以下の\texttt{hello.chpl}を作成する。\texttt{main}関数は省略できる。コメントの記法は、C言語(C99)と同様だが、ネストできる。
 
 \begin{Verbatim}{Chapel}
-writeln("Hello, world!");
-\end{Verbatim}
-
-シェルを起動して\verb#chpl#コマンドでコンパイルする。実行可能ファイル\verb#hello#が生成されるので、起動する。
-
-\begin{Verbatim}{bash}
-$ chpl -o hello hello.chpl
-$ ./hello
-Hello, world!
-\end{Verbatim}
-
-なお、実行可能ファイル\verb#hello#には、Chapelのコンパイラによって自動的に\verb#help#オプションが追加される。
-
-\begin{Verbatim}{bash}
-$ ./hello --help
-\end{Verbatim}
-
-\verb#chpl#コマンドにも様々なオプションがある。例えば、\verb#savec#オプションを指定すると、C言語に変換できる。
-
-\begin{Verbatim}{bash}
-$ chpl --savec hello hello.chpl
-\end{Verbatim}
-
-\verb#fast#オプションを指定すれば、推奨設定での最適化が有効になる。リリース版をビルドする際に重宝する。
-
-\begin{Verbatim}{bash}
-$ chpl --fast -o hello hello.chpl
-\end{Verbatim}
-
-\chapter{字句と型}
-
-\section{識別子}
-
-大文字と小文字は区別する。
-空白(\verb#0x20#)とタブ(\verb#0x09#)と改行(\verb#0x0A#)と復帰(\verb#0x0D#)は、区切り文字である。
-
-\begin{table}[h]
-\raggedright
-\begin{tabular}{ll}
-\textbf{識別子} & \verb#ident := [A-Z_a-z] [$0-9A-Z_a-z]*#
-\end{tabular}
-\end{table}
-
-\section{基本型\label{sec:prim}}
-
-Chapelは\textbf{強い静的型付け}を行い、型はコンパイル時に決まる。
-言語仕様に組み込まれた型を\textbf{基本型}と呼ぶ。
-
-\begin{table}[h]
-\raggedright
-\begin{tabular}{ll}
-\textbf{ボイド型} & \verb#void# \\
-\textbf{論理型}   & \verb#bool# \\
-\textbf{整数型}   & \verb#int uint# \\
-\textbf{実数型}   & \verb#real# \\
-\textbf{虚数型}   & \verb#imag# \\
-\textbf{複素数型} & \verb#complex# \\
-\textbf{文字列型} & \verb#string#
-\end{tabular}
-\end{table}
-
-\section{リテラル}
-
-\begin{table}[h]
-\raggedright
-\begin{tabular}{ll}
-\textbf{論理値} & \verb#bool := 'true' | 'false'# \\
-\textbf{整数値} & \verb#int  := ('0x' | '0X' | '0o' | '0O' | '0b' | '0B')? [0-9]+# \\
-\textbf{実数値} & \verb#real := [0-9]* ([0-9] '.' | '.' [0-9]) [0-9]* ('e' [0-9]+)?# \\
-\textbf{虚数値} & \verb#imag := real 'i'# \\
-\textbf{文字列} & \verb#text := ('"' char* '"' | "'" char* "'")#
-\end{tabular}
-\end{table}
-
-\section{コメント}
-
-C言語(C99)と同様に、1行のコメントは\verb#//#の右側に、複数行のコメントは\verb#/*#と\verb#*/#で囲んだ中に、記述する。
-
-\begin{Verbatim}{Chapel}
-// 1-line comments
-
 /*
 multiline comments
  or block comments
 */
+writeln("Hello, world!"); // 1-line comments
 \end{Verbatim}
 
-\chapter{式と演算子}
+\chpl{}でビルドして、\texttt{hello}を生成する。\texttt{--fast}を指定すると、最適化が有効になり、実行時の検査機能が無効化される。
+他にも、\texttt{--savec}を指定すると、C言語に変換できる。\texttt{hello}には、\texttt{--help}を始め、便利な機能が自動的に付加される。
 
-\section{評価戦略}
+\begin{Verbatim}{bash}
+$ chpl --fast -o hello --savec savec hello.chpl
+$ ./hello
+Hello, world!
+$ ./hello --help
+\end{Verbatim}
 
-式は\textbf{正格}に評価され、演算子や関数は\textbf{値呼び}か\textbf{参照呼び}である。
-式が定数の場合は、積極的に\textbf{部分評価}する。
+Chapelでは、\texttt{module}宣言で\textbf{名前空間}を定義する。関数の外に記述された処理は、名前空間の初期化と同時に実行される。
+最も外側の処理は、拡張子\texttt{.chpl}を除外した名前の、名前空間を構成する。これが、\texttt{main}関数を省略できた理由である。
 
-\section{優先順位と結合}
+\begin{Verbatim}{Chapel}
+module Foo {
+	writeln("initilize Foo");
+	proc main() {
+		writeln("This is Foo");
+	}
+}
+module Bar {
+	writeln("initilize Bar");
+	proc main() {
+		writeln("This is Bar");
+	}
+}
+import baz.Foo;
+import baz.Bar;
+proc main() {
+	Foo.main();
+	Bar.main();
+}
+\end{Verbatim}
+
+複数の名前空間を定義した場合は、どの名前空間に実装された\texttt{main}関数を起動するか、ビルド時に指定する必要がある。
+
+\begin{Verbatim}{bash}
+$ chpl --main-module baz baz.chpl
+$ ./baz
+initilize Foo
+initilize Bar
+This is Foo
+This is Bar
+\end{Verbatim}
+
+\chapter{式\label{chap:op}}
+
+C言語と同様に、演算子には、左右の\textbf{結合法則}と\textbf{優先順位}がある。優先順に掲載する。演算の順序は、括弧で調整できる。
 
 \begin{table}[h]
 \raggedright
-\begin{tabular}{llll}
-\textbf{関数適用}     & \verb#. () []#     & \textbf{左結合} & \textbf{高} \\
-\textbf{実体化}       & \verb#new#         & \textbf{右結合} & \\
-\textbf{型変換}       & \verb#:#           & \textbf{左結合} & \\
-\textbf{累乗算}       & \verb#**#          & \textbf{右結合} & \\
-\textbf{集約演算}     & \verb#reduce scan# & \textbf{左結合} & \\
-\textbf{否定演算}     & \verb#! ~#         & \textbf{右結合} & \\
-\textbf{乗除算}       & \verb#* / %#       & \textbf{左結合} & \\
-\textbf{単項演算}     & \verb#+ -#         & \textbf{右結合} & \\
-\textbf{ビットシフト} & \verb#<< >>#       & \textbf{左結合} & \\
-\textbf{ビット論理積} & \verb#&#           & \textbf{左結合} & \\
-\textbf{排他的論理和} & \verb#^#           & \textbf{左結合} & \\
-\textbf{ビット論理和} & \verb#|#           & \textbf{左結合} & \\
-\textbf{加減算}       & \verb#+ -#         & \textbf{左結合} & \\
-\textbf{レンジ}       & \verb#..#          & \textbf{左結合} & \\
-\textbf{順序比較}     & \verb#<= => < >#   & \textbf{左結合} & \\
-\textbf{等値比較}     & \verb#== !=#       & \textbf{左結合} & \\
-\textbf{短絡論理積}   & \verb#&&#          & \textbf{左結合} & \\
-\textbf{短絡論理和}   & \verb#||#          & \textbf{左結合} & \textbf{低} \\
+\begin{tabular}{lll}
+\textbf{関数適用}     & \verb#. () []#                          & 左結合 \\
+\textbf{初期化}       & \verb#new#                              & 右結合 \\
+\textbf{所有権}       & \verb#owned shared borrowed unmanaged#  & 右結合 \\
+\textbf{ヌル許容}     & \verb#? !#                              & 左結合 \\
+\textbf{型変換}       & \verb#:#                                & 左結合 \\
+\textbf{累乗}         & \verb#**#                               & 右結合 \\
+\textbf{集約}         & \verb#reduce scan dmapped#              & 左結合 \\
+\textbf{否定}         & \verb#! ~#                              & 右結合 \\
+\textbf{乗除}         & \verb#* / %#                            & 左結合 \\
+\textbf{符号}         & \verb#+ -#                              & 右結合 \\
+\textbf{シフト}       & \verb#<< >>#                            & 左結合 \\
+\textbf{論理積}       & \verb#&#                                & 左結合 \\
+\textbf{排他的論理和} & \verb#^#                                & 左結合 \\
+\textbf{論理和}       & \verb#|#                                & 左結合 \\
+\textbf{加減}         & \verb#+ -#                              & 左結合 \\
+\textbf{レンジ}       & \verb#.. ..<#                           & 左結合 \\
+\textbf{順序比較}     & \verb#<= => < >#                        & 左結合 \\
+\textbf{等値比較}     & \verb#== !=#                            & 左結合 \\
+\textbf{短絡論理積}   & \verb#&&#                               & 左結合 \\
+\textbf{短絡論理和}   & \verb#||#                               & 左結合 \\
+\textbf{刻み幅}       & \verb|by # align|                       & 左結合 \\
+\textbf{ループ変数}   & \verb#in#                               & 左結合 \\
+\textbf{制御構造式}   & \verb#if for forall sync single atomic# & 左結合 \\
+\textbf{区切り}       & \verb#,#                                & 左結合 \\
 \end{tabular}
 \end{table}
 
-\section{オーバーロード}
+\section{型変換}
 
-Chapelの演算子は、再定義することで新たなデータ型に対応する。
-これを\textbf{演算子のオーバーロード}と呼ぶ。
-
-\begin{Verbatim}{Chapel}
-proc !(str: string) return str + "!";
-writeln(!"Hello, World");
-\end{Verbatim}
-
-上の例は、オーバーロードにより文字列を引数に取る演算子\verb#!#を定義した。同様に、2項演算子も定義できる。
+Chapelは、\textbf{静的型付け言語}である。また、型変換を明示的に行う場合は、\texttt{:}演算子を使う。以下に、型変換の例を示す。
 
 \begin{Verbatim}{Chapel}
-proc *(str: string, n: int) return + reduce (for 1..n do str);
+writeln(1 + 2: real); // 3.0
+writeln(int: string); // int(64)
 \end{Verbatim}
 
-\chapter{変数と定数}
+\section{集約演算}
 
-\section{変数}
-
-変数は、破壊的代入が可能で、その型はコンパイル時に決定する。
-下記は、\verb#int#型の変数\verb#foo#の宣言である。
+\texttt{reduce}演算子は、右辺の値を集計する。必要に応じて、並列処理が行われる。\texttt{scan}演算子は、集計の過程を順番に返す。
+集計の内容は、\texttt{+}や\texttt{*}や\texttt{min}や\texttt{max}を指定できる。\texttt{minloc}や\texttt{maxloc}の場合は、最小値または最大値の位置も取得できる。
 
 \begin{Verbatim}{Chapel}
-var foo: int;
+writeln(+ scan(1..10)); // 1 3 6 10 15 21 28 36 45 55
+writeln("value, index: ", minloc reduce zip([3, 2, 1], 0..2)); // value, index: (1, 2)
+writeln("value, index: ", maxloc reduce zip([4, 5, 6], 0..2)); // value, index: (6, 2)
 \end{Verbatim}
 
-変数宣言では、変数の初期値を指定することもできる。
-下記は、\verb#int#型の変数\verb#foo#に初期値\verb#12#を代入する。
+\chapter{変数}
+
+\texttt{var}で宣言された識別子は、\textbf{変数}となる。宣言と同時に型と値を指定できる。自明な場合は、型または値を省略できる。
+変数の値は、\textbf{代入演算子}で変更できる。その場合の変数を\textbf{左辺値}と呼ぶ。また、\textbf{スワップ演算子}で両辺の値を交換できる。
 
 \begin{Verbatim}{Chapel}
 var foo: int = 12;
+var bar: int;
+foo = 889464;
+var a = "golden axe.";
+var b = "silver axe.";
+a <=> b;
+writeln(a, b, foo);
 \end{Verbatim}
 
-初期値が明示的に与えられる場合は、型を省略できる。
-下記は、\verb#int#型の変数\verb#foo#に初期値\verb#12#を代入する。
+\section{定数}
+
+\texttt{const}で宣言された識別子は、\textbf{定数}となる。定数の値は変更できず、初期値で固定される。初期値は実行時に計算される。
 
 \begin{Verbatim}{Chapel}
-var foo = 12;
-\end{Verbatim}
-
-\section{静的定数\label{sec:param}}
-
-定数の中でも、予約語\verb#param#を前置して宣言された定数は、\textit{parameter}となる。本稿では、\textbf{静的定数}と呼ぶ。
-静的定数の値は、基本型か列挙型で、コンパイル時に確定する。下記は、\verb#int#型定数\verb#foo#に\verb#12#を代入する。
-
-\begin{Verbatim}{Chapel}
-param foo: int = 12;
-\end{Verbatim}
-
-静的定数の宣言では、定数値を明示する必要上、初期化の式を省略することはできないが、型は省略できる。
-
-\begin{Verbatim}{Chapel}
-param foo = 12;
-\end{Verbatim}
-
-静的定数は、第\ref{sec:gene}節に述べる通り、ジェネリクスの基盤である。
-また、定数への破壊的代入は禁止される。
-なお、予約語\verb#config#を予約語\verb#param#に前置して宣言する静的定数は、定数値をコンパイル時に変更できる。
-
-\begin{Verbatim}{Chapel}
-config param foo = 121;
-\end{Verbatim}
-
-上記の静的定数\verb#foo#の値は、デフォルトでは\verb#121#だが、コンパイル時に\verb#set#オプションにより変更できる。
-
-\begin{Verbatim}{bash}
-$ chpl param.chpl --set foo=12321;
-\end{Verbatim}
-
-\section{動的定数}
-
-定数の中でも、予約語\verb#const#を前置して宣言された定数は、\textit{constant}となる。本稿では、\textbf{動的定数}と呼ぶ。
-動的定数の値は、任意の型で、実行時に確定し、変更できない。下記は、\verb#int#型定数\verb#bar#に\verb#12#を代入する。
-
-\begin{Verbatim}{Chapel}
-const bar: int = 12;
-\end{Verbatim}
-
-動的定数の宣言では、定数値を明示する必要上、初期化の式を省略することはできないが、型は省略できる。
-
-\begin{Verbatim}{Chapel}
+const foo: int = 12;
 const bar = 12;
 \end{Verbatim}
 
-動的定数は、それ自体が\textit{immutable}であることを示し、その参照先が\textit{immutable}であることは保証しない。
+\texttt{param}で宣言された識別子は、\textbf{静的定数}となる。定数と同様に初期値で固定され、初期値はコンパイル時に計算される。
 
 \begin{Verbatim}{Chapel}
-class Bar {
-	var mutable;
-}
-const bar = new Bar();
-bar.mutable = 114514;
-\end{Verbatim}
-
-なお、予約語\verb#config#を予約語\verb#const#に前置して宣言する動的定数は、値をプログラム起動時に変更できる。
-
-\begin{Verbatim}{Chapel}
-config const bar = 121;
-\end{Verbatim}
-
-上記の動的定数\verb#bar#の値は、デフォルトでは\verb#121#だが、定数と同名のオプションにより起動時に変更できる。
-
-\begin{Verbatim}{bash}
-$ chpl -o const const.chpl
-$ ./const --bar=12321
-\end{Verbatim}
-
-\section{型の別名\label{sec:type}}
-
-定数の中でも、予約語\verb#type#を前置して宣言された定数は、\textit{type alias}となる。
-直訳すれば、\textbf{型の別名}である。
-
-\begin{Verbatim}{Chapel}
+param foo: int = 12;
+param bar = 12;
 type num = int;
 \end{Verbatim}
 
-型の別名は、変数宣言や関数定義を始め、あらゆる場所で利用できる。
-下記は、\verb#int#型定数\verb#foo#を宣言する。
+\texttt{type}で宣言された識別子は、\textbf{型定数}となる。なお、静的定数には、以下に示す\textbf{基本型}または\textbf{列挙型}の値のみ設定できる。
 
 \begin{Verbatim}{Chapel}
-param foo: num = 121;
+param a: bool = true;
+param b: uint = 1919;
+param c: real = 8.10;
+param d: imag = 364i;
+param e: string = 'ABC' + "DEF";
+param f: Gibier = Gibier.Rabbit;
+enum Gibier {Deer, Boar, Rabbit};
 \end{Verbatim}
 
-なお、予約語\verb#config#を予約語\verb#type#に前置して宣言する型の別名は、設定値をコンパイル時に変更できる。
+\section{設定}
+
+\texttt{config}を前置した変数や定数の値は、起動時に変更できる。同様に、静的定数や型定数も、コンパイル時に変更できる。
 
 \begin{Verbatim}{Chapel}
-config type num = int;
+config const bar = 121;
+config param foo = 121;
+config type num = uint;
+writeln(foo, bar, num: string);
 \end{Verbatim}
 
-上記の型の別名\verb#num#の値は、デフォルトでは\verb#int#だが、コンパイル時に\verb#set#オプションにより変更できる。
+例えば、定数\texttt{bar}は、起動時に\texttt{--bar}で設定できる。静的定数\texttt{foo}と型定数\texttt{num}は、コンパイル時に\texttt{--set}で設定できる。
 
-\chapter{逐次処理}
+\begin{Verbatim}{bash}
+$ chpl config.chpl --set foo=12321 --set num=real
+$ ./config --bar=12321
+1232112321real(64)
+\end{Verbatim}
 
-\section{式と代入}
+\chapter{構文}
 
-\textbf{式文}とは、式の直後にセミコロンを付記した文である。
-式が評価され、その結果は受け取ることができない。
-\textbf{代入文}は、左辺値の直後に\textbf{代入演算子}(\verb#= += -= *= /= %= **= &= |= ^= &&= ||= <<= >>=#)と式を並べ、セミコロンを付記した文である。
-式を評価した結果を左辺値に代入する。
-左辺値は変数かフィールドである。
-
-\section{ブロック}
-
-\textbf{複文}とは、複数の文の並びをまとめ、その前後を括弧で閉じた文である。
-内部の文は先頭から順に実行する。
-複文は、\textbf{レキシカルスコープ}を構成し、内部で宣言された変数や関数に対し、外部からの参照は禁止される。
+Chapelの構文には、Fortranの影響が見られる。\textbf{文}の区切りには、\texttt{;}を記す。基本的に、先頭の文から順番に実行される。
+複数の文を括弧で閉じた\textbf{複文}は、静的な\textbf{スコープ}を形成し、内側で宣言された変数や関数は、外側に対して秘匿される。
 
 \begin{Verbatim}{Chapel}
 {
-	var a = 12;
-	writeln(a);
+	var foo = 12;
+	writeln(foo);
 }
-writeln(a);
+var foo = 13;
+writeln(foo);
 \end{Verbatim}
 
 \section{条件分岐}
 
-\textbf{条件分岐}とは、式を評価した結果により、実行する処理が切り替わる構文である。
-\verb#if#文と\verb#select#文がある。
-\verb#if#文の条件式は\verb#bool#型である。
-\verb#else#節は不要な場合は省略可能である。
-条件式を囲む括弧は不要である。
+\texttt{if}文は、\textbf{条件分岐}を行う。条件式は\texttt{bool}型である。\texttt{then}節が復文の場合は、\texttt{then}を省略できる。\texttt{else}節も省略できる。
 
 \begin{Verbatim}{Chapel}
-if age < 20 then writeln("Adult Only") else writeln("Welcome");
+const age = 18;
+if age < 18 then {
+	writeln("Adults Only");
+} else {
+	writeln("Yeah, Right");
+}
 \end{Verbatim}
 
-予約語\verb#then#は条件式の範囲を明示する意味もある。
-\verb#then#節に複文を記述する場合は、\verb#then#を省略できる。
+\texttt{select}文は、\textbf{多分岐}を行う。条件式が合致した\texttt{when}節か\texttt{otherwise}節が実行される。両者とも固有のスコープを持つ。
 
 \begin{Verbatim}{Chapel}
-if language == "Kotlin" {writeln("I love Kotlin");}
-\end{Verbatim}
-
-\verb#select#文は\textbf{多分岐}を行う。条件式と等しいラベルを持つ\verb#when#文を実行する。等値性は演算子\verb#==#で検証する。
-
-\begin{Verbatim}{Chapel}
-select animal {
+select "cat" {
 	when "cat" do writeln("meow");
 	when "dog" do writeln("bowwow");
 	otherwise writeln("gobblegobble");
 }
 \end{Verbatim}
 
-当該のラベルがない場合、\verb#otherwise#文を実行する。
-\verb#when#文と\verb#otherwise#文は、固有のスコープを有する。
+\section{反復処理}
 
-\section{条件反復}
-
-\textbf{条件反復}とは、条件式が\verb#true#である限り、処理を反復する構文である。
-\verb#while do#文と\verb#do while#文がある。
-\verb#while do#文では、まず条件式が評価され、\verb#true#ならば\verb#do#節を実行する。
-\verb#do#節が終了すると条件式に戻る。
+\texttt{while do}文は、\texttt{do}節を繰り返す。まず、条件式を評価して、\texttt{true}の場合は\texttt{do}節を実行し、再び条件式の評価に戻る。
+\texttt{do while}文も、\texttt{do}節を繰り返す。まず、\texttt{do}節を実行して、条件式を評価する。\texttt{true}の場合は、再び\texttt{do}節を実行する。
 
 \begin{Verbatim}{Chapel}
+var i = 1;
 while i < 1024 do i *= 2;
+do i >>= 1; while i >= 1;
+writeln(i); // 0
 \end{Verbatim}
 
-\verb#do while#文では、まず\verb#do#節が実行され、条件式が\verb#true#ならば\verb#do#節に戻り、\verb#false#ならば反復を終了する。
-
-\begin{Verbatim}{Chapel}
-do i *= 2 while i < 1024;
-\end{Verbatim}
-
-\verb#while do#文では、\verb#do#節が複文の場合、\verb#do#を省略できる。
-なお、両文とも、条件式を囲む括弧は不要である。
-
-\section{要素反復}
-
-\textbf{要素反復}とは、イテレータが反復する限り、返値に対する処理を実行する構文である。
-第\ref{sec:iter}節で解説する。
+\texttt{for}文は、\textbf{イテレータ}が値を返す限り\texttt{do}節を繰り返す。\texttt{while do}文や\texttt{for}文の\texttt{do}節が復文の場合は、\texttt{do}を省略できる。
 
 \begin{Verbatim}{Chapel}
 for i in 1..100 do writeln(i);
 \end{Verbatim}
 
-\section{大域脱出}
-
-\verb#break#文は、条件反復や要素反復を強制的に終了する。
-\verb#continue#文は、条件反復や要素反復の先頭に戻る。
-条件反復や要素反復が入れ子の場合、\verb#break#文や\verb#continue#文の対象は、最内の条件反復や要素反復である。
+反復処理を離脱する場合は、C言語と同様に、\texttt{break}文や\texttt{continue}文を使う。ラベルを指定すれば、\textbf{大域脱出}もできる。
 
 \begin{Verbatim}{Chapel}
-for i in 1..10 do break;
+while true do break;
+for 1..100 do continue;
+label outside for i in 1..10 do for j in 1..10 do break outside;
 \end{Verbatim}
 
-\textbf{ラベル文}は、条件反復や要素反復に名前を与え、\verb#break#文や\verb#continue#文による\textbf{大域脱出}の対象に設定する。
+\chapter{関数\label{chap:proc}}
 
-\begin{Verbatim}{Chapel}
-label foo for i in 1..10 do for j in 1..10 {
-	if i < j then continue foo;
-	writeln(i, ".", j);
-}
-\end{Verbatim}
+Chapelの関数には、\textbf{手続き}と\textbf{イテレータ}と演算子の3種類が存在し、予約語の\texttt{proc}と\texttt{iter}と\texttt{operator}で定義できる。
+記事では、単に手続きを指して関数と呼ぶ。関数は、\textit{first-class}で、\textbf{テンプレート}の機能を持ち、例外処理も可能である。
 
-\section{値の交換}
+\section{定義}
 
-\textbf{スワップ演算子} \verb#<=>#は、演算子の両辺の\textbf{左辺値}を交換する。
-左辺値とは、代入文の左辺に指定する値である。
-
-\begin{Verbatim}{Chapel}
-var a = "golden axe", b = "silver axe";
-a <=> b;
-\end{Verbatim}
-
-上記のスワップ演算子を始め、代入演算子は、返値を\verb#void#型と定義しており、実質的に文として機能する。
-
-\chapter{関数\label{sec:proc}}
-
-第\ref{sec:proc}章では、Chapelの\textit{procedure}の仕様に言及する。
-単に\textit{function}と呼ぶと、第\ref{sec:iter}節の\textit{iterator}も含む。
-本稿では特記ない限り、関数は\textit{procedure}を指す。
-下記は、\verb#int#型の引数を取る\verb#void#型の関数\verb#foo#である。
-
-\begin{Verbatim}{Chapel}
-proc foo(x: int, y: int): void {
-	writeln(x + y);
-}
-\end{Verbatim}
-
-引数の型は引数の名前の後にコロンを挟んで記述する。
-返値の型は引数宣言の後にコロンを挟んで記述する。
-引数が複数ある場合はカンマ区切りで引数宣言を並べるが、引数がない場合は括弧そのものを省略して良い。
-
-\begin{Verbatim}{Chapel}
-proc hoge: void {
-	writeln("foo");
-}
-\end{Verbatim}
-
-関数呼び出しは、関数名の後に実引数を記述する。
-関数定義で括弧を省略した場合は、括弧を記述できない。
-
-\begin{Verbatim}{Chapel}
-foo(1, 2);
-hoge;
-\end{Verbatim}
-
-実引数は、対応する仮引数の名前を指定して渡すこともできる。
-例えば、下記の2行は同じ効果をもたらす。
-
-\begin{Verbatim}{Chapel}
-foo(x = 1, y = 2);
-foo(y = 2, x = 1);
-\end{Verbatim}
-
-仮引数にはデフォルト値を指定できる。
-デフォルト値を持つ仮引数は、関数呼び出しで実引数を省略できる。
-
-\begin{Verbatim}{Chapel}
-proc foo(x: int = 1, y: int = 2): void {
-	writeln(x + y);
-}
-\end{Verbatim}
-
-\textbf{可変長引数}の関数は、実引数の個数が可変である。
-可変長引数の実体はタプルである。
-第\ref{sec:tuple}章で解説する。
-
-\begin{Verbatim}{Chapel}
-proc foo(x: int ...): void {
-	for param i in 1..x.size do writeln(x(i));
-}
-\end{Verbatim}
-
-可変長引数の関数は、実引数をカンマ区切りで並べることもできるし、代わりにタプルを渡すこともできる。
-
-\begin{Verbatim}{Chapel}
-foo(1, 2, 3);
-foo((1, 2, 3, 4, 5));
-\end{Verbatim}
-
-関数を終了するには\verb#return#文を実行する。
-この時、\textbf{返値}を指定する。
-返値の型は返値に合わせて指定する。
+以下の関数\texttt{foo}は、\texttt{int}型の引数\texttt{x}と\texttt{y}を取り、\texttt{return}文で\texttt{int}型の値を返す。関数の呼び方は、C言語と同様である。
 
 \begin{Verbatim}{Chapel}
 proc foo(x: int, y: int): int {
 	return x + y;
 }
+writeln(foo(1, 2));
 \end{Verbatim}
 
-\verb#void#型の場合は、返値なしで\verb#return#文を記述する。
-内容が\verb#return#文のみの関数は、波括弧を省略できる。
-
-\begin{Verbatim}{Chapel}
-proc foo(x: int, y: int): int return x + y;
-\end{Verbatim}
-
-\section{ラムダ式\label{sec:lambda}}
-
-\textbf{ラムダ式}は、\textbf{無名関数}を定義する式である。
-下記は、引数\verb#x#と\verb#y#を加算する無名関数を定数\verb#add#に代入する。
-
-\begin{Verbatim}{Chapel}
-const add = lambda(x: int, y: int) return x + y;;
-\end{Verbatim}
-
-無名関数に限らず、関数は全て\textit{first class function}である。
-\verb#int#型の引数を加算する関数\verb#plus#を定義する。
-
-\begin{Verbatim}{Chapel}
-proc plus(x: int, y: int): int return x + y;
-\end{Verbatim}
-
-\textit{first class function}は、変数に代入できる。
-例えば、下記のプログラムは、\verb#plus#関数を定数\verb#add#に代入する。
-
-\begin{Verbatim}{Chapel}
-const add: func(int, int, int) = plus;
-\end{Verbatim}
-
-変数に代入した関数は、実引数を与えれば呼び出せる。
-同様に、関数の引数に\textbf{高階関数}を渡すこともできる。
-
-\begin{Verbatim}{Chapel}
-proc apply(op: func(int, int, int), x: int, y: int): int return op(x, y);
-\end{Verbatim}
-
-なお、組込み関数\verb#func#は、関数型を表現する。
-可変長引数であり、引数の型と返値の型を順番に指定する。
-
-\section{関数の修飾子}
-
-修飾子の前置により、リンカの挙動を制御できる。\verb#export#修飾子は、関数をプログラムの外部に公開する。
-
-\begin{Verbatim}{Chapel}
-export proc foo(x: int): int return 2 * x;
-\end{Verbatim}
-
-\verb#inline#修飾子は、関数を強制的にインライン展開して、関数を呼び出す全ての式を、関数の内容で置換する。
-
-\begin{Verbatim}{Chapel}
-inline proc foo(x: int): int return 2 * x;
-\end{Verbatim}
-
-外部で実装された関数を利用する場合は、\verb#extern#修飾子を使う。
-下記は\verb#sched_getcpu#関数をリンクする。
-
-\begin{Verbatim}{Chapel}
-extern proc sched_getcpu(): c_int;
-\end{Verbatim}
-
-外部で実装された関数を利用する際は、プロトタイプ宣言を記述したヘッダファイルを指定する必要がある。
-
-\begin{Verbatim}{Chapel}
-int sched_getcpu();
-\end{Verbatim}
-
-\begin{Verbatim}{bash}
-$ chpl -o link link.chpl link.h
-\end{Verbatim}
-
-\section{引数の修飾子}
-
-修飾子の前置により、関数の引数の挙動を制御できる。
-\verb#param#修飾子は、引数を第\ref{sec:param}節の静的定数にする。
-\verb#type#修飾子は、引数を第\ref{sec:type}節の型の別名にする。
-下記の\verb#makeTuple#関数は、指定の要件のタプルを返す。
-
-\begin{Verbatim}{Chapel}
-proc makeTuple(param dim: int, type eltType): dim * eltType {
-	const tuple: dim * eltType;
-	return tuple;
-}
-\end{Verbatim}
-
-\verb#in#修飾子を前置した引数は、仮引数に実引数の複製が渡される。
-引数への代入は、実引数に影響を持たない。
-
-\begin{Verbatim}{Chapel}
-proc foo(in x: int): void {
-	assert(x == 1);
-	x = 12;
-}
-var a = 1;
-foo(a);
-assert(a == 1);
-\end{Verbatim}
-
-\verb#out#修飾子を前置した引数は、仮引数に実引数の複製が渡されない。
-引数への代入は、実引数に書き戻される。
-
-\begin{Verbatim}{Chapel}
-proc foo(out x: int): void {
-	assert(x == 0);
-	x = 12;
-}
-var a = 1;
-foo(a);
-assert(a == 12);
-\end{Verbatim}
-
-\verb#inout#修飾子は、\verb#in#と\verb#out#の双方の性質を持つ。
-\verb#ref#修飾子を前置した引数は、\textit{passed by reference}になる。
-
-\section{返値の修飾子}
-
-修飾子の後置により、関数の返値の挙動を制御できる。
-\verb#param#修飾子は、返値を第\ref{sec:param}節の静的定数にする。
-\verb#type#修飾子は、返値を第\ref{sec:type}節の型の別名にする。
-下記の\verb#makeType#関数は、指定の要件のタプル型を返す。
-
-\begin{Verbatim}{Chapel}
-proc makeType(param dim: int) type return dim * int;
-\end{Verbatim}
-
-\verb#ref#修飾子は、返値を左辺値にする。
-値を単に取り出すことも可能だが、代入式の左辺にすることもできる。
-
-\begin{Verbatim}{Chapel}
-var tuple = (0, 0, 0, 0, 0, 0, 0, 0, 0);
-proc A(i: int) ref: int return tuple(i);
-writeln(tuple);
-for i in 1..9 do A(i) = i;
-writeln(tuple);
-\end{Verbatim}
-
-上記のプログラムを実行すると、下記の出力を得る。
-関数\verb#A#の返値は、まるで変数であるかのように見える。
-
-\begin{Verbatim}{bash}
-(0, 0, 0, 0, 0, 0, 0, 0, 0)
-(1, 2, 3, 4, 5, 6, 7, 8, 9)
-\end{Verbatim}
-
-\section{関数の条件式}
-
-関数呼び出しは、実質的に\textbf{テンプレート関数}のインスタンス化である。
-その条件は\verb#where#節で指定できるが、値が静的に確定する式に限る。
-\verb#where#節は第\ref{sec:param}節の静的定数と並び、\textit{generic programming}の根幹をなす。
-下記の\verb#whichType#関数は、引数\verb#x#の型を定数\verb#t#に格納し、条件式で検査する。
-関数の呼び分けが実現する。
-
-\begin{Verbatim}{Chapel}
-proc whichType(x: ?t): string where t == real return "x is real";
-proc whichType(x: ?t): string where t == imag return "x is imag";
-\end{Verbatim}
-
-静的な式はコンパイル時に計算される。
-これを\textbf{部分評価}と呼び、例えば、階乗をコンパイル時に計算できる。
-
-\begin{Verbatim}{Chapel}
-proc fact(param n) param where n >= 1 return n * fact(n-1);
-proc fact(param n) param where n == 0 return 1;
-param fac6 = fact(6);
-\end{Verbatim}
-
-上記は、\textbf{メタ関数}を定義することにより、言語の機能を後天的に拡張する\textbf{メタプログラミング}の例でもある。
-\Cpp でも、下記のテンプレートを定義すれば階乗をコンパイル時に計算できるが、直感的でなく煩雑である。
-
-\lstset{language=[11]{C++}}
-\begin{Verbatim}{Chapel}
-template<int n> struct fact {
-	enum {val = n * fact<n-1>::val};
-};
-template<> struct fact<0> {
-	enum {val = 1};
-};
-constexpr int fac6 = fact<6>::val;
-\end{Verbatim}
-\lstset{language=Chapel}
-
-コンパイルエラーを出力する\verb#compilerError#関数など、ある種の関数は、メタプログラミングに有用である。
-
-\section{関数の型推論}
-
-\textbf{型推論}とは、静的型付け言語で、変数や関数の引数、返値の型を省略しても、自動的に補完する機能である。
+引数や返り値の型は、省略できる。この場合の関数は、実質的に\textbf{テンプレート関数}であり、型は、実引数から推論される。
 
 \begin{Verbatim}{Chapel}
 proc foo(x, y) return x + y;
+writeln(foo(1, 2i)); // 1.0 + 2.0i
+writeln(foo(2i, 3)); // 3.0 + 2.0i
 \end{Verbatim}
 
-引数\verb#x#と引数\verb#y#の型は、関数のインスタンス化の際に、実引数の型から推論される。
-返値の型も同様である。
+引数が0個の場合は、引数の括弧を省略できる。また、内容が\texttt{return}文だけの関数は、処理を囲む括弧\verb|{}|を省略できる。
 
 \begin{Verbatim}{Chapel}
-foo(1.0, 2.0);
+proc foo return 100110;
+writeln(foo);
 \end{Verbatim}
 
-引数の型を省略し、その型を関数の中で取得するには、\textbf{クエリ式}を利用する。
-下記の\verb#xtype#がその例である。
+関数に引数を渡す際に、引数の名前を指定できる。また、引数を省略した場合に渡されるデフォルトの値を設定できる。
 
 \begin{Verbatim}{Chapel}
-proc foo(x: ?xtype) {
-	select xtype {
-		when real do writeln(x, " is real");
-		when imag do writeln(x, " is imag");
-	}
-}
+proc foo(x: int = 0, y: int = 0): int return x + y;
+writeln(foo(x = 1, y = 2)); // 3
+writeln(foo(y = 2, x = 1)); // 3
+writeln(foo(1)); // 1
 \end{Verbatim}
 
-ただし、省略された引数の型を取得するには、クエリ式を利用せずに、予約語\verb#type#を利用する方法もある。
+関数は、可変長の引数を宣言できる。その実体は\textbf{タプル}である。また、タプルを渡す場合は、展開の演算子\texttt{...}を使う。
 
 \begin{Verbatim}{Chapel}
-proc foo(x) {
-	select x.type {
-		when real do writeln(x, " is real");
-		when imag do writeln(x, " is imag");
-	}
-}
+proc sum(x: int ...): int return + reduce(x);
+writeln(sum(1, 2, 3) + sum((...(100, 200)))); // 306
 \end{Verbatim}
 
-クエリ式は、定義域が不明な配列を受け取り、定義域を取得する際にも利用する。
-配列は第\ref{sec:array}章に述べる。
-
-\begin{Verbatim}{Chapel}
-proc foo(x: [?D] ?t) {
-	writeln("domain is ", D);
-	writeln(typeToString(t));
-}
-\end{Verbatim}
-
-\section{入れ子関数}
-
-関数の定義は、他の関数の内部に記述できる。
-これを関数の\textbf{ネスティング}と呼び、関数の秘匿に利用できる。
+関数は、他の関数の内側にも定義できる。関数の外側から見ると、内側の関数は秘匿される。また、\textbf{高階関数}にもできる。
 
 \begin{Verbatim}{Chapel}
 proc factorial(num: int): int {
@@ -722,966 +311,697 @@ proc factorial(num: int): int {
 	}
 	return tc(num, 1);
 }
+writeln(factorial(10)); // 3628800
 \end{Verbatim}
 
-\section{イテレータ\label{sec:iter}}
-
-予約語\verb#proc#の代わりに\verb#iter#を前置して定義した関数は\textit{coroutine}となり、処理の中断と復帰が可能になる。
-例えば、下記の関数\verb#foo#を何度も呼び出すと、最初は整数\verb#1#、次に整数\verb#2#、最後に整数\verb#3#を返して終了する。
+例えば、関数を関数の引数や変数に代入できる。また、関数の名前が必要なければ、\texttt{lambda}で無名の関数を定義できる。
 
 \begin{Verbatim}{Chapel}
-iter foo(): int {
-	yield 1;
-	yield 2;
-	yield 3;
+proc call(f, x: int, y: int): int return f(x, y);
+const add = lambda(x: int, y: int) return x + y;;
+writeln(call(add: func(int, int, int), 36, 514)); // 550
+\end{Verbatim}
+
+\section{修飾子}
+
+\texttt{inline}で宣言された関数は、\textbf{インライン展開}される。\texttt{export}で宣言された関数は、\textbf{ライブラリ関数}として公開される。
+
+\begin{Verbatim}{Chapel}
+inline proc foo(x: int): int return 2 * x;
+export proc bar(x: int): int return 2 * x;
+writeln(foo(100)); // 200
+writeln(bar(300)); // 600
+\end{Verbatim}
+
+共有ライブラリで実装された関数を使う場合は、\texttt{extern}で関数を宣言する。以下に、CPUの番号を取得する例を示す。
+
+\begin{Verbatim}{Chapel}
+require "sched.h";
+extern proc sched_getcpu(): int;
+writeln("CPU:", sched_getcpu());
+\end{Verbatim}
+
+引数や返り値にも、修飾子を指定できる。\texttt{param}や\texttt{type}で宣言された引数は、定数や型となる。返り値も同様にできる。
+
+\begin{Verbatim}{Chapel}
+proc tuplet(param dim: int, type eltType) type return dim * eltType;
+const septet: tuplet(7, int) = (114, 514, 1919, 810, 364, 889, 464);
+\end{Verbatim}
+
+\texttt{inout}や\texttt{out}で宣言された引数の値は、関数から戻る際に書き戻される。ただし、\texttt{out}の場合は、実引数が無視される。
+
+\begin{Verbatim}{Chapel}
+proc intents(inout x: int, in y: int, out z: int, ref v: int): void {
+	x += y;
+	z += y;
+	v += y;
+}
+var a: int = 1;
+var b: int = 2;
+var c: int = 3;
+var d: int = 4;
+intents(a, b, c, d);
+writeln(a, b, c, d); // 3226
+\end{Verbatim}
+
+\texttt{ref}で宣言された引数は、\textbf{参照渡し}になる。また、返り値が\texttt{ref}の関数は、左辺値を返すので、代入の構文を定義できる。
+
+\begin{Verbatim}{Chapel}
+var tuple = (0, 0, 0, 0, 0, 0, 0, 0, 0);
+proc A(i: int) ref: int return tuple(i);
+coforall i in tuple.indices do A(i) = i;
+writeln(tuple);
+\end{Verbatim}
+
+\section{条件分岐}
+
+Chapelの関数は、実質的に\textbf{テンプレート関数}である。関数が\textbf{インスタンス}になる条件は、\texttt{where}節で詳細に指定できる。
+\texttt{where}節は、コンパイル時に評価される。例えば、以下の\texttt{whichType}関数は、引数\texttt{x}の型\texttt{xt}に応じて、内容が変化する。
+
+\begin{Verbatim}{Chapel}
+proc whichType(x: ?xt): string where xt == real return "x is real";
+proc whichType(x: ?xt): string where xt == imag return "x is imag";
+proc whichType(x: ?xt): string return "x is neither real nor imag";
+writeln(whichType(114.514));
+writeln(whichType(364364i));
+writeln(whichType(1919810));
+\end{Verbatim}
+
+\texttt{where}節の条件分岐は、任意の定数式を扱えるので、\textbf{コンパイル時計算}に利用できる。以下は、階乗を計算する例である。
+
+\begin{Verbatim}{Chapel}
+proc fact(param n: int) param: int where n >= 1 return n * fact(n-1);
+proc fact(param n: int) param: int where n == 0 return 1;
+if fact(8) != 5040 then compilerError("fact(7) == 5040");
+\end{Verbatim}
+
+\section{型引数}
+
+任意の値を受け取る引数に、\texttt{?}を前置した\textbf{型引数}を宣言すると、型を取得できる。以下に、配列の型を取得する例を示す。
+ただし、型引数を宣言せずに、\texttt{.type}や\texttt{.domain}や\texttt{.eltType}などの\textbf{クエリ式}を活用し、型の詳細を取得する方法もある。
+
+\begin{Verbatim}{Chapel}
+proc foo(x: [?dom] ?el) return (dom, el: string);
+proc bar(x) return (x.domain, x.eltType: string);
+writeln(foo([1, 2, 3, 4, 5, 6, 7, 8])); // ({0..7}, int(64))
+writeln(bar([1, 2, 3, 4, 5, 6, 7, 8])); // ({0..7}, int(64))
+writeln(foo(["one" => 1, "two" => 2])); // ({one, two}, int(64))
+writeln(bar(["one" => 1, "two" => 2])); // ({one, two}, int(64))
+\end{Verbatim}
+
+\section{例外処理}
+
+\texttt{throw}文は、異常の発生を通知する。この異常を\textbf{例外}と呼ぶ。\texttt{catch}文で捕捉されるまで、関数が順繰りに巻き戻される。
+例外が発生し得る関数は、\texttt{throws}宣言が必要である。また、\texttt{defer}文で予約した処理は、例外が発生しても実行される。
+
+\begin{Verbatim}{Chapel}
+proc foo(message: string) throws {
+	defer writeln("See you");
+	throw new Error(message);
 }
 \end{Verbatim}
 
-\textit{coroutine}は、\verb#yield#文を実行する度に処理を中断し、指定された返値を返す。\verb#return#文の記述は禁止する。
-\textit{coroutine}の実行は、前に実行した\verb#yield#文の直後で再開する。
-典型的には、\textit{coroutine}は\verb#for#文で利用する。
+\texttt{catch}文は、\texttt{try}文の内側で例外が発生した場合には、その例外を捕捉し、回復処理を行う役割がある。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-for i in foo() do writeln(i);
-\end{Verbatim}
-
-\verb#for#文は、指定された\textit{coroutine}を何度も呼び出し、返値をインデックス変数に格納して、処理を実行する。
-なお、連番を返すだけの\textit{coroutine}は、\textbf{レンジ演算子}で事足りる。下記は、\verb#1#から\verb#5#までの整数を出力する。
-
-\begin{Verbatim}{Chapel}
-for i in 1..5 do writeln(i);
-\end{Verbatim}
-
-自身を再帰的に呼ぶ関数を\textbf{再帰関数}と呼ぶ。
-第\ref{sec:proc}章の\textit{procedure}だけでなく、\textit{coroutine}も再帰関数にできる。
-
-\begin{Verbatim}{Chapel}
-iter foo(n: int): int {
-	if n > 0 then for i in foo(n-1) do yield i;
-	yield n;
+try {
+	foo("Hello,");
+	foo("world!");
+} catch e {
+	writeln(e);
 }
 \end{Verbatim}
 
-\textbf{イテレータ型}とは、\textit{coroutine}として\verb#these#メソッドを実装したクラス型もしくはレコード型の総称である。
+\section{演算子}
+
+\texttt{operator}で宣言された関数は、演算子の機能を再定義する。ただし、\chapref{op}に掲載した演算子に限る。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-class Foo {
-	var min: int;
-	var max: int;
+operator *(text: string, num: int) return + reduce (for 1..num do text);
+writeln("Lorem ipsum dolor sit amet, consectetur adipiscing elit" * 10);
+\end{Verbatim}
+
+\section{イテレータ}
+
+\texttt{iter}で宣言された関数は、\textbf{イテレータ}となる。\texttt{yield}文は、処理を断ち、指定された値を返し、残りの処理を再開する。
+\texttt{these}を実装した構造体も、イテレータとして機能する。\texttt{for}文に渡すと、暗黙的に\texttt{these}が呼ばれる。以下に例を示す。
+
+\begin{Verbatim}{Chapel}
+iter iterator(): string {
+	yield "EMURATED";
+	yield "EMURATED";
+	yield "EMURATED";
 }
-\end{Verbatim}
-
-クラスとレコードの詳細は、第\ref{sec:class}章で解説する。
-上記のクラス\verb#Foo#に、下記のメソッド\verb#these#を実装する。
-
-\begin{Verbatim}{Chapel}
-iter Foo.these(): int {
-	for i in min..max do yield i;
+iter int.these() const ref: int {
+	for i in 1..this do yield i;
 }
+var repetition: int = 10;
+for i in iterator() do writeln(i);
+for i in repetition do writeln(i);
 \end{Verbatim}
 
-\verb#these#メソッドの定義により、\verb#Foo#クラスはイテレータとしての機能を獲得し、\verb#for#文で利用可能になった。
+\chapter{構造体\label{chap:class}}
+
+Chapelでは、構造体を定義して、構造体に変数や関数を定義できる。変数を\textbf{フィールド}と呼び、関数を\textbf{メソッド}と呼ぶ。
+構造体は、\textbf{クラス}と\textbf{レコード}と\textbf{共用体}に分類できる。クラスは\textbf{参照型}の性質を、レコードと共用体は\textbf{値型}の性質を持つ。
+
+\section{定義}
+
+以下に、クラスを定義して、\texttt{new}演算子で\textbf{インスタンス}を生成する例を示す。参照型なので、変数には参照が格納される。
 
 \begin{Verbatim}{Chapel}
-for i in new Foo() do writeln(i);
-\end{Verbatim}
-
-\verb#for#文は、イテレータの\verb#these#メソッドを暗黙的に実行するが、明示的に\textit{coroutine}を指定しても構わない。
-
-\chapter{並列処理}
-
-\textbf{タスク並列}は粗粒度の並列化に適し、\textbf{データ並列}は細粒度の並列化に適す。
-両者の詳細は、別著\footnote{\url{http://pafelog.net/wing.pdf}}に述べる。
-
-\section{タスク並列処理}
-
-\verb#begin#文は、指定された文を実行するタスクを分岐させ、\verb#sync#文は、指定されたタスクの終了を待機する。
-
-\begin{Verbatim}{Chapel}
-sync begin writeln("hello, task!");
-\end{Verbatim}
-
-\verb#cobegin#文は、複文である。
-波括弧の内部の各文をタスク分岐により並列処理して、全文の終了を待機する。
-
-\begin{Verbatim}{Chapel}
-cobegin {
-	writeln("1st parallel task");
-	writeln("2nd parallel task"); 
-	writeln("3rd parallel task"); 
+class Num {
+	var r: real;
+	var i: imag;
 }
-writeln("task 1, 2, 3 are finished");
+var num: Num = new Num();
+num.r = 816.07;
+num.i = 14.22i;
+writeln(num.r);
 \end{Verbatim}
 
-上記の\verb#cobegin#文は、\verb#begin#文によるタスク分岐と、\verb#sync#文による待機で、下記に示すように代用できる。
+以下に、レコードを定義する例を示す。クラスと似た機能だが、値型なので、インスタンスの複製が変数に格納される。
 
 \begin{Verbatim}{Chapel}
-sync {
-	begin writeln("1st parallel task");
-	begin writeln("2nd parallel task"); 
-	begin writeln("3rd parallel task"); 
+record Num {
+	var r: real;
+	var i: imag;
 }
-writeln("task 1, 2, 3 are finished");
+var num: Num;
+num.r = 816.07;
+num.i = 14.22i;
+writeln(num.r);
 \end{Verbatim}
 
-通常は、\verb#cobegin#文で事足りるが、タスクを再帰的に合流させる動作が不要な場合に、\verb#sync#文を利用する。
+共用体は、同じメモリ領域を複数のフィールドで共有する。最後に値を格納したフィールドのみ、意味のある値を持つ。
 
 \begin{Verbatim}{Chapel}
-inline proc string.shambles(): void {
-	proc traverse(a: int, b: int) {
-		if b > a {
-			const mid = (a + b) / 2;
-			begin traverse(a, 0 + mid);
-			begin traverse(1 + mid, b);
-		} else writeln(substring(a));
-	}
-	sync traverse(1, this.length);
+union Num {
+	var r: real;
+	var i: imag;
 }
+var num: Num;
+num.r = 816.07;
+num.i = 14.22i;
+writeln(num.i);
 \end{Verbatim}
 
-なお、\verb#cobegin#文の内部に代入文を記述する場合は、\verb#with#節を記述して、代入する変数を示す必要がある。
+\section{総称型}
+
+総称型は、型引数や静的定数を引数に取る多相型である。型引数が異なると、異なる型として扱われる。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-cobegin with(ref a, ref b) {
-	a = sched_getcpu();
-	b = sched_getcpu();
+record Stack {
+	type eltType;
+	param size: int;
 }
+var a: Stack(eltType = uint, size = 12);
+var b: Stack(eltType = real, size = 24);
+writeln("a is ", a.type: string); // a is Stack(uint(64), 12)
+writeln("b is ", b.type: string); // b is Stack(real(64), 24)
 \end{Verbatim}
 
-\verb#coforall#文は、並列化された\verb#for#文である。
-反復処理を実行する多数のタスクを生成し、終了を待機する。
+\section{メソッド}
+
+構造体には、メソッドを定義できる。また、メソッドでインスタンスを参照する場合は、\texttt{this}を使う。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-coforall i in 1..100 do writeln("my number is ", i);
-\end{Verbatim}
-
-\verb#coforall#文は\verb#begin#文と\verb#sync#文の糖衣構文である。
-上記のプログラムは下記のプログラムと等価である。
-
-\begin{Verbatim}{Chapel}
-sync for i in 1..100 do begin writeln("my number is ", i);
-\end{Verbatim}
-
-\section{データ並列処理}
-
-\verb#forall#文は、\verb#coforall#文と異なり、並列化の挙動を詳細に制御できる\verb#for#文である。
-第\ref{sec:iter.parallel}節で解説する。
-
-\begin{Verbatim}{Chapel}
-forall i in 1..100 do writeln("my number is ", i);
-\end{Verbatim}
-
-\verb#reduce#演算子は、多数の値を集計して少数の値に変換する演算子である。
-これを\textbf{リダクション演算}と呼ぶ。
-\verb#reduce#演算子の前に演算子(\verb#+ * && || & | ^ min max minloc maxloc#)を、後にイテレータを併記する。
-
-\begin{Verbatim}{Chapel}
-const sum = + reduce (1..1000);
-\end{Verbatim}
-
-上記のプログラムは、演算の競合を回避しつつ並列処理される点を除けば、下記のプログラムと等価である。
-
-\begin{Verbatim}{Chapel}
-for i in 1..1000 do sum += i;
-\end{Verbatim}
-
-演算子\verb#minloc#は最小値の位置を、\verb#maxloc#は最大値の位置を求める演算子だが、引数と返値がタプルである。
-
-\begin{Verbatim}{Chapel}
-var (value, idx) = minloc reduce zip(A, A.domain);
-\end{Verbatim}
-
-なお、\verb#zip#は引数に与えたイテレータを結合する。
-例えば、\verb#zip(1..2, 3..4)#は\verb#(1, 3), (2, 4)#を返す。
-\verb#scan#演算子は、リダクション演算の途中結果を順番に返すイテレータを返す。
-これを\textbf{スキャン演算}と呼ぶ。
-
-\begin{Verbatim}{Chapel}
-for sum in + scan (1..100) do writeln(sum);
-\end{Verbatim}
-
-\verb#scan#演算子は、\verb#reduce#演算子と同様に、効率的に並列処理される。
-時系列データの積分などに応用できる。
-
-\section{並列処理の禁止}
-
-\verb#serial#文は、条件式の値が\verb#true#の場合は、\verb#do#節内でタスクの分岐を禁止して、逐次処理を行う文である。
-
-\begin{Verbatim}{Chapel}
-serial true do begin writeln("executed");
-\end{Verbatim}
-
-\section{並列イテレータ\label{sec:iter.parallel}}
-
-\verb#forall#文と\verb#coforall#文は、ともに並列化された\verb#for#文である点では同等と言えるが、その挙動は異なる。
-
-\begin{Verbatim}{Chapel}
-coforall i in 1..100 do writeln(i);
-\end{Verbatim}
-
-\verb#coforall#文は、\verb#begin#文の糖衣構文であり、イテレーション毎にタスクを分岐し、処理の終了を待機する。
-
-\begin{Verbatim}{Chapel}
-sync for i in 1..100 do begin writeln(i);
-\end{Verbatim}
-
-\verb#forall#文は、それ自体は並列化の機能を持たず、並列化に関する全ての判断をイテレータの裁量に委ねる。
-
-\begin{Verbatim}{Chapel}
-forall i in 1..100 do writeln(i);
-\end{Verbatim}
-
-\verb#forall#文は、以下に例示する\textit{leader iterator}により並列化し、末端の逐次処理は\textit{follower iterator}で行う。
-
-\begin{Verbatim}{Chapel}
-iter range.these(param tag): range(int) where tag == iterKind.leader {
-	if this.size > 16 {
-		const mid = (this.high + this.low) / 2;
-		const (rng1, rng2) = (this(..mid), this(mid+1..));
-		cobegin {
-			for i in rng1.these(iterKind.leader) do yield i;
-			for i in rng2.these(iterKind.leader) do yield i;
-		}
-	} else yield this;
-}
-\end{Verbatim}
-
-上記の\textit{leader iterator}は、レンジを再帰的に等分割しつつ並列化する。
-下記の\textit{follower iterator}も実装する。
-
-\begin{Verbatim}{Chapel}
-iter range.these(param tag, followThis) where tag == iterKind.follower {
-	for i in followThis do yield i;
-}
-\end{Verbatim}
-
-以上のオーバーロードにより、\verb#forall#文で利用可能になる。
-実質的に、\verb#forall#文は下記の糖衣構文である。
-
-\begin{Verbatim}{Chapel}
-for subrange in (1..100).these(iterKind.leader) {
-	for i in (1..100).these(iterKind.follower, subrange) do writeln(i);
-}
-\end{Verbatim}
-
-\chapter{複合型\label{sec:class}}
-
-\textbf{複合型}とは、第\ref{sec:prim}節の\textbf{単純型}の対義語であり、複数の単純型や複合型の組み合わせで定義される型である。
-第\ref{sec:class}章で取り上げる\textbf{クラス}や\textbf{レコード}は、複合型である。
-他にも、タプルやレンジの実体はレコードである。
-複合型の中でも、クラスは\textbf{参照型}の性格を有する。
-\verb#new#演算子でインスタンス化し、\verb#delete#文で破棄する。
-参照型とは、変数や即値がインスタンスを参照する型である。
-明示的にインスタンス化を行う必要性がある。
-
-\begin{Verbatim}{Chapel}
-class Foo {}
-const foo: Foo = new Foo();
-delete foo; // OK
-\end{Verbatim}
-
-複合型の中でも、レコードは\textbf{値型}の性格を有する。
-\verb#new#演算子でインスタンス化し、\verb#delete#文は禁止する。
-値型とは、変数や即値がインスタンスとなる型である。
-本来、明示的なインスタンス化や破棄は不要である。
-
-\begin{Verbatim}{Chapel}
-record Bar {}
-const bar: Bar = new Bar();
-delete bar; // NG
-\end{Verbatim}
-
-参照型の変数は、何らかの値を代入する以前は、有効なインスタンスを参照しない。
-この状態を\verb#nil#と呼ぶ。
-
-\begin{Verbatim}{Chapel}
-class Foo {}
-var foo: Foo = nil;
-writeln(foo);
-\end{Verbatim}
-
-\section{メンバ変数}
-
-\textbf{フィールド}とは、クラスやレコードがインスタンス毎に有する変数であり、複合型という名称の所以である。
-フィールドの型に制限はなく、再帰的なクラスの定義も実現する。
-下記は、\textbf{リスト構造}を実装する例である。
-
-\begin{Verbatim}{Chapel}
-class List {
-	var value: int;
-	var next: List;
-}
-\end{Verbatim}
-
-特定のインスタンスのフィールドを参照するには、\textbf{ドット演算子}で、インスタンスとフィールドを指定する。
-
-\begin{Verbatim}{Chapel}
-var cons = new List();
-var cdr = cons.next;
-cons.value = 114514;
-\end{Verbatim}
-
-Chapelでは、フィールドへの参照は、左辺値を返すメソッドを暗黙的に呼び出す。
-下記はその実体である。
-
-\begin{Verbatim}{Chapel}
-proc List.value ref: int return value;
-\end{Verbatim}
-
-フィールドと同名で、引数を持たず、左辺値を返すメソッドを\textbf{アクセサ}と呼び、明示的な定義も可能である。
-
-\begin{Verbatim}{Chapel}
-proc Account.name ref: string {
-	if name != "Tomori Nao" then name = "Tomori Nao";
-	return name;
-}
-\end{Verbatim}
-
-\section{メンバ関数}
-
-\textbf{メソッド}とは、クラスやレコードに属する関数であり、必要であればインスタンスのフィールドを参照する。
-
-\begin{Verbatim}{Chapel}
-class Add {
-	const x, y: real;
-	proc print(): void {
-		writeln(x + y);
+record User {
+	var name: string;
+	proc set(name) {
+		this.name = name;
 	}
 }
+var user: User;
+user.set("Alicia");
+writeln(user.name);
 \end{Verbatim}
 
-特定のクラスやレコードのメソッドを呼び出すには、ドット演算子で、インスタンスとメソッドを指定する。
+なお、値型の性質を持つレコードでも、\texttt{this}はインスタンスへの参照であり、意図通りにフィールドの値を変更できる。
+既存の構造体にも、メソッドを追加できる。また、フィールドと同名で、参照と代入を隠蔽する、\textbf{アクセサ}を定義できる。
 
 \begin{Verbatim}{Chapel}
-const add = new Add(x = 1, y = 2);
-add.print();
-\end{Verbatim}
-
-定義済みのクラスやレコードにもメソッドを追加できる。
-その場合は、クラスやレコードの名前を明記する。
-
-\begin{Verbatim}{Chapel}
-proc Add.add(): real return x + y;
-\end{Verbatim}
-
-\section{生成と破棄}
-
-インスタンス化では、当該のクラスやレコードと同名のメソッドを実行する。
-これを\textbf{コンストラクタ}と呼ぶ。
-コンストラクタは明示的に定義することもでき、その場合、引数は自由に設定できるが、返り値は禁止する。
-
-\begin{Verbatim}{Chapel}
-class Add {
-	const x: real = 0;
-	const y: real = 0;
-	proc Add(x: real, y: real) {
-		this.x = x;
-		this.y = y;
-	}
-}
-\end{Verbatim}
-
-コンストラクタを省略した場合は、フィールドの初期値を引数に取るコンストラクタが自動的に定義される。
-
-\begin{Verbatim}{Chapel}
-var add2 = new Add(x = 1, y = 2);
-\end{Verbatim}
-
-この場合、引数にはデフォルト値が設定され、フィールドの変数宣言の初期化式の値がデフォルト値になる。
-
-\begin{Verbatim}{Chapel}
-var add1 = new Add(x = 1);
-var add3 = new Add(y = 2);
-\end{Verbatim}
-
-クラスやレコードは、インスタンスが消滅する際に実行する処理を定義できる。
-これを\textbf{デストラクタ}と呼ぶ。
-デストラクタは明示的に定義できる。
-ただし、引数や返り値は禁止する。
-下記は、デストラクタの例である。
-
-\begin{Verbatim}{Chapel}
-proc Foo.~Foo() {
-	writeln("deleted");
-}
-\end{Verbatim}
-
-\section{自身の参照}
-
-クラスやレコードが、インスタンスを明示的に参照する際は、予約語\verb#this#を用いる。
-使用例を以下に示す。
-
-\begin{Verbatim}{Chapel}
-proc Account.setName(name: string): void {
-	this.name = "@" + name;
-}
-\end{Verbatim}
-
-上記の代入文の左辺の\verb#name#は\verb#Account#クラスのフィールド\verb#name#を、右辺の\verb#name#は引数\verb#name#を参照する。
-参照型の性格を持つクラスに限らず、値型の性格を持つレコードでも、\verb#this#は参照である点に注意を要する。
-
-\begin{Verbatim}{Chapel}
-record Account {
+record User {
 	var name: string;
 }
-\end{Verbatim}
-
-上記のレコード\verb#Account#のインスタンスを引数に、フィールド\verb#name#を変更する関数\verb#setName#を考えてみる。
-
-\begin{Verbatim}{Chapel}
-proc setName(account: Account, name: string): void {
-	account.name = name;
+proc User.name ref {
+	writeln(".name");
+	return this.name;
 }
+var user: User;
+user.name = "Jane";
+writeln(user.name);
 \end{Verbatim}
 
-外部からは、フィールド\verb#name#は不変に見える。レコードは値型で、引数にはコピーが渡されるためである。
-
-\begin{Verbatim}{Chapel}
-var nao: Account;
-setName(nao, "Tomori Nao");
-writeln(nao);
-\end{Verbatim}
-
-予約語\verb#this#はコピーではなく参照であるため、意図する通りに自身のフィールドに代入することができる。
-
-\section{ファンクタ}
-
-\verb#this#メソッドを定義したクラスやレコードは、実質的に関数としても機能する。
-これを\textbf{ファンクタ}と呼ぶ。
+\texttt{this}メソッドが定義された構造体は、関数と同様に振る舞う。引数を与えると、暗黙的に\texttt{this}メソッドが実行される。
 
 \begin{Verbatim}{Chapel}
 class Add {
 	proc this(a: int, b: int): int return a + b;
 }
+const add = new Add();
+writeln(add(123, 45)); // 168
 \end{Verbatim}
 
-上記のクラス\verb#Add#は、2個の整数を引数に取り、加算を行う\verb#this#メソッドを実装する。
-定数\verb#add#に格納し、第\ref{sec:lambda}節の\textit{first class function}と同様に引数を与えて呼び出す。
-\verb#123+45#を計算し、出力として\verb#168#を得る。
+\texttt{init}メソッドが定義された構造体は、引数を与えてインスタンスを生成すると、暗黙的に\texttt{init}メソッドが実行される。
+\texttt{init}メソッドは、フィールドを初期化できる。定数の場合は、\texttt{init}メソッドで初期化する必要がある。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-const add = new Add();
-writeln(add(123, 45));
+class Add {
+	const x: real;
+	const y: real;
+	proc init(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+}
+const add = new Add(x = 1, y = 2);
+writeln("x, y: ", (add.x, add.y));
 \end{Verbatim}
 
-\section{継承と派生}
+\texttt{init}メソッドは、省略しても自動的に定義される。また、\texttt{deinit}メソッドは、インスタンスを解放する際に実行される。
 
-\textbf{継承}とは、あるクラスやレコードが、他のクラスやレコードのフィールドやメソッドを引き継ぐことである。
+\begin{Verbatim}{Chapel}
+class Sub {
+	const x: real = 0;
+	const y: real = 0;
+	proc deinit() {
+		writeln("deleted");
+	}
+}
+const sub = new Sub(x = 1, y = 2);
+writeln("x, y: ", (sub.x, sub.y));
+\end{Verbatim}
+
+\section{所有権}
+
+Chapelのクラスには、\textbf{所有権}の概念がある。所有権を持つ変数の参照が消滅したインスタンスは、自動的に解放される。
+所有権は、変数宣言で指定する。無修飾または\texttt{owned}で修飾した場合は、その変数がインスタンスの所有権を独占する。
+
+\begin{Verbatim}{Chapel}
+class Hello {
+	proc deinit() {
+		writeln("See you");
+	}
+}
+var hello: owned Hello = new owned Hello();
+var hallo: borrowed Hello = hello.borrow();
+\end{Verbatim}
+
+\texttt{borrowed}で修飾された変数は、所有権を取得せず、他の\texttt{owned}や\texttt{shared}の変数が所有するインスタンスを参照できる。
+\texttt{shared}で修飾した場合は、変数の間でインスタンスが共有される。全ての参照が消滅するとインスタンスが解放される。
+
+\begin{Verbatim}{Chapel}
+class Hello {
+	proc deinit() {
+		writeln("See you");
+	}
+}
+var hello = new shared Hello();
+var hallo = new unmanaged Hello();
+delete hallo;
+\end{Verbatim}
+
+\texttt{unmanaged}で修飾した場合は、所有権による管理を受けず、\texttt{delete}文で、明示的にインスタンスを解放する必要がある。
+変数に代入すると、所有権を移譲できる。\texttt{owned}の場合は、所有権が左辺値に移り、\texttt{shared}の場合は、単に共有される。
+
+\section{継承}
+
+クラスを定義する際に、\textbf{親クラス}を指定すると、その親クラスのフィールドやメソッドを継承できる。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
 class Foo {
-	proc foo(): string return "foo!";
+	proc foo() return "foo!";
 }
-\end{Verbatim}
-
-上記のクラス\verb#Foo#は\verb#foo#メソッドを実装する。
-これに対し、下記のクラス\verb#Bar#も\verb#foo#メソッドを実装する。
-
-\begin{Verbatim}{Chapel}
-class Bar: Foo {}
-\end{Verbatim}
-
-クラス名の直後にコロンを挟んでクラス名を記述すると、それを\textbf{基底クラス}とする\textbf{派生クラス}の宣言になる。
-派生クラス\verb#Bar#は基底クラス\verb#Foo#のフィールドやメソッドを有する。
-必要に応じ、メソッドは再定義できる。
-
-\begin{Verbatim}{Chapel}
-proc Bar.foo(): string return "bar!";
-\end{Verbatim}
-
-上記は、\verb#Foo#クラスから継承した\verb#foo#メソッドの挙動を再定義する例である。
-これを\textbf{オーバーライド}と呼ぶ。
-
-\section{総称型\label{sec:gene}}
-
-クラスやレコードのフィールドで、第\ref{sec:param}節の静的定数や第\ref{sec:type}節の型の別名を宣言すると、\textbf{総称型}になる。
-
-\begin{Verbatim}{Chapel}
-record Stack {
-	type eltType;
+class Bar: Foo {
+	override proc foo() return super.foo() + "bar!";
 }
+const foo = new Foo();
+const bar = new Bar();
+writeln(foo.foo()); // foo!
+writeln(bar.foo()); // foo!bar!
 \end{Verbatim}
 
-総称型は、型を引数に取る型であり、リスト等のデータ構造の実装を特定の型から分離する際に有用である。
-
-\begin{Verbatim}{Chapel}
-var a: Stack(eltType = uint);
-var b: Stack(eltType = real);
-\end{Verbatim}
-
-上記の変数\verb#a#と\verb#b#は、両者ともに\verb#Stack#型だが、相互に異なる型を持つ。
-\verb#typeToString#関数で確認できる。
-
-\begin{Verbatim}{Chapel}
-writeln("a is ", typeToString(a.type));
-writeln("b is ", typeToString(b.type));
-\end{Verbatim}
-
-上記のプログラムを実行して、下記の出力を得ることから、\verb#Stack#型は、型を引数に取る総称型だとわかる。
-
-\begin{Verbatim}{bash}
-a is Stack(uint(64))
-b is Stack(real(64))
-\end{Verbatim}
-
-総称型の引数となる型を\textit{parameterized type}と呼ぶ。
-\textit{parameterized type}は型に限らず、静的定数でも良い。
+継承したメソッドの内容を再定義する場合は、\texttt{override}宣言を行う。再定義する前のメソッドは、\texttt{super}で参照できる。
 
 \section{構造的部分型}
 
-特定の関数を実装したクラスやレコードは、特定の仕様を満たす型と認定する。
-これを\textit{duck typing}と呼ぶ。
+以下に示す\texttt{voice}関数は、\texttt{quack}メソッドが定義された、任意の型の値を引数に取る。これを\textbf{ダックタイピング}と呼ぶ。
 
 \begin{Verbatim}{Chapel}
-class Duck {}
-class Kamo {}
+class Duck {
+	proc quack() return "quack!";
+}
+class Kamo {
+	proc quack() return "quack!";
+}
+proc voice(x) return x.quack();
+writeln(voice(new Duck())); // quack!
+writeln(voice(new Kamo())); // quack!
 \end{Verbatim}
 
-上記のクラス\verb#Duck#と\verb#Kamo#は相互の継承関係にないが、同型の引数を宣言した\verb#quack#メソッドを実装する。
+\chapter{配列}
+
+Chapelの配列には、\textbf{矩形配列}と\textbf{連想配列}の2種類が存在する。また、類似の概念に、\textbf{タプル}と\textbf{レンジ}と\textbf{領域}が存在する。
+
+\section{タプル}
+
+タプルは、複数の要素をカンマ区切りで並べた値である。値型で、要素の型が揃う必要もなく、配列よりも軽量である。
+要素の型を揃えた場合は、要素の数と型の乗算により、タプル型を表現できる。また、\texttt{these}イテレータが利用できる。
 
 \begin{Verbatim}{Chapel}
-proc Duck.quack(): string return "quack!";
-proc Kamo.quack(): string return "quack!";
+const nums: 9 * int = (60, 45, 53, 163, 90, 53, 165, 75, 60);
+const boys: (string, string, string) = ("Tom", "Ken", "Bob");
+writeln(boys(0), boys(1), boys(2), for name in boys do name); // TomKenBobTom Ken Bob
 \end{Verbatim}
 
-下記の関数\verb#duck#を定義する。
-型が省略された引数\verb#x#を受け取り、引数\verb#x#に対し\verb#quack#メソッドを実行する。
+タプルは、複数の変数を同時に宣言する場合や、値を同時に書き込む場合に利用できる。この機能を\textbf{アンパック}と呼ぶ。
 
 \begin{Verbatim}{Chapel}
-proc duck(x): string return x.quack();
+var (a, b): (string, int) = ("student", 24);
+writeln(a, b);
 \end{Verbatim}
 
-下記のクラス\verb#Ibis#を定義する。
-前掲のクラス\verb#Duck#や\verb#Kamo#を継承しない。
-\verb#quack#メソッドも未実装である。
-
-\begin{Verbatim}{Chapel}
-class Ibis {}
-\end{Verbatim}
-
-\verb#Duck#と\verb#Kamo#と\verb#Ibis#のインスタンスを\verb#duck#関数に与える。
-\verb#Ibis#クラスの場合はコンパイルエラーとなる。
-
-\begin{Verbatim}{Chapel}
-duck(new Duck()); // OK
-duck(new Kamo()); // OK
-duck(new Ibis()); // NG
-\end{Verbatim}
-
-関数が参照するメソッドやフィールドに基づき、引数の型を暗黙的に制限する仕組みを\textbf{構造的部分型}と呼ぶ。
-
-\chapter{タプル\label{sec:tuple}}
-
-\textbf{タプル}は、値をカンマ区切りで並べたデータ型である。
-要素の型を揃える必要はなく、配列より軽量である。
-括弧で囲むことで生成する。
-個別の要素を参照するには、1から始まる番号を添えて\verb#this#メソッドを呼ぶ。
-
-\begin{Verbatim}{Chapel}
-var names = ("Tom", "Ken", "Bob");
-const ken = boys(2);
-names(3) = "Robert";
-\end{Verbatim}
-
-タプル型は、要素の型をカンマ区切りで並べた組で表現する。
-もしくは、要素の個数と型の乗算で表現する。
-
-\begin{Verbatim}{Chapel}
-const tup1: (int, int, int) = (1, 2, 3);
-const tup2: 3 * int = (1, 2, 3);
-\end{Verbatim}
-
-タプルは、要素の型が揃っている場合、\verb#these#メソッドを呼び出すことにより、イテレータとして機能する。
-
-\begin{Verbatim}{Chapel}
-for boy in ("Tom", "Ken", "Bob") do writeln(a);
-\end{Verbatim}
-
-複数の変数や定数を宣言する際は、変数名や定数名をカンマ区切りで並べたタプルによる宣言も可能である。
-
-\begin{Verbatim}{Chapel}
-var (a, b): (string, int);
-var (c, d): 2 * int;
-\end{Verbatim}
-
-同様に、複数の変数に対する代入も、タプルを利用して纏めることができる。
-これを\textbf{アンパック代入}と呼ぶ。
-
-\begin{Verbatim}{Chapel}
-(a, b) = ("John", 24);
-\end{Verbatim}
-
-タプルによる変数宣言は、引数宣言にも適用できる。
-下記は、タプル\verb#(y, z)#を引数に取る関数を定義する。
+タプルのアンパック機能は、関数の宣言でも利用できる。タプルで宣言された引数には、タプルの値を渡す必要がある。
 
 \begin{Verbatim}{Chapel}
 proc foo(x: int, (y, z): (int, int)): int return x * (y + z);
+writeln(foo(2, (3, 4))); // 14
 \end{Verbatim}
 
-第\ref{sec:proc}章の可変長引数の実体はタプルであるが、反対に、タプルを展開して固定長引数に与えることもできる。
+\section{レンジ}
+
+レンジは、整数の有限区間や半無限区間や無限区間を表す値である。値型で、同様の機能を持つ領域よりも軽量である。
 
 \begin{Verbatim}{Chapel}
-proc mul(x: int, y: int): int return x * y;
-const mul23 = mul((...(2, 3)));
+const from100To200: range(int, boundedType = BoundedRangeType.bounded) = 100..200;
+const from100ToInf: range(int, boundedType = BoundedRangeType.boundedLow) = 100..;
+const fromInfTo200: range(int, boundedType = BoundedRangeType.boundedHigh) = ..20;
 \end{Verbatim}
 
-上記2行目の\verb#...#は\textbf{タプル展開演算子}であり、本来は固定長引数である関数\verb#mul#に、実引数\verb#2#と\verb#3#を与える。
-
-\chapter{範囲\label{sec:range}}
-
-\textbf{レンジ}は、整数の範囲を表現するデータ型である。
-第\ref{sec:domain}章の\textbf{領域}に比べて軽量で、実体はレコードである。
+\texttt{by}で刻み幅を指定できる。その場合は、\texttt{align}で指定された値を必ず含む。また、\verb|#|でレンジの要素の個数を指定できる。
 
 \begin{Verbatim}{Chapel}
-const rng = 1..100;
+writeln(10..30 by -7);              // 30 23 16
+writeln(10..30 by -7 align 13);     // 27 20 13
+writeln(10..30 by -7 align 13 # 2); // 27 20
 \end{Verbatim}
 
-レンジ演算子 \verb#..#で生成する。
-最小値と最大値を省略することにより、半無限区間や無限区間も表現できる。
+レンジに含まれる要素の個数は\texttt{.size}で、区間の下限は\texttt{.low}で、区間の上限は\texttt{.high}で、刻み幅は\texttt{.stride}で得られる。
 
 \begin{Verbatim}{Chapel}
-const from1toInf: range(int) = 1..;
+writeln((100..200).size);      // 101
+writeln((100..200).low);       // 100
+writeln((100..200).high);      // 200
+writeln((100..200).stride);    //   1
+writeln((100..200).alignment); // 100
 \end{Verbatim}
 
-必要に応じて、要素の個数は \verb|#|演算子で、周期は \verb#by#演算子で、基準点の調整は \verb#align#演算子で指定できる。
+レンジでは、\texttt{these}イテレータが利用できる。\texttt{for}文に限らず、並列化された\texttt{forall}文や\texttt{coforall}文でも利用できる。
 
 \begin{Verbatim}{Chapel}
-writeln(10..30 by -7 align 13 # 3);
+for i in 1..100 do writeln(i);
+forall i in 1..100 do writeln(i);
+coforall i in 1..100 do writeln(i);
 \end{Verbatim}
 
-要素の個数は\verb#size#メソッドで取得できる。
-最小値と最大値は\verb#low#メソッドと\verb#high#メソッドで取得できる。
+\section{領域}
+
+領域は、配列の定義域や値の集合を表す。レンジのタプルと等価な\textbf{矩形領域}と、要素を格納した\textbf{連想領域}の2種類がある。
+領域の要素の型は\texttt{.idxType}で取得できる。特に、矩形領域は、\texttt{.rank}で階数を、\texttt{.dims}でレンジのタプルを取得できる。
 
 \begin{Verbatim}{Chapel}
-assert((1..100).size == 100);
+const rectangular: domain = {0..10, -1..2};
+const associative: domain = {"foo", "bar"};
+writeln(rectangular.rank);
+writeln(rectangular.dims());
+writeln(rectangular.idxType: string); // int(64)
+writeln(associative.idxType: string); // string
 \end{Verbatim}
 
-レンジ型は、要素の型と有界性と不連続性を指定して表現する。
-
-\begin{Verbatim}{Chapel}
-range(type idxType = int, boundedType = BoundedRangeType.bounded, stridable = false)
-\end{Verbatim}
-
-\verb#boundedType#は有界性を表現し、デフォルトは\verb#bounded#だが、最小値と最大値を省略すれば、無限になる。
-
-\begin{table}[h]
-\raggedright
-\begin{tabular}{ll}
-\verb#bounded#     & 最小と最大の両方が有限の有限区間 \\
-\verb#boundedLow#  & 最小が有限で最大が無限の半開区間 \\
-\verb#boundedHigh# & 最小が無限で最大が有限の半開区間 \\
-\verb#boundedNone# & 最小と最大の両方が無限の無限区間 \\
-\end{tabular}
-\end{table}
-
-\verb#stridable#は不連続性を表現し、デフォルトは\verb#false#だが、\verb#by#演算子を使用した場合に限り\verb#true#になる。
-
-\begin{Verbatim}{Chapel}
-assert((1..3 by 2).stridable);
-\end{Verbatim}
-
-レンジは、\verb#these#メソッドを呼び出すことで、イテレータとして機能する。
-典型的には、\verb#for#文で利用する。
-
-\begin{Verbatim}{Chapel}
-for i in 1..5 do writeln(i);
-\end{Verbatim}
-
-\verb#these#メソッドは、第\ref{sec:iter.parallel}節の\textit{leader iterator}と\textit{follower iterator}をオーバーロードし、並列化に対応する。
-
-\chapter{領域\label{sec:domain}}
-
-\textbf{領域}は、空間や集合を表現するデータ型である。
-第\ref{sec:range}章のレンジに比べて高級で、実体はレコードである。
-\textbf{矩形領域}は、レンジをカンマ区切りで並べて生成し、任意次元の矩形空間や、矩形配列の定義域を表現する。
-\textbf{連想領域}は、包含する具体的な要素をカンマ区切りで並べて生成し、集合や、連想配列の定義域を表現する。
-
-\begin{Verbatim}{Chapel}
-const rectangular = {0..10, -20..20};
-const associative = {"foo", "bar"};
-\end{Verbatim}
-
-矩形領域の場合、\verb#dims#メソッドでレンジのタプルに変換できる。
-個別のレンジは\verb#dim#メソッドで取得する。
-
-\begin{Verbatim}{Chapel}
-var dom: domain(2) = {1..10, 1..20};
-writeln(dom.dims());
-writeln(dom.dim(2));
-\end{Verbatim}
-
-矩形領域の範囲を設定するには、レンジのタプルを引数に、\verb#setIndices#メソッドを実行する。
-
-\begin{Verbatim}{Chapel}
-var dom: domain(2) = {1..10, 1..20};
-dom.setIndices((-100..100, 1..200));
-\end{Verbatim}
-
-矩形領域型は、次元数と要素の型と不連続性を指定して表現する。
-
-\begin{Verbatim}{Chapel}
-domain(rank: int, type idxType = int, stridable = false)
-\end{Verbatim}
-
-\verb#rank#は次元数で、\verb#rank#メソッドで静的定数として取得できる。
-\verb#idxType#は、各次元の要素の型を表現する。
-
-\begin{Verbatim}{Chapel}
-param rank = {1..10, 1..20, 1..30}.rank;
-\end{Verbatim}
-
-\verb#stridable#は不連続性を表し、デフォルトは\verb#false#である。
-連想領域型は、要素の型を指定して表現する。
-
-\begin{Verbatim}{Chapel}
-domain(idxType = string)
-\end{Verbatim}
-
-矩形領域と連想領域は、暗黙的に\verb#these#メソッドを呼び出すことで、両者ともにイテレータとして機能する。
+矩形領域も連想領域も、\texttt{these}イテレータが利用できる。特に、矩形領域は、多重ループを表す構文としても利用できる。
 
 \begin{Verbatim}{Chapel}
 for xyz in {1..10, 1..10, 1..10} do writeln(xyz);
 for boy in {"Tom", "Ken", "Bob"} do writeln(boy);
 \end{Verbatim}
 
-\verb#these#メソッドは、第\ref{sec:iter.parallel}節の\textit{leader iterator}と\textit{follower iterator}をオーバーロードし、並列化に対応する。
+\section{配列}
 
-\chapter{配列\label{sec:array}}
-
-\textbf{配列}は、第\ref{sec:domain}章の領域を定義域に持ち、値域への写像を表現するデータ型であり、実体はレコードである。
-配列の定義域により、矩形領域を定義域に持つ\textbf{矩形配列}と、連想領域を定義域に持つ\textbf{連想配列}に分類できる。
+配列は、定義域から値域への写像を表す。矩形領域に対応する\textbf{矩形配列}と、連想領域に対応する\textbf{連想配列}の2種類がある。
 
 \begin{Verbatim}{Chapel}
 const rectangular = [1, 2, 3, 4, 5, 6, 7, 8];
 const associative = [1 => "one", 2 => "two"];
+writeln(rectangular, rectangular.domain); // 1 2 3 4 5 6 7 8{0..7}
+writeln(associative, associative.domain); // one two{1, 2}
 \end{Verbatim}
 
-配列型は領域を括弧で括り、要素の型を指定して表現する。
-領域を直に指定する場合、波括弧は省略できる。
+\texttt{this}メソッドが利用でき、要素の位置を引数に渡せば、その要素を参照できる。領域を渡せば、部分配列も参照できる。
 
 \begin{Verbatim}{Chapel}
 var A: [{1..10, 1..10}] real;
 var B: [{'foo', 'bar'}] real;
-\end{Verbatim}
-
-配列の要素を参照する際は、要素のインデックスを引数として、左辺値メソッド\verb#this#を暗黙的に実行する。
-
-\begin{Verbatim}{Chapel}
 A[1, 2] = 1.2;
 A(3, 4) = 3.4;
-\end{Verbatim}
-
-上記のインデックスはタプルでも指定できる。
-インデックスに領域を指定した場合、部分配列を取得できる。
-
-\begin{Verbatim}{Chapel}
-for (i, j) in A.domain do A(i, j) = i * 0.1 * j;
 writeln(A(1..2, 1..3));
 \end{Verbatim}
 
-上記のプログラムを実行すると、下記の出力を得ることから、正しく部分配列を取得していることがわかる。
-
-\begin{Verbatim}{bash}
-1.1 1.2 1.3
-2.1 2.2 2.3
-\end{Verbatim}
-
-配列は、\verb#these#メソッドを実装し、イテレータとして機能する。
-これは左辺値を返し、\verb#for#文で代入できる。
+\texttt{these}イテレータも利用できる。左辺値を返すので、\texttt{for}文でループ変数に値を書き込むと、その値が配列に反映される。
 
 \begin{Verbatim}{Chapel}
 var boys = ['Tom', 'Ken', 'Bob'];
 for boy in boys do boy += '-san';
-writeln(boys);
+writeln(boys); // Tom-san Ken-san Bob-san
 \end{Verbatim}
 
-矩形配列で、値が0の要素が多く、全要素を格納するコストが過大である場合、\textit{sparse array}も利用できる。
+祖な矩形領域を定義域に指定すると、粗な配列を宣言できる。これは、粗行列の実装として活用できる。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-var SpsD: sparse subdomain({1..16, 1..64});
-var SpsA: [SpsD] real;
-SpsD += (8, 10);
-SpsD += (3, 64);
-SpsA[8, 10] = 114.514;
+var D: sparse subdomain({1..16, 1..64});
+var A: [D] real;
+D += (8, 10);
+D += (3, 64);
+A[8, 10] = 114.514;
 \end{Verbatim}
 
-配列の外見はレコードだが、内部的には、矩形配列や連想配列を実装するクラスのインスタンスを参照する。
-領域も同様で、配列や領域を引数に取る関数は\textit{pass by value}だが、実質的には\textit{pass by reference}に見える。
+配列は値型であり、配列を他の配列に代入すると、値が複製される。ただし、関数に配列を渡す場合は、参照渡しになる。
 
 \begin{Verbatim}{Chapel}
-proc foo(arr: [] int) {
+proc update(arr: [] int) {
 	arr = [2, 3, 4];
 }
 var A = [1, 2, 3];
-foo(A);
-writeln(A);
-\end{Verbatim}
-
-配列の代入は、右辺の配列の全要素を、左辺の配列の対応する要素に代入する操作である点に注意を要する。
-
-\begin{Verbatim}{Chapel}
-var A: [1..10] int;
 var B = A;
-for a in A do a = 1;
-writeln("A is ", A);
-writeln("B is ", B);
+update(A);
+writeln(A); // 2 3 4
+writeln(B); // 1 2 3
 \end{Verbatim}
 
-上記のプログラムを実行すると、下記の出力を得る。
-これは、配列が参照型ではなく値型である証左である。
+\chapter{並列処理}
 
-\begin{Verbatim}{bash}
-A is 1 1 1 1 1 1 1 1 1 1
-B is 0 0 0 0 0 0 0 0 0 0
-\end{Verbatim}
+Chapelは、\href{https://github.com/qthreads/qthreads}{qthreads}の\textbf{軽量スレッド}を採用し、細粒度の並列処理が得意で、\textbf{タスク}の分岐と待機を高効率に実行できる。
 
-配列のエイリアスが必要な場合は、\textbf{エイリアス演算子} \verb#=>#を利用する。
-部分配列のエイリアスも作成できる。
+\section{タスク}
+
+まず、基本の構文を解説する。\texttt{begin}文でタスクを非同期に実行し、\texttt{sync}文でそのタスクを待機する。以下に例を示す。
 
 \begin{Verbatim}{Chapel}
-var A: [1..10] int;
-var B => A[2..9];
-for b in B do b = 1;
-writeln("A is ", A);
+sync {
+	begin writeln("1st parallel task");
+	begin writeln("2nd parallel task");
+	begin writeln("3rd parallel task");
+}
+writeln("task 1, 2, 3 are finished");
 \end{Verbatim}
 
-上記のプログラムを実行すると、下記の出力を得る。
-配列\verb#B#に対する操作が配列\verb#A#に反映することがわかる。
-
-\begin{Verbatim}{bash}
-A is 0 1 1 1 1 1 1 1 1 0
-\end{Verbatim}
-
-配列は、\textbf{区分化大域アドレス空間}に従い、\textit{locale}と呼ばれる分散ノードに適切に分散配置する機能を有する。
-\verb#dmapped#演算子により、下記の矩形配列\verb#A#は格子状に分散配置され、矩形配列\verb#A#は周期的に分散配置される。
+\texttt{begin}文は、入れ子にできる。糖衣構文として、\texttt{cobegin}文でも同じ処理を記述できる。通常は\texttt{cobegin}文で事足りる。
 
 \begin{Verbatim}{Chapel}
-use BlockDist, CyclicDist;
+cobegin {
+	writeln("1st parallel task");
+	writeln("2nd parallel task");
+	writeln("3rd parallel task");
+}
+writeln("task 1, 2, 3 are finished");
+\end{Verbatim}
+
+外側で宣言された変数に、\texttt{begin}文や\texttt{cobegin}文で値を書き戻す場合は、\texttt{with}節の宣言が必要である。以下に例を示す。
+
+\begin{Verbatim}{Chapel}
+var a: string;
+var b: string;
+sync {
+	begin with(ref a) a = "1st parallel task";
+	begin with(ref b) b = "2nd parallel task";
+}
+writeln(a);
+writeln(b);
+\end{Verbatim}
+
+\texttt{sync}文や\texttt{cobegin}文による待機は、僅かな負荷を生じるので、効率を求める場合は、敢えて\texttt{begin}文を使う場合もある。
+
+\begin{Verbatim}{Chapel}
+inline proc string.shambles: void {
+	proc traverse(a: int, b: int) {
+		if b > a {
+			const mid = (a + b) / 2;
+			begin traverse(a, 0 + mid);
+			begin traverse(1 + mid, b);
+		} else writeln(this(a));
+	}
+	sync traverse(0, this.size - 1);
+}
+\end{Verbatim}
+
+\texttt{serial}文は、条件式が\texttt{true}の場合に、並列処理を逐次処理に切り替える。並列処理の最適化やデバッグに利用できる。
+
+\begin{Verbatim}{Chapel}
+serial true {
+	begin writeln("1st serial task");
+	begin writeln("2nd serial task");
+}
+\end{Verbatim}
+
+\section{反復処理}
+
+\texttt{forall}文と\texttt{coforall}文は、並列化された\texttt{for}文である。OpenMPの\texttt{omp parallel for}に相当する。以下に例を示す。
+
+\begin{Verbatim}{Chapel}
+forall i in 1..100 do writeln(i);
+coforall i in 1..100 do writeln(i);
+\end{Verbatim}
+
+\texttt{coforall}文は、以下の糖衣構文である。反復回数と同じ個数のタスクを生成する。\textbf{タスク並列}を意識した機能と言える。
+
+\begin{Verbatim}{Chapel}
+sync for i in 1..100 do begin writeln(i);
+\end{Verbatim}
+
+\texttt{forall}文は、タスクを生成する\textit{leader}と、末端の逐次処理を担当する\textit{follower}の、2個のイテレータで並列処理を行う。
+
+\begin{Verbatim}{Chapel}
+iter foo(rng): int {
+	for i in rng do yield i;
+}
+\end{Verbatim}
+
+\texttt{foo}イテレータを多重に定義して、以下の派生型を実装する。これが\textit{leader}で、タスクとデータを再帰的に分岐させる。
+
+\begin{Verbatim}{Chapel}
+iter foo(param tag, rng): range where tag == iterKind.leader {
+	if rng.size > 16 {
+		const mid = (rng.high + rng.low) / 2;
+		cobegin {
+			for i in foo(tag, rng(..mid+0)) do yield i;
+			for i in foo(tag, rng(mid+1..)) do yield i;
+		}
+	} else yield rng;
+}
+\end{Verbatim}
+
+また、以下の派生型が\textit{follower}で、並列処理の末端で、細粒度の逐次処理を担当する。データは\texttt{followThis}に渡される。
+
+\begin{Verbatim}{Chapel}
+iter foo(param tag, rng, followThis): int where tag == iterKind.follower {
+	for i in followThis do yield i;
+}
+\end{Verbatim}
+
+処理の内容に応じて、最適なタスクとデータの分配方法を選べる点で、\texttt{forall}文は\textbf{データ並列}を意識した機能と言える。
+
+\begin{Verbatim}{Chapel}
+forall i in foo(1..100) do writeln(i);
+\end{Verbatim}
+
+\section{ロケール\label{sect:locale}}
+
+Chapelでは、分散メモリ環境の構成単位を\textbf{ロケール}と呼ぶ。典型的には、1個の共有メモリ環境がロケールに相当する。
+利用可能なロケールは\texttt{Locales}で得られる。また、\href{https://gasnet.lbl.gov}{GASNet}を使う場合は、環境変数\verb|CHPL_COMM|を設定する必要がある。
+
+\begin{Verbatim}{Chapel}
+coforall l in Locales do on l {
+	writeln(here == l);
+	writeln(here.name);
+	writeln(here.numPUs());
+}
+\end{Verbatim}
+
+特定のロケールを指定して、タスクを実行するには、\texttt{on}文を使う。また、\texttt{here}を通じて、現在のロケールを参照できる。
+他のロケールに存在するデータを参照すると、\textbf{レイテンシ}が発生する。\texttt{on}文は、参照の局所性を高める目的でも使える。
+
+\begin{Verbatim}{Chapel}
+import BigInteger;
+var x: BigInteger.bigint;
+on Locales(0) do x = new BigInteger.bigint(12);
+on x.locale do writeln(x, " is on ", x.locale);
+\end{Verbatim}
+
+\section{分散配列}
+
+Chapelの配列のメモリ領域は、\sectref{locale}のロケールに分散して配置できる。分配の方法は、\texttt{dmapped}演算子で指定する。
+例えば、\texttt{Block}を選ぶと、配列は矩形の塊で分配される。また、\texttt{localSubdomain}で、そのロケールの領域を取得できる。
+
+\begin{Verbatim}{Chapel}
+use BlockDist;
 var A: [{1..10,1..10} dmapped Block(boundingBox={1..10,1..10})] real;
+for l in Locales do on l do for (i, j) in A.localSubdomain() do writeln(A(i, j).locale);
+\end{Verbatim}
+
+\texttt{Cyclic}を選ぶと、周期的に分配される。\texttt{dmapped}で確保した配列は、必要に応じて\texttt{on}文で参照の局所性を確保できる。
+
+\begin{Verbatim}{Chapel}
+use CyclicDist;
 var B: [{1..10,1..10} dmapped Cyclic(startIdx=(1,1))] real;
+for l in Locales do on l do for (i, j) in B.localSubdomain() do writeln(B(i, j).locale);
 \end{Verbatim}
 
-分配された配列や領域に対し、\textit{locale}が自身の領域を取得するには、\verb#localSubdomain#メソッドを利用する。
+\section{アトミック変数}
+
+並列処理で、複数のタスクが共通の変数を読み書きする場合は、\textbf{アトミック演算}で、タスク間の競合を防ぐ必要がある。
+競合の例を以下に示す。変数\texttt{sum}の値を取得し、新たな値を書き戻す間に、\texttt{sum}の値が変化すれば、誤った結果になる。
 
 \begin{Verbatim}{Chapel}
-for locale in Locales do on locale {
-	for (i, j) in A.localSubdomain() {
-		writeln((i, j), " @ ", here.id);
+config const N = 80;
+var sum: int;
+do {
+	coforall n in 1..N with(ref sum) do sum -= n * n;
+	coforall n in 1..N with(ref sum) do sum += n * n;
+} while sum == 0;
+writeln(sum);
+\end{Verbatim}
+
+以下に、適切な実装を示す。\texttt{add}や\texttt{sub}の代わりに、\texttt{fetchAdd}や\texttt{fetchSub}を使えば、演算する直前の値も取得できる。
+
+\begin{Verbatim}{Chapel}
+config const N = 80;
+var sum: atomic int;
+do {
+	coforall n in 1..N do sum.sub(n * n);
+	coforall n in 1..N do sum.add(n * n);
+} while sum.read() == 0; // infinite loop
+writeln(sum);
+\end{Verbatim}
+
+\section{ロック付き変数}
+
+\texttt{sync}型の変数を参照するには、\texttt{readFE}を使う。ただし、変数の状態が\textit{empty}の場合は、\textit{full}に遷移するまで待機となる。
+\texttt{writeEF}で値を書き込むと、状態が\textit{full}に遷移する。これは\textbf{排他制御}の機能であり、タスク間の競合を防ぐ効果がある。
+
+\begin{Verbatim}{Chapel}
+config const N = 80;
+var sum: sync int = 0;
+do {
+	coforall n in 1..N do {
+		const v = sum.readFE();
+		sum.writeEF(v + n * n);
 	}
-}
-\end{Verbatim}
-
-\verb#Locales#は実行環境で利用可能な\textit{locale}を格納する配列であり、\verb#on#文は指定された\textit{locale}で文を実行する。
-
-\chapter{その他の型}
-
-\section{列挙型\label{sec:enum}}
-
-\textbf{列挙型}は、何らかのカテゴリを示す識別子の有限集合を表現するデータ型で、個別の識別子を\textbf{列挙子}と呼ぶ。
-
-\begin{Verbatim}{Chapel}
-enum Rabbit {Lapin, Lievre};
-\end{Verbatim}
-
-\section{共用体}
-
-\textbf{共用体}は、状況によりデータ型が変化する変数に対し、適切な型を指定して参照可能としたデータ型である。
-下記の共用体\verb#Pure#の場合、フィールド\verb#r#と\verb#i#は同じメモリ領域に占位する。
-バイト境界は適切に調整する。
-
-\begin{Verbatim}{Chapel}
-union Pure {
-	var r: real;
-	var i: imag;
-}
-var pure: Pure;
-pure.r = 19.19;
-
-\end{Verbatim}
-
-最後に値を代入したフィールドのみが有意である。
-なお、クラスやレコードと同様にメソッドを定義できる。
-
-\section{同期型}
-
-下記は、\verb#sync#型と\verb#single#型の\textbf{同期変数}の利用例である。
-タスクは、同期変数\verb#release$#の更新を待機する。
-
-\begin{Verbatim}{Chapel}
-var count$: sync int = 32;
-var release$: single bool;
-coforall i in 1..32 {
-	const mc = count$;
-	if mc != 1 {
-		count$ = mc - 1;
-		writeln("wait");
-		release$;
-	} else release$ = true;
-}
-\end{Verbatim}
-
-同期変数は、変数値の他に\textit{full}か\textit{empty}の状態を有する。
-初期値は\textit{empty}で、代入により\textit{full}に遷移する。
-同期変数への代入は\textit{empty}時のみ、参照は\textit{full}時のみ可能である。
-さもなければ、遷移するまで待機する。
-\verb#sync#変数のみ、変数値の参照で\textit{empty}に遷移する。
-反対に、代入済みの\verb#single#変数は再代入を拒絶する。
-
-\chapter{モジュール}
-
-\textbf{名前空間}とは、変数や関数が可視となる範囲を\verb#module#文で区分し、衝突の可能性を回避する仕組みである。
-
-\begin{Verbatim}{Chapel}
-module Foo {
-	const piyo = "piyo";
-	proc hoge(): string return "hoge";
-}
-\end{Verbatim}
-
-上記の名前空間\verb#Foo#で宣言された変数\verb#piyo#や関数\verb#hoge#は、外部からの参照に\textbf{ドット演算子}が必要になる。
-
-\begin{Verbatim}{Chapel}
-writeln(Foo.hoge());
-\end{Verbatim}
-
-\verb#use#宣言を記述すれば、記述した名前空間の内部では、対象の名前空間に対し、ドット演算子を省略できる。
-
-\begin{Verbatim}{Chapel}
-use Foo;
-writeln(piyo);
-\end{Verbatim}
-
-明示的な名前空間に属さない文は、ファイル名から拡張子\verb#.chpl#を除去した名前の名前空間に暗黙的に属す。
-名前空間は、プログラムの起点となる\verb#main#関数を明示的に定義できる。
-引数はなく、返値は\verb#int#型である。
-
-\begin{Verbatim}{Chapel}
-proc main() {
-	writeln("Hello, World!");
-}
-\end{Verbatim}
-
-プログラムが起動すると、\verb#main#関数を定義した名前空間が初期化され、名前空間の直下の文が実行される。
-依存関係に従い、全ての名前空間が初期化すると、\verb#main#関数を実行する。
-\verb#main#関数は重複して定義できる。
-
-\begin{Verbatim}{Chapel}
-module Foo {
-	proc main() {
-		writeln("This is Foo");
+	coforall n in 1..N do {
+		const v = sum.readFE();
+		sum.writeEF(v - n * n);
 	}
-}
-module Bar {
-	proc main() {
-		writeln("This is Bar");
-	}
-}
-\end{Verbatim}
-
-この場合、どの名前空間に属す\verb#main#関数でプログラムを起動するか、コンパイル時に指定する必要がある。
-
-\begin{Verbatim}{bash}
-$ chpl --main-module Foo module.chpl
+} while sum.readFF() == 0; // infinite loop
+writeln(sum.readFF());
 \end{Verbatim}
 
 \end{document}
