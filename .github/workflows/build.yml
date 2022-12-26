@@ -35,10 +35,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        repository: nextzlog/fava
+        path: fava
+    - uses: actions/checkout@v2
+      with:
+        repository: nextzlog/mine
+        path: mine
     - uses: actions/download-artifact@v2
       with:
         path: book
-    - run: cp book/*/*.md book/*.pdf site
+    - run: |
+        cp book/*/*.md book/*.pdf site
+        cp fava/images/* site/images
+        cp mine/images/* site/images
     - run: |
         sudo apt install pdf2svg
         for p in {01..35}
@@ -53,4 +63,3 @@ jobs:
         enable_jekyll: true
         github_token: ${{secrets.GITHUB_TOKEN}}
         publish_dir: site
-        keep_files: true

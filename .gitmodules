@@ -1,0 +1,6 @@
+[submodule "mine"]
+	path = mine
+	url = https://github.com/nextzlog/mine
+[submodule "fava"]
+	path = fava
+	url = https://github.com/nextzlog/fava
