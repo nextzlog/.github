@@ -76,13 +76,13 @@ Push(1) Push(2) Add
 ### 2.1 有限状態機械
 
 有限状態機械は、**状態**と**遷移規則**の有限集合で構成される。論理回路で言えば、**記憶素子**が保持する情報が状態である。
-有限状態機械に信号$$x_n$$を与えると、Table 2.1の遷移規則に従って、状態$$q_n$$から状態$$q_{n+1}$$に遷移して、信号$$y_n$$を返す。
+有限状態機械に信号 $x_n$ を与えると、Table 2.1の遷移規則に従って、状態 $q_n$ から状態 $q_{n+1}$ に遷移して、信号 $y_n$ を返す。
 
 Table 2.1 state transition tables.
 
 (1) SR flip-flop.
 
-|$$x_n$$ | $$q_n$$ | $$q_{n+1}$$ | $$y_n$$ |
+|$x_n$  |  $q_n$  |  $q_{n+1}$  |  $y_n$  |
 |---|---|---|---|
 |00 | 0 | 0 | 0 |
 |00 | 1 | 1 | 1 |
@@ -96,7 +96,7 @@ Table 2.1 state transition tables.
 
 (2) JK flip-flop.
 
-|$$x_n$$ | $$q_n$$ | $$q_{n+1}$$ | $$y_n$$ |
+|$x_n$  |  $q_n$  |  $q_{n+1}$  |  $y_n$  |
 |---|---|---|---|
 |00 | 0 | 0 | 0 |
 |00 | 1 | 1 | 1 |
@@ -110,7 +110,7 @@ Table 2.1 state transition tables.
 
 (3) 2bit counter.
 
-|$$x_n$$ | $$q_n$$ | $$q_{n+1}$$ | $$y_n$$ |
+|$x_n$  |  $q_n$  |  $q_{n+1}$  |  $y_n$  |
 |---|---|---|---|
 |0 | 00 | 00 | 00 |
 |1 | 00 | 01 | 00 |
@@ -159,12 +159,9 @@ println(if(ZLO.test("ZLLLLLLLLLLLLLLLLO").isDefined) "OK" else "NO")
 ### 2.2 セルオートマトン
 
 単体の有限状態機械は、再帰計算が苦手である。しかし、その集合体である**セルオートマトン**は、任意の計算ができる。
-構成単位を**セル**と呼ぶ。各セルは、近傍$$k$$個のセルの状態を参照し、式 2.1に示す遷移規則$$\delta$$に従って、状態遷移する。
+構成単位を**セル**と呼ぶ。各セルは、近傍 $k$ 個のセルの状態を参照し、式 2.1に示す遷移規則 $\delta$ に従って、状態遷移する。
 
-$$
-
-\delta: Q^k \to Q.
- \qquad(2.1)$$
+$$\delta: Q^k \to Q. \qquad(2.1)$$
 
 空間的な自由を得た恩恵で、再帰構造を持つ計算に対応する。例えば、**フラクタル図形**を描画する遷移規則が存在する。
 さて、2次元のセルオートマトンの実装例を、以下に示す。引数は、遷移規則と、縦横に並んだセルの最初の状態である。
@@ -209,12 +206,10 @@ object WireWorldRule extends Rule[Char](ROI => (ROI(1)(1), ROI.flatten.count(_ =
 
 ### 2.3 チューリング機械
 
-**チューリング機械**は、無限長の**テープ**と、その内容を読み書きする有限状態機械と、式 2.2の遷移関数$$\delta$$で構成される。
-状態$$q_n$$で記号$$x_n$$を読み取ると、記号$$y_n$$に書き換える。状態$$q_{n+1}$$に遷移して$$\lambda_n$$の方向に移動し、再び記号を読み取る。
+**チューリング機械**は、無限長の**テープ**と、その内容を読み書きする有限状態機械と、式 2.2の遷移関数 $\delta$ で構成される。
+状態 $q_n$ で記号 $x_n$ を読み取ると、記号 $y_n$ に書き換える。状態 $q_{n+1}$ に遷移して $\lambda_n$ の方向に移動し、再び記号を読み取る。
 
-$$
-
-(q_{n+1},y_n,\lambda_n) = \delta(q_n,x_n),
+$$(q_{n+1},y_n,\lambda_n) = \delta(q_n,x_n),
 \enspace\mathrm{where}\enspace
 \enspace\mathrm{where}\enspace
 \left\{
@@ -223,8 +218,7 @@ q_n &\in Q,\\
 x_n,y_n &\in \Sigma,\\
 \lambda_n &\in \{L,R\}.
 \end{aligned}
-\right.
- \qquad(2.2)$$
+\right. \qquad(2.2)$$
 
 この動作は、任意の逐次処理型の計算機と等価であり、並列処理型のセルオートマトンと並んで、計算機の頂点に立つ。
 特に、**帰納的に枚挙可能**な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、Fig. 2.2に示す。
@@ -241,7 +235,7 @@ x_n,y_n &\in \Sigma,\\
 
 (3) 111=110+001.
 
-Fig. 2.2 numerical increment operation on a Turing machine ($$k=1$$).
+Fig. 2.2 numerical increment operation on a Turing machine ( $k=1$ ).
 
 任意の遷移関数を読み取り、その遷移関数を忠実に実行する、言語処理系と等価な**万能チューリング機械**も実装できる。
 遷移関数と計算手順で、異なるテープを使用した例をUTM型に実装する。状態0から1にかけて、遷移規則を検索する。
@@ -279,12 +273,10 @@ CUTM("0111111", "I0a0RI1a1Ra0a0Ra1a1Ra b Lb0c1Lb1b0Lb F1 c0c0Lc1c1Lc F R")('F').
 
 ### 2.4 逆ポーランド記法
 
-**スタック**を備え、再帰計算に対応した有限状態機械を**プッシュダウンオートマトン**と呼ぶ。式 2.3の遷移関数$$\delta$$に従う。
-$$Q$$は状態の、$$\Sigma$$と$$\Gamma$$は入力とスタックの記号の有限集合である。$$\Gamma^*$$は$$\Gamma$$の元を並べた任意長の記号列$$y^*$$の集合である。
+**スタック**を備え、再帰計算に対応した有限状態機械を**プッシュダウンオートマトン**と呼ぶ。式 2.3の遷移関数 $\delta$ に従う。
+ $Q$ は状態の、 $\Sigma$ と $\Gamma$ は入力とスタックの記号の有限集合である。 $\Gamma^*$ は $\Gamma$ の元を並べた任意長の記号列 $y^*$ の集合である。
 
-$$
-
-(q_{n+1},y^*_n) = \delta(q_n,\sigma_n,x_n),
+$$(q_{n+1},y^*_n) = \delta(q_n,\sigma_n,x_n),
 \enspace\mathrm{where}\enspace
 \left\{
 \begin{aligned}
@@ -293,11 +285,10 @@ x_n &\in \Gamma,\\
 y^*_n &\in \Gamma^*,\\
 \sigma_n &\in \Sigma.
 \end{aligned}
-\right.
- \qquad(2.3)$$
+\right. \qquad(2.3)$$
 
-記号$$\sigma_n$$を受け取ると、スタックの先頭の記号$$x_n$$を取り除き、先頭に記号列$$y^*_n$$を順番に積んで、状態$$q_{n+1}$$に遷移する。
-再帰計算を活用した例として、第2.1節で実装した正規表現の拡張を考える。以下の関数ZLOは、記号列$$\texttt{Z}^n\texttt{L}\texttt{O}^n$$を表す。
+記号 $\sigma_n$ を受け取ると、スタックの先頭の記号 $x_n$ を取り除き、先頭に記号列 $y^*_n$ を順番に積んで、状態 $q_{n+1}$ に遷移する。
+再帰計算を活用した例として、第2.1節で実装した正規表現の拡張を考える。以下の関数ZLOは、記号列 $\texttt{Z}^n\texttt{L}\texttt{O}^n$ を表す。
 
 ```scala
 def ZLO: R[Char] = Cat(One('Z'), Cat(Alt(One('L'), new R(ZLO.test(_))), One('O')))
@@ -307,18 +298,12 @@ println(ZLO.test("ZZZZZZZZZZZZZZZZZZZZZZZZZLOOOOOOOOOOOOOOOOOOOOOOOOO").isDefine
 残念ながら、再帰計算は実行できても、受け取った記号列を読み返す機能がなく、計算能力はチューリング機械に劣る。
 ただし、記憶装置としてスタックを使う広義の**スタック機械**は、重要な計算モデルである。式 2.4の計算を例に考える。
 
-$$
-
-(1 + 2) * (10 - 20).
- \qquad(2.4)$$
+$$(1 + 2) * (10 - 20). \qquad(2.4)$$
 
 演算子には優先順位があるため、式を左から読むだけでは、計算は困難である。数値を保持する記憶装置も必要である。
 前者は、式 2.5の**逆ポーランド記法**で解決する。演算子に優先順位はなく、出現する順番に、直前の数値に適用される。
 
-$$
-
-\texttt{1 2 + 10 20 - *}.
- \qquad(2.5)$$
+$$\texttt{1 2 + 10 20 - *}. \qquad(2.5)$$
 
 手順をFig. 2.3に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
 その再帰計算や条件分岐も、指定された長さだけ記号列を遡る**分岐命令**があれば実現できる。詳細は第6章に解説する。
@@ -355,117 +340,81 @@ println(ArithStackMachine("3 4 * 10 20 * +")) // 212
 実在する計算機を意識した第2章の計算モデルに対し、関数の**評価**と**適用**による計算手順の抽象化がラムダ計算である。
 第3章では、任意の式を**ラムダ式**と呼ぶ。変数も、整数も、関数もラムダ式である。関数は、式 3.1のように定義する。
 
-$$
+$$f := \lambda xy.2x+3y+z+1. \qquad(3.1)$$
 
-f := \lambda xy.2x+3y+z+1.
- \qquad(3.1)$$
+式 3.1を関数 $f$ の**ラムダ抽象**と呼ぶ。変数 $x$ と $y$ を、 $\lambda$ により**束縛**された変数と呼ぶ。また、変数 $z$ を**自由変数**と呼ぶ。
+式 3.1は式 3.2と等価である。関数 $g$ は、変数 $x$ を束縛し、変数 $y$ を引数に取る関数を返す。これを**カリー化**と呼ぶ。
 
-式 3.1を関数$$f$$の**ラムダ抽象**と呼ぶ。変数$$x$$と$$y$$を、$$\lambda$$により**束縛**された変数と呼ぶ。また、変数$$z$$を**自由変数**と呼ぶ。
-式 3.1は式 3.2と等価である。関数$$g$$は、変数$$x$$を束縛し、変数$$y$$を引数に取る関数を返す。これを**カリー化**と呼ぶ。
+$$g := \lambda x.\lambda y.2x+3y+1. \qquad(3.2)$$
 
-$$
+式 3.3は、変数 $x$ と $y$ を具体的な値で束縛する。これを関数適用と呼ぶ。また、式の実体を計算する操作を評価と呼ぶ。
+評価の途中で、束縛変数を定数に置換する操作を**ベータ簡約**と呼ぶ。式 3.3の値は、2度の簡約を経由して $27$ と求まる。
 
-g := \lambda x.\lambda y.2x+3y+1.
- \qquad(3.2)$$
+$$\lambda x.\lambda y.(3x+7y) \enspace 2 \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} \lambda y.(6+7y) \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} 6+21 = 27. \qquad(3.3)$$
 
-式 3.3は、変数$$x$$と$$y$$を具体的な値で束縛する。これを関数適用と呼ぶ。また、式の実体を計算する操作を評価と呼ぶ。
-評価の途中で、束縛変数を定数に置換する操作を**ベータ簡約**と呼ぶ。式 3.3の値は、2度の簡約を経由して$$27$$と求まる。
+任意の自然数と演算は、自然数を枚挙する関数 $s$ と自然数 $0$ があれば、**ペアノの公理**で定義できる。式 3.4に例を示す。
+自然数は、2個の引数を取る関数で表す。変数 $x$ に自然数を渡せば、加算になる。変数 $s$ に自然数を渡せば、乗算になる。
 
-$$
-
-\lambda x.\lambda y.(3x+7y) \enspace 2 \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} \lambda y.(6+7y) \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} 6+21 = 27.
- \qquad(3.3)$$
-
-任意の自然数と演算は、自然数を枚挙する関数$$s$$と自然数$$0$$があれば、**ペアノの公理**で定義できる。式 3.4に例を示す。
-自然数は、2個の引数を取る関数で表す。変数$$x$$に自然数を渡せば、加算になる。変数$$s$$に自然数を渡せば、乗算になる。
-
-$$
-
-n := \lambda sx.(s^{\circ n}x) \enspace \lambda x.(x+1) \enspace 0,
+$$n := \lambda sx.(s^{\circ n}x) \enspace \lambda x.(x+1) \enspace 0,
 \enspace
 \left\{
 \begin{aligned}
 a + b &:= \lambda ab.\lambda sx.as(bsx),\\
 a \times b &:= \lambda ab.\lambda sx.a(bs)x.
 \end{aligned}
-\right.
- \qquad(3.4)$$
+\right. \qquad(3.4)$$
 
 真偽値は、真と偽の順序組を引数に取り、どちらかを返す関数で表現できる。論理積と論理和の定義例を式 3.5に示す。
-真偽値の変数$$y$$を偽で束縛すれば、変数$$x$$との論理積になる。逆に、変数$$x$$を真で束縛すれば、変数$$y$$との論理和になる。
+真偽値の変数 $y$ を偽で束縛すれば、変数 $x$ との論理積になる。逆に、変数 $x$ を真で束縛すれば、変数 $y$ との論理和になる。
 
-$$
-
-\mathrm{t} := \lambda xy.x, \enspace
+$$\mathrm{t} := \lambda xy.x, \enspace
 \mathrm{f} := \lambda xy.y, \enspace
 \left\{
 \begin{aligned}
 a \land b &:= \lambda ab.ab\mathrm{f},\\
 a \lor  b &:= \lambda ab.a\mathrm{t}b.
 \end{aligned}
-\right.
- \qquad(3.5)$$
+\right. \qquad(3.5)$$
 
-関数$$f$$に対し、性質$$f(x)\!=\!x$$を満たす点$$x$$を**不動点**と呼ぶ。また、式 3.6の性質を満たす関数$$p$$を**不動点演算子**と呼ぶ。
+関数 $f$ に対し、性質 $f(x)\!=\!x$ を満たす点 $x$ を**不動点**と呼ぶ。また、式 3.6の性質を満たす関数 $p$ を**不動点演算子**と呼ぶ。
 
-$$
+$$\forall f, \enspace f(p(f)) \equiv p(f). \qquad(3.6)$$
 
-\forall f, \enspace f(p(f)) \equiv p(f).
- \qquad(3.6)$$
+関数 $p$ を利用すれば、再帰的な関数 $h(x)$ を式 3.7で定義できる。関数 $h$ は、再帰計算の実体を表す関数 $g$ を引数に取る。
 
-関数$$p$$を利用すれば、再帰的な関数$$h(x)$$を式 3.7で定義できる。関数$$h$$は、再帰計算の実体を表す関数$$g$$を引数に取る。
+$$h := \lambda x.pgx, \enspace\mathrm{where}\enspace g := \lambda fy.E. \qquad(3.7)$$
 
-$$
+関数 $h$ が再帰的であるには、関数 $g$ の変数 $f$ が関数 $h$ を参照する必要がある。式 3.8の変形で、この要求は保証される。
 
-h := \lambda x.pgx, \enspace\mathrm{where}\enspace g := \lambda fy.E.
- \qquad(3.7)$$
-
-関数$$h$$が再帰的であるには、関数$$g$$の変数$$f$$が関数$$h$$を参照する必要がある。式 3.8の変形で、この要求は保証される。
-
-$$
-
-h
+$$h
 \equiv \lambda x.(pg) x
 \equiv \lambda x.(g (pg)) x
-\equiv \lambda x.ghx.
- \qquad(3.8)$$
+\equiv \lambda x.ghx. \qquad(3.8)$$
 
-式 3.8を**無名再帰**と呼ぶ。関数$$p$$が実装できれば、任意の再帰計算を実行できる。最も著名な実装例を式 3.9に示す。
+式 3.8を**無名再帰**と呼ぶ。関数 $p$ が実装できれば、任意の再帰計算を実行できる。最も著名な実装例を式 3.9に示す。
 
-$$
+$$\mathbb{Y}{} := \lambda f.(\lambda x.f(xx))(\lambda x.f(xx)). \qquad(3.9)$$
 
-\mathbb{Y}{} := \lambda f.(\lambda x.f(xx))(\lambda x.f(xx)).
- \qquad(3.9)$$
+関数 $f$ に対し、式 3.9の関数 $\mathbb{Y}$ が式 3.6を満たす様子は、式 3.10で証明できる。ただし、無限再帰に注意を要する。
+関数 $\mathbb{Y}{}f$ を評価すると、同じ関数 $\mathbb{Y}{}f$ が右辺に出現する。無限再帰を防ぐには、関数 $\mathbb{Y}{}f$ の評価を遅延させる必要がある。
 
-関数$$f$$に対し、式 3.9の関数$$\mathbb{Y}$$が式 3.6を満たす様子は、式 3.10で証明できる。ただし、無限再帰に注意を要する。
-関数$$\mathbb{Y}{}f$$を評価すると、同じ関数$$\mathbb{Y}{}f$$が右辺に出現する。無限再帰を防ぐには、関数$$\mathbb{Y}{}f$$の評価を遅延させる必要がある。
-
-$$
-
-\mathbb{Y}{}f
+$$\mathbb{Y}{}f
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} (\lambda x.f(xx))(\lambda x.f(xx))
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} f((\lambda x.f(xx))(\lambda x.f(xx)))
-\equiv f(\mathbb{Y}{}f).
- \qquad(3.10)$$
+\equiv f(\mathbb{Y}{}f). \qquad(3.10)$$
 
-または、式 3.11の関数$$\mathbb{Z}$$なら、関数$$\mathbb{Z}{}f$$の評価は停止する。関数$$\mathbb{Z}{}$$は、関数$$\mathbb{Y}$$に**イータ変換**の逆を施した関数である。
+または、式 3.11の関数 $\mathbb{Z}$ なら、関数 $\mathbb{Z}{}f$ の評価は停止する。関数 $\mathbb{Z}{}$ は、関数 $\mathbb{Y}$ に**イータ変換**の逆を施した関数である。
 
-$$
+$$\mathrm{Z} := \lambda f.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy)). \qquad(3.11)$$
 
-\mathrm{Z} := \lambda f.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy)).
- \qquad(3.11)$$
+関数 $\mathbb{Z}{}f$ を評価すると、変数 $y$ を引数に取る関数が出現する。右辺の関数 $\mathbb{Z}{}f$ の展開が保留され、無限再帰は回避される。
 
-関数$$\mathbb{Z}{}f$$を評価すると、変数$$y$$を引数に取る関数が出現する。右辺の関数$$\mathbb{Z}{}f$$の展開が保留され、無限再帰は回避される。
-
-$$
-
-\mathrm{Z}f
+$$\mathrm{Z}f
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} (\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy))
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy))y)
-\mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.\mathrm{Z}fy).
- \qquad(3.12)$$
+\mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.\mathrm{Z}fy). \qquad(3.12)$$
 
-式 3.9の関数$$\mathbb{Z}$$を利用すれば、本書で自作する言語は、任意の計算を実行できる。第9章で実装を終えた後に実験する。
+式 3.9の関数 $\mathbb{Z}$ を利用すれば、本書で自作する言語は、任意の計算を実行できる。第9章で実装を終えた後に実験する。
 
 ## 4 簡単なコンパイラ
 
@@ -474,31 +423,23 @@ $$
 
 ### 4.1 形式言語の階層性
 
-**形式言語**とは、定義が明確で、何らかの計算手順で処理できる言語である。まず、形式言語$$L$$は式 4.1で定義される。
+**形式言語**とは、定義が明確で、何らかの計算手順で処理できる言語である。まず、形式言語 $L$ は式 4.1で定義される。
 
-$$
+$$L(G) \subset \Sigma^* = \left\{\langle\sigma_1,...,\sigma_n,...\rangle\mid\sigma_n\in\Sigma\right\}. \qquad(4.1)$$
 
-L(G) \subset \Sigma^* = \left\{\langle\sigma_1,...,\sigma_n,...\rangle\mid\sigma_n\in\Sigma\right\}.
- \qquad(4.1)$$
+言語 $L$ は**文**の集合である。文とは、記号 $\sigma$ の列である。記号は有限集合 $\Sigma$ で定義され、集合 $\Sigma$ を**アルファベット**と呼ぶ。
+記号 $\sigma$ の出現には、明確な規則がある。この規則を**生成規則**と呼び、生成規則の集合を**文法**と呼ぶ。式 4.2に例を示す。
 
-言語$$L$$は**文**の集合である。文とは、記号$$\sigma$$の列である。記号は有限集合$$\Sigma$$で定義され、集合$$\Sigma$$を**アルファベット**と呼ぶ。
-記号$$\sigma$$の出現には、明確な規則がある。この規則を**生成規則**と呼び、生成規則の集合を**文法**と呼ぶ。式 4.2に例を示す。
-
-$$
-
-P = \left\{
+$$P = \left\{
 \begin{aligned}
 \mathtt{S} &\to \texttt{(S)},\\
 \mathtt{S} &\to \texttt{(f)},
 \end{aligned}
-\right.:(N\cup\Sigma)^*\to(N\cup\Sigma)^*.
- \qquad(4.2)$$
+\right.:(N\cup\Sigma)^*\to(N\cup\Sigma)^*. \qquad(4.2)$$
 
 生成規則は、左辺の記号列を右辺の記号列に置換する規則である。式 4.2の例では、記号Sから式 4.3が導出される。
 
-$$
-
-\texttt{(f)},
+$$\texttt{(f)},
 \texttt{((f))},
 \texttt{(((f)))},
 \texttt{((((f))))},
@@ -506,23 +447,17 @@ $$
 \texttt{((((((f))))))},
 \texttt{(((((((f)))))))},
 \texttt{((((((((f))))))))},
-\ldots.
- \qquad(4.3)$$
+\ldots. \qquad(4.3)$$
 
-生成規則の両辺に出現できる記号$$\nu\!\in\!N$$を**非終端記号**と呼ぶ。また、右辺に限って出現する記号$$\sigma\!\in\!\Sigma$$を**終端記号**と呼ぶ。
-任意の文は、**開始記号**と呼ばれる記号$$S$$を起点に生成される。最終的に、言語$$L(G)$$の文法$$G$$は式 4.4で定義される。
+生成規則の両辺に出現できる記号 $\nu\!\in\!N$ を**非終端記号**と呼ぶ。また、右辺に限って出現する記号 $\sigma\!\in\!\Sigma$ を**終端記号**と呼ぶ。
+任意の文は、**開始記号**と呼ばれる記号 $S$ を起点に生成される。最終的に、言語 $L(G)$ の文法 $G$ は式 4.4で定義される。
 
-$$
+$$G=(N,\Sigma,P,S),\enspace\mathrm{where}\enspace S\in N. \qquad(4.4)$$
 
-G=(N,\Sigma,P,S),\enspace\mathrm{where}\enspace S\in N.
- \qquad(4.4)$$
-
-文法$$G$$に従う文を生成し、または文を開始記号$$S$$に帰する手順が定義され、曖昧性がなければ、文法$$G$$は**形式的**である。
+文法 $G$ に従う文を生成し、または文を開始記号 $S$ に帰する手順が定義され、曖昧性がなければ、文法 $G$ は**形式的**である。
 形式言語の中でも、生成規則が自由な言語を**帰納的可算言語**と呼び、式 4.5の制限を加えた言語を**文脈依存言語**と呼ぶ。
 
-$$
-
-\alpha A \beta \to \alpha \gamma \beta,
+$$\alpha A \beta \to \alpha \gamma \beta,
 \enspace\mathrm{where}\enspace
 \left\{
 \begin{aligned}
@@ -530,30 +465,24 @@ A &\in N,\\
 \alpha,\beta &\in (N\cup\Sigma)^*,\\
 \gamma &\in (N\cup\Sigma)^+.
 \end{aligned}
-\right.
- \qquad(4.5)$$
+\right. \qquad(4.5)$$
 
 形式言語の中でも、式 4.6の制限を持ち、前後の文脈に依存せずに、生成規則が適用できる言語を**文脈自由言語**と呼ぶ。
 第2.4節で述べたプッシュダウンオートマトンを利用して、文に対して生成規則を再帰的に適用することで処理できる。
 
-$$
-
-A \to \alpha,
+$$A \to \alpha,
 \enspace\mathrm{where}\enspace
 \left\{
 \begin{aligned}
 A &\in N,\\
 \alpha &\in (N\cup\Sigma)^*.
 \end{aligned}
-\right.
- \qquad(4.6)$$
+\right. \qquad(4.6)$$
 
 形式言語の中でも、文法の制約が強く、有限状態機械で処理可能な言語を**正規言語**と呼ぶ。その記法が正規表現である。
 有限状態機械では、無限の記憶を持てず、特に再帰的な生成規則を扱えず、生成規則は式 4.7に示す形式に制限される。
 
-$$
-
-\left\{
+$$\left\{
 \begin{aligned}
 A &\to a,\\
 A &\to aB,
@@ -565,21 +494,16 @@ A &\to aB,
 a &\in \Sigma,\\
 A,B &\in N.
 \end{aligned}
-\right.
- \qquad(4.7)$$
+\right. \qquad(4.7)$$
 
 形式言語の文は、適用した生成規則の木構造で表現できる。これを**構文木**と呼び、構文木を導く作業を**構文解析**と呼ぶ。
-特にLL法では、終端記号の列を読み進め、見つけた終端記号に適う生成規則を、開始記号$$S$$を起点に深さ優先探索する。
+特にLL法では、終端記号の列を読み進め、見つけた終端記号に適う生成規則を、開始記号 $S$ を起点に深さ優先探索する。
 
-$$
-(S=\texttt{add})\to(\texttt{mul + mul})\to(\texttt{num * num + num})\to(\texttt{1 * 2 + 3}).
- \qquad(4.8)$$
+$$(S=\texttt{add})\to(\texttt{mul + mul})\to(\texttt{num * num + num})\to(\texttt{1 * 2 + 3}). \qquad(4.8)$$
 
-LR法では、終端記号の列を読み進め、置換可能な部分を非終端記号に置換する。最終的に開始記号$$S$$に到達して終わる。
+LR法では、終端記号の列を読み進め、置換可能な部分を非終端記号に置換する。最終的に開始記号 $S$ に到達して終わる。
 
-$$
-(\texttt{1 * 2 + 3})\to(\texttt{num * num + num})\to(\texttt{mul + mul})\to(S=\texttt{add}).
- \qquad(4.9)$$
+$$(\texttt{1 * 2 + 3})\to(\texttt{num * num + num})\to(\texttt{mul + mul})\to(S=\texttt{add}). \qquad(4.9)$$
 
 通常、高水準言語は形式言語である。仮に自然言語を採用すると、翻訳する手順が曖昧になり、実装困難なためである。
 
@@ -617,10 +541,7 @@ $$
 
 左再帰は、**左結合**の式を表す際に重要である。式 4.10に例を示す。左結合の式では、式の左側の演算子が優先される。
 
-$$
-
-1 - 2 - 3 - 4 - 5 = (((1 - 2) - 3) - 4) - 5 = -13.
- \qquad(4.10)$$
+$$1 - 2 - 3 - 4 - 5 = (((1 - 2) - 3) - 4) - 5 = -13. \qquad(4.10)$$
 
 右結合にすれば無限再帰を回避できるが、式の意味が変化してしまう。反復を表す特殊記号*など、代替手段で回避する。
 
@@ -1235,7 +1156,7 @@ println(new FaVM(FavaPEGs.expr("((x,y)=>x+y)(2,3)").get.m.code(Root)).data.pop)
 ### 9.4 言語処理系を動かす
 
 完成した言語処理系は、第3章に述べたラムダ計算の実験環境として利用できる。まず、式 3.4の自然数の演算を試す。
-自然数は帰納的に枚挙可能で、自然数の後続の自然数を求める関数と$$0$$で表現できる。加算と乗算も、簡単に実装できる。
+自然数は帰納的に枚挙可能で、自然数の後続の自然数を求める関数と $0$ で表現できる。加算と乗算も、簡単に実装できる。
 
 ```
 fava$ ((l,r)=>(f,x)=>l(f)(r(f)(x)))((f)=>(x)=>f(x),(f)=>(x)=>f(f(x)))((x)=>x+1,0) // 1 + 2
@@ -1253,7 +1174,7 @@ fava$ ((l,r)=>l((x,y)=>x,r))((x,y)=>x,(x,y)=>y)(true,false) // true | false
 true
 ```
 
-無名関数による再帰計算も可能である。式 3.9に述べた不動点演算子を利用する。$$10$$の階乗を求める例を以下に示す。
+無名関数による再帰計算も可能である。式 3.9に述べた不動点演算子を利用する。 $10$ の階乗を求める例を以下に示す。
 
 ```
 fava$ ((f)=>((x)=>f(x(x)))((x)=>f(x(x))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)

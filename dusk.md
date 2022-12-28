@@ -267,7 +267,7 @@ shared double[N][N + PAD] A, B, C;
 ## 4 行列積の並列処理の評価
 
 第4章では、行列積の処理速度の計測を通じて、第2章で実装したスケジューラを利用した場合の**台数効果**を確認する。
-具体的には、正方行列$$A,B$$の積だが、行列$$B$$のキャッシュミスを抑制するため、行列$$B$$を転置した$$A{}^tB$$の形式とする。
+具体的には、正方行列 $A,B$ の積だが、行列 $B$ のキャッシュミスを抑制するため、行列 $B$ を転置した $A{}^tB$ の形式とする。
 
 ```dlang
 import core.atomic, std.algorithm, std.numeric, std.parallelism, std.random, std.range, std.stdio;
@@ -379,7 +379,7 @@ void dmm_gr3d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 }
 ```
 
-行列を2軸で分割した場合も実装する。$$k$$軸で分割せず、$$i,j$$軸を並列化した場合である。部分行列は$$k$$軸のみ長くなる。
+行列を2軸で分割した場合も実装する。 $k$ 軸で分割せず、 $i,j$ 軸を並列化した場合である。部分行列は $k$ 軸のみ長くなる。
 
 ```dlang
 void dmm_gr2d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
@@ -422,15 +422,20 @@ Fig. 4.1は、2個のIntel Xeon E5-2699 v3を搭載した、NUMA型の共有メ�
 
 ![scales/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.svg](scales/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.svg)
 
-Fig. 4.1 dense matrix multiplication, $$8192\times8192\times8192$$.
+Fig. 4.1 dense matrix multiplication,  $8192\times8192\times8192$ .
 
-同じ並列化でも、提案実装と既存実装の性能には差がある。その差を解釈する。まず、排他制御の所要時間を$$D$$とする。
-排他制御を$$M/D/1$$の待ち行列とし、$$N$$個のプロセッサが**ポアソン到着**すると、待ち時間$$w$$の期待値は式 ?となる。
+同じ並列化でも、提案実装と既存実装の性能には差がある。その差を解釈する。まず、排他制御の所要時間を $D$ とする。
+排他制御を $M/D/1$ の待ち行列とし、 $N$ 個のプロセッサが**ポアソン到着**すると、待ち時間 $w$ の期待値は式 4.1となる。
 
+$$\begin{alignedat}{1}
 
+w &= \left\{N-1-\displaystyle\frac{1}{\rho b_{N-1}}\left(\displaystyle\sum_{n=0}^{N-1}b_n-N\right)\right\}D,\\
+b_n &= \displaystyle\sum_{k=0}^n\displaystyle\frac{(-1)^k}{k!}(n-k)^ke^{(n-k)\rho}\rho^k,\\
+\rho &= \lambda D.
+\end{alignedat} \qquad(4.1)$$
 
-特に細粒度の並列処理の場合は、既存実装のままプロセッサを増強すると、到着率$$\lambda$$が増加して、待ち時間が急増する。
-逆に、常に疎粒度のタスクを奪う提案実装では、到着率$$\lambda$$が抑制される。式 ?は、Brun & Garcia (2000)に従った。
+特に細粒度の並列処理の場合は、既存実装のままプロセッサを増強すると、到着率 $\lambda$ が増加して、待ち時間が急増する。
+逆に、常に疎粒度のタスクを奪う提案実装では、到着率 $\lambda$ が抑制される。式 4.1は、Brun & Garcia (2000)に従った。
 
 ## 5 高性能並列処理系の紹介
 
@@ -529,7 +534,7 @@ Fig. 5.1に結果を示す。MeltdownやSpectreの対策により、Intel Xeon E
 
 ![scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg](scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg)
 
-Fig. 5.1 dense matrix multiplication, $$8192\times8192\times8192$$, vectorized by AVX.
+Fig. 5.1 dense matrix multiplication,  $8192\times8192\times8192$ , vectorized by AVX.
 
-PDRWSは、第4.1節のタスク並列処理に相当し、3軸を粒度$$128$$まで再帰的に並列化して、末端でSIMD命令を使用した。
-QUEUEは、第4.3節のデータ並列処理に相当し、2軸を粒度$$128$$まで格子状に並列化して、同様にSIMD命令を使用した。
+PDRWSは、第4.1節のタスク並列処理に相当し、3軸を粒度 $128$ まで再帰的に並列化して、末端でSIMD命令を使用した。
+QUEUEは、第4.3節のデータ並列処理に相当し、2軸を粒度 $128$ まで格子状に並列化して、同様にSIMD命令を使用した。
