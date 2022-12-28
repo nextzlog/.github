@@ -11,60 +11,33 @@ layout: page
 # 1 言語処理系を作る
 
 本書では、**ラムダ計算**を理論的背景に持つ独自のプログラミング言語の**インタプリタ**を自作して、**計算論**の基礎を学ぶ。
-実装は公開済みで気軽に閲覧できる。最低限の機能に留めた簡素な言語だが、改良次第では汎用的な言語に拡張できる。
+自作する言語の名前はfavaとする。最低限の機能に限定した簡素な言語だが、改良次第では高機能な言語に拡張できる。
 
-```bash
-$ git clone https://github.com/nextzlog/fava
-```
+## 1.1 サンプル
 
-改良には開発環境が必要だが、殆どの場合は**パッケージリポジトリ**経由で、即座に調達できる。ArchLinuxの例を示す。
-
-```bash
-$ sudo pacman -S jdk-openjdk scala
-```
-
-頒布版には、**対話環境**を同梱した。また、第2章に述べる様々な計算モデルの実験機能も同梱した。起動時に機能を選ぶ。
-
-```
-$ java -jar build/libs/fava.jar
-which language do you use?
-[0]: fava
-[1]: math
-select: 0
-fava$ "HELLO, WORLD!"
-HELLO, WORLD!
-```
-
-自作言語の名前はfavaとする。専用の命令を実装した仮想的な実行環境で動作する。算術演算や論理演算が実行できる。
-
-```
-fava$ 11 + 4 * 5 - 14
-17
-```
-
-理念的には**純粋関数型言語**に分類できる。式に**副作用**がなく、式の値は定数で、式の構造から明確に求まる特徴を持つ。
-また、関数は関数の引数や返り値にできる。ただし、関数は名前も局所変数も定義できず、数学的な関数の概念に似る。
+理念的には**純粋関数型言語**に分類できる。状態の概念がなく、式の値は定数だが、理論的には任意の計算を実行できる。
+関数は関数の引数や返り値にできる。ただし、関数の名前も局所変数も定義できず、参照可能な変数は引数に限られる。
 
 ```
 fava$ ((x)=>(y)=>3*x+7*y)(2)(3)
 27
 ```
 
-実用的な計算が困難な程の制約に思えるが、実際には第3章で解説する通り、優れた計算能力を持つ。階乗も計算できる。
+実用的な計算が困難な程の制約に思えるが、実際には第3章で述べる通り、任意の計算を実行できる。階乗も計算できる。
 
 ```
 fava$ ((f)=>((x)=>f(x(x)))((x)=>f(x(x))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)
 3628800
 ```
 
-理論的には、**帰納的に枚挙可能**な集合に対する、任意の計算を実行できる。自然数を関数で表現する芸当も可能である。
+自然数を関数で定義する例を示す。この例題は、関数型言語が任意の計算を実行できる性質を示す際に、よく登場する。
 
 ```
 fava$ ((f,x)=>f(f(f(f(f(x))))))((x)=>x+1,0) // 0 + 1 + 1 + 1 + 1 + 1
 5
 ```
 
-また、任意の**順序組**を定義して操作できる。順序組は構造体と等価である。理論的には複雑な**グラフ構造**も表現できる。
+任意の順序組も定義できる。端的に言えば構造体に相当し、複雑なグラフ構造も関数で表現できる性質を示す例である。
 
 ```
 fava$ ((pair)=>pair((car,cdr)=>car))(((car,cdr)=>(z)=>z(car,cdr))(12,34))
@@ -73,9 +46,27 @@ fava$ ((pair)=>pair((car,cdr)=>cdr))(((car,cdr)=>(z)=>z(car,cdr))(12,34))
 34
 ```
 
-対話環境の拡張機能として、実行環境で実行される命令列を表示する機能も用意した。実行環境の動作の理解に役立つ。
+## 1.2 開発環境
+
+favaの実装は公開済みで、以下の操作でビルドできる。実行環境としてJavaが、開発環境としてGradleが必要である。
 
 ```
+$ git clone https://github.com/nextzlog/fava
+$ gradle build -p fava
+```
+
+以下の操作で起動する。fava以外にも、第2章で実装する様々な計算モデルを実験する機能も含まれ、起動時に選べる。
+favaは対話的に実行できる。favaの内部で実行される命令列を表示する機能も用意した。内部的な動作の理解に役立つ。
+
+```
+$ java -jar fava/build/libs/fava.jar
+which language do you use?
+[0]: fava
+[1]: lisp
+[2]: math
+select: 0
+fava$ "HELLO, WORLD!"
+HELLO, WORLD!
 fava$ compile(1 + 2)
 Push(1) Push(2) Add
 ```
@@ -179,62 +170,55 @@ $$
  \qquad(2.1)$$
 
 空間的な自由を得た恩恵で、再帰構造を持つ計算に対応する。例えば、**フラクタル図形**を描画する遷移規則が存在する。
-Fig. 2.1に示す**ラングトンの環**の例では、仮足を伸ばして式 2.2の遺伝子を注入し、分裂増殖する生物群集を模倣する。
-
-$$
-
-0710710711111041041071071071.
- \qquad(2.2)$$
-
-![images/cell.loops.svg](images/cell.loops.svg)
-
-Fig. 2.1 Langton's loops in cellular automata.
-
-2次元の実装例を示す。遷移規則は引数で指定する。全てのセルが同時に更新される**同期型セルオートマトン**を採用した。
+さて、2次元のセルオートマトンの実装例を、以下に示す。引数は、遷移規則と、縦横に並んだセルの最初の状態である。
 
 ```scala
-class CA2[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
+class Grid[S](rule: Rule[S], data: Array[Array[S]]) {
+	def update = {
+		val next = rule(data.map(_.toSeq).toSeq)
+		next.zip(data).foreach(_.copyToArray(_))
+	}
+}
+```
+
+全てのセルが同時に状態遷移する**同期型セルオートマトン**を以下に実装する。引数は、遷移規則と、近傍の距離である。
+
+```scala
+class Rule[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
 	def ROI[V](i: Int)(s: Seq[V]) = Range.inclusive(i - d, i + d).map(Math.floorMod(_, s.size)).map(s)
 	def apply(s: Seq[Seq[S]]) = s.indices.map(x => s(x).indices.map(y => rule(ROI(x)(s).map(ROI(y)))))
 }
 ```
 
 理論的には、任意の遷移規則を初期状態で受け取り、模倣する万能機械も構築できる。その例が**ワイヤワールド**である。
-黒の基板に黄色の配線を作ると、信号が配線を巡り、記憶素子を含む、様々な論理回路を模倣する。Fig. 2.2に例を示す。
+黒の基板に黄色の配線を作ると、信号が配線を巡り、記憶素子を含む、様々な論理回路を模倣する。Fig. 2.1に例を示す。
 
 ![images/wire.count.svg](images/wire.count.svg)
 
-(1) 4bit counter.
+Fig. 2.1 Wireworld logic circuits.
 
-
-![images/wire.adder.svg](images/wire.adder.svg)
-
-(2) binary adder.
-
-Fig. 2.2 Wireworld logic circuits.
-
-Fig. 2.2(1)は**カウンタ**である。左側の**発振回路**から周期的に信号を送り込む度に、右側の配線4本の信号が切り替わる。
-Fig. 2.2(2)は**加算器**である。果ては、表示器を備えた計算機さえ実装可能な点が特徴だが、遷移規則は実に単純である。
+Fig. 2.1は**カウンタ**である。左側の**発振回路**から周期的に信号を送る度に、右側の4本の配線を流れる信号が切り替わる。
 
 ```scala
-object WireWorldRule extends CA2[Char](ROI => ROI(1)(1) match {
-	case 'W' if(ROI.flatten.count(_ == 'H') == 1) => 'H'
-	case 'W' if(ROI.flatten.count(_ == 'H') == 2) => 'H'
-	case 'W' => 'W'
-	case 'H' => 'T'
-	case 'T' => 'W'
-	case 'B' => 'B'
+object WireWorldRule extends Rule[Char](ROI => (ROI(1)(1), ROI.flatten.count(_ == 'H')) match {
+	case ('W', 1) => 'H'
+	case ('W', 2) => 'H'
+	case ('W', _) => 'W'
+	case ('H', _) => 'T'
+	case ('T', _) => 'W'
+	case ('B', _) => 'B'
 })
 ```
 
 ## 2.3 チューリング機械
 
-**チューリング機械**は、無限長の**テープ**と、その内容を読み書きする有限状態機械と、式 2.3の遷移関数$$\delta$$で構成される。
+**チューリング機械**は、無限長の**テープ**と、その内容を読み書きする有限状態機械と、式 2.2の遷移関数$$\delta$$で構成される。
 状態$$q_n$$で記号$$x_n$$を読み取ると、記号$$y_n$$に書き換える。状態$$q_{n+1}$$に遷移して$$\lambda_n$$の方向に移動し、再び記号を読み取る。
 
 $$
 
 (q_{n+1},y_n,\lambda_n) = \delta(q_n,x_n),
+\enspace\mathrm{where}\enspace
 \enspace\mathrm{where}\enspace
 \left\{
 \begin{aligned}
@@ -243,10 +227,10 @@ x_n,y_n &\in \Sigma,\\
 \lambda_n &\in \{L,R\}.
 \end{aligned}
 \right.
- \qquad(2.3)$$
+ \qquad(2.2)$$
 
 この動作は、任意の逐次処理型の計算機と等価であり、並列処理型のセルオートマトンと並んで、計算機の頂点に立つ。
-特に、帰納的に枚挙可能な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、Fig. 2.3に示す。
+特に、**帰納的に枚挙可能**な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、Fig. 2.2に示す。
 
 ![images/tape.plus1.svg](images/tape.plus1.svg)
 
@@ -256,46 +240,49 @@ x_n,y_n &\in \Sigma,\\
 
 (2) 110=101+001.
 
-Fig. 2.3 numerical increment operation on a Turing machine ($$k=1$$).
+![images/tape.plus3.svg](images/tape.plus3.svg)
+
+(3) 111=110+001.
+
+Fig. 2.2 numerical increment operation on a Turing machine ($$k=1$$).
 
 任意の遷移関数を読み取り、その遷移関数を忠実に実行する、言語処理系と等価な**万能チューリング機械**も実装できる。
-遷移関数と計算手順で、別々のテープを使用した例をUTM型に実装する。状態F0からF1にかけ、遷移規則を検索する。
+遷移関数と計算手順で、異なるテープを使用した例をUTM型に実装する。状態0から1にかけて、遷移規則を検索する。
 
 ```scala
-class UTM[V](data1: Seq[V], data2: Seq[V], bk1: V, bk2: V, mvL: V, mvR: V, var st1: V) {
+class UTM[V](data1: Seq[V], data2: Seq[V], b1: V, b2: V, mL: V, mR: V, var s1: V, var s2: Int = 0) {
 	val tape1 = data1.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
 	val tape2 = data2.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
-	var (hd1, hd2) -> st2 = (0, 0) -> "F0"
-	def rd1 = tape1.getOrElse(hd1, bk1)
-	def rd2 = tape2.getOrElse(hd2, bk2)
-	def apply(stop: V) = Iterator.continually(st2 match {
-		case "F0" if rd2 == st1 => (st1 = st1, st2 = "F1", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F0" if rd2 != st1 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 5)
-		case "F1" if rd2 == rd1 => (st1 = st1, st2 = "F2", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F1" if rd2 != rd1 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 4)
-		case "F2" if rd2 != bk2 => (st1 = rd2, st2 = "F3", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F3" if rd2 != bk2 => (st1 = st1, st2 = "F4", tape1(hd1) = rd2, hd1 += 0, hd2 += 1)
-		case "F4" if rd2 == bk1 => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F4" if rd2 == mvL => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 -= 1, hd2 += 1)
-		case "F4" if rd2 == mvR => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 1, hd2 += 1)
-		case "F5" if rd2 == bk2 => (st1 = st1, st2 = "F0", tape1(hd1) = rd1, hd1 += 0, hd2 += 1)
-		case "F5" if rd2 != bk2 => (st1 = st1, st2 = "F5", tape1(hd1) = rd1, hd1 += 0, hd2 -= 1)
-	}).takeWhile(t => st1 != stop || st2 != "F0").map(t => tape1.values.mkString)
+	var hd1, hd2 = 0
+	def r1 = tape1.getOrElse(hd1, b1) 
+	def r2 = tape2.getOrElse(hd2, b2)
+	def apply(sop: V) = Iterator.continually(s2 match {
+		case 0 if r2 == s1 => (s1 = s1, s2 = 1, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 0 if r2 != s1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 5) 
+		case 1 if r2 == r1 => (s1 = s1, s2 = 2, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 1 if r2 != r1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 4) 
+		case 2 if r2 != b2 => (s1 = r2, s2 = 3, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 3 if r2 != b2 => (s1 = s1, s2 = 4, tape1(hd1) = r2, hd1 += 0, hd2 += 1) 
+		case 4 if r2 == b1 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 4 if r2 == mL => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 -= 1, hd2 += 1) 
+		case 4 if r2 == mR => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 1, hd2 += 1) 
+		case 5 if r2 == b2 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+		case 5 if r2 != b2 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 -= 1) 
+	}).takeWhile(t => s1 != sop || s2 != 0).map(t => tape1.values.mkString)
 }
 ```
 
-状態F2からF4で、状態遷移と書き戻しと移動を行う。状態F5でテープの左端に戻り、状態F0に戻る。使用例を示す。
+状態2から4にかけて、状態遷移と書き戻しと移動を行う。状態5でテープの左端に戻り、状態0に戻る。使用例を示す。
+遷移規則は式 2.2の通り、5個組で読み込ませる。初期状態Iから状態Fまで動かすと、Fig. 2.2の計算が実行される。
 
 ```scala
 case class CUTM(data1: String, data2: String) extends UTM(data1, data2, ' ', '*', 'L', 'R', 'I')
 CUTM("0111111", "I0a0RI1a1Ra0a0Ra1a1Ra b Lb0c1Lb1b0Lb F1 c0c0Lc1c1Lc F R")('F').foreach(println)
 ```
 
-遷移規則は式 2.3の通り、5個組で読み込ませる。初期状態Iから状態Fまで動かすと、Fig. 2.3の計算が実行される。
-
 ## 2.4 逆ポーランド記法
 
-**スタック**を備え、再帰計算に対応した有限状態機械を**プッシュダウンオートマトン**と呼ぶ。式 2.4の遷移関数$$\delta$$に従う。
+**スタック**を備え、再帰計算に対応した有限状態機械を**プッシュダウンオートマトン**と呼ぶ。式 2.3の遷移関数$$\delta$$に従う。
 $$Q$$は状態の、$$\Sigma$$と$$\Gamma$$は入力とスタックの記号の有限集合である。$$\Gamma^*$$は$$\Gamma$$の元を並べた任意長の記号列$$y^*$$の集合である。
 
 $$
@@ -310,9 +297,9 @@ y^*_n &\in \Gamma^*,\\
 \sigma_n &\in \Sigma.
 \end{aligned}
 \right.
- \qquad(2.4)$$
+ \qquad(2.3)$$
 
-記号$$\sigma_n$$を受け取ると、スタックの先頭の記号$$x_n$$を取り除き、先頭に記号列$$y^*_n$$を順番に積んで。状態$$q_{n+1}$$に遷移する。
+記号$$\sigma_n$$を受け取ると、スタックの先頭の記号$$x_n$$を取り除き、先頭に記号列$$y^*_n$$を順番に積んで、状態$$q_{n+1}$$に遷移する。
 再帰計算を活用した例として、第2.1節で実装した正規表現の拡張を考える。以下の関数ZLOは、記号列$$\texttt{Z}^n\texttt{L}\texttt{O}^n$$を表す。
 
 ```scala
@@ -321,29 +308,29 @@ println(ZLO.test("ZZZZZZZZZZZZZZZZZZZZZZZZZLOOOOOOOOOOOOOOOOOOOOOOOOO").isDefine
 ```
 
 残念ながら、再帰計算は実行できても、受け取った記号列を読み返す機能がなく、計算能力はチューリング機械に劣る。
-ただし、記憶装置としてスタックを使う広義の**スタック機械**は、重要な計算モデルである。式 2.5の計算を例に考える。
+ただし、記憶装置としてスタックを使う広義の**スタック機械**は、重要な計算モデルである。式 2.4の計算を例に考える。
 
 $$
 
 (1 + 2) * (10 - 20).
- \qquad(2.5)$$
+ \qquad(2.4)$$
 
 演算子には優先順位があるため、式を左から読むだけでは、計算は困難である。数値を保持する記憶装置も必要である。
-前者は、式 2.6の**逆ポーランド記法**で解決する。演算子に優先順位はなく、出現する順番に、直前の数値に適用される。
+前者は、式 2.5の**逆ポーランド記法**で解決する。演算子に優先順位はなく、出現する順番に、直前の数値に適用される。
 
 $$
 
 \texttt{1 2 + 10 20 - *}.
- \qquad(2.6)$$
+ \qquad(2.5)$$
 
-手順をFig. 2.4に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
+手順をFig. 2.3に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
+その再帰計算や条件分岐も、指定された長さだけ記号列を遡る**分岐命令**があれば実現できる。詳細は第6章に解説する。
 
 ![images/pola.anime.svg](images/pola.anime.svg)
 
-Fig. 2.4 1 2 + 10 20 - *.
+Fig. 2.3 1 2 + 10 20 - *.
 
-その再帰計算や条件分岐も、指定された長さだけ記号列を遡る**分岐命令**があれば実現できる。詳細は第6章に解説する。
-逆ポーランド記法の数式を計算する実装例を示す。数式は、空白で区切る必要がある。この実装は、第4章で再び使う。
+逆ポーランド記法とスタック機械による四則演算の実装例を以下に示す。数式は、整数と演算子を空白で区切って渡す。
 
 ```scala
 object ArithStackMachine extends collection.mutable.Stack[Int]() {
@@ -356,6 +343,15 @@ object ArithStackMachine extends collection.mutable.Stack[Int]() {
 	}.lastOption.map(_ => pop).last
 }
 ```
+
+Fig. 2.3の手順で計算を行う。整数を読み取るとスタックに積み、演算子を読み取ると演算を行う。以下に使用例を示す。
+
+```scala
+println(ArithStackMachine("1 2 + 10 20 - *")) // -30
+println(ArithStackMachine("3 4 * 10 20 * +")) // 212
+```
+
+この実装は、第4章で再び使用する。第4章では、中置記法の数式を逆ポーランド記法に変換するコンパイラを実装する。
 
 # 3 ラムダ計算の理論
 
@@ -1085,7 +1081,7 @@ case class LitST(value: Any) extends AST {
 }
 ```
 
-定数は単にPush命令に翻訳される。なお、文字列の場合は、特別にStrST型で扱う。特殊文字の処理を行う目的である。
+定数は単にPush命令に翻訳される。なお、文字列の場合は、特別にStrST型で扱う。ここで、特殊な文字の処理を行う。
 
 ```scala
 case class StrST(string: String) extends AST {
@@ -1127,7 +1123,10 @@ case class BinST(op: String, e1: AST, e2: AST) extends AST {
 }
 ```
 
+## 9.2 分岐と関数の構文木
+
 条件分岐の式はIfST型で表す。条件式と、真の場合に評価する式と、偽の場合に評価する式で、合計3個の引数を取る。
+条件分岐は、条件式の命令列の後に、Skin命令と、真の場合の命令列と、Skip命令と、偽の場合の命令列を配置する。
 
 ```scala
 case class IfST(cond: AST, vals: (AST, AST)) extends AST {
@@ -1141,15 +1140,12 @@ case class IfST(cond: AST, vals: (AST, AST)) extends AST {
 }
 ```
 
-条件分岐は、条件式の命令列の後に、Skin命令と、真の場合の命令列と、Skip命令と、偽の場合の命令列を出力する。
-
-## 9.2 関数と引数の構文木
-
-最初に、関数を表すDefST型を実装する。引数と、関数の内容を引数に取る。また、外側の関数を参照する変数を持つ。
-関数の内容の命令列を生成してから、その長さと引数の個数に対応したDef命令と、Ret命令を冒頭と最後に追加する。
+次に、関数を表すDefST型を実装する。引数は、関数の引数と内容である。また、外側の関数を参照する変数を定義する。
+関数は、内容の命令列を生成して、命令の個数と引数の個数を指定したDef命令と、Ret命令を冒頭と最後に配置する。
 
 ```scala
-case class DefST(pars: Seq[String], body: AST, var out: DefST = null) extends AST {
+case class DefST(pars: Seq[String], body: AST) extends AST {
+	var out: DefST = null
 	def code(implicit env: DefST) = {
 		val codes = body.code((this.out = env, this)._2)
 		(Def(codes.size + 2, pars.size) +: codes :+ Ret)
@@ -1157,7 +1153,8 @@ case class DefST(pars: Seq[String], body: AST, var out: DefST = null) extends AS
 }
 ```
 
-関数は、定義された際の関数の包含関係を保持する。最も外側の関数は、便宜的に架空の関数を表すRoot型を参照する。
+関数は、関数が定義された場所での、関数の包含関係を保持する。関数の包含関係は、変数を参照できる範囲を決定する。
+外側の関数は、命令列を生成する際に、引数で渡される。また、最も外側の関数は、便宜的に以下のRoot型を参照する。
 
 ```scala
 object Root extends DefST(Seq(), null)
@@ -1168,9 +1165,9 @@ object Root extends DefST(Seq(), null)
 ```scala
 case class StIdST(val name: String) extends AST {
 	def search(env: DefST, nest: Int = 0): Load = {
-		if(env.pars.contains(name)) return Load(nest, env.pars.indexOf(name))
-		if(env.out != null) search(env.out, nest + 1)
-		else sys.error(s"variable $name not defined")
+		if(env.pars.contains(name)) Load(nest, env.pars.indexOf(name))
+		else if(env.out != null) search(env.out, nest + 1)
+		else sys.error(s"parameter $name is not declared")
 	}
 	def code(implicit env: DefST) = Seq(search(env))
 }
