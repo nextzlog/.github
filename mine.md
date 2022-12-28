@@ -795,7 +795,7 @@ $$F(\boldsymbol{s}) = \int_{\Omega_t} k(\boldsymbol{s}, \boldsymbol{t}) f(\bolds
 \end{aligned}
 \right. \qquad(3.27)$$
 
-例えば、**ラプラス変換**や**フーリエ変換**が該当する。さて、式 3.29で定義される核関数 $k$ は、再生核である。証明しよう。
+例えば、**ラプラス変換**や**フーリエ変換**が該当する。さて、式 3.28で定義される核関数 $k$ は、再生核である。証明しよう。
 
 $$k(x,y) = \displaystyle\frac{a}{\pi} \mathrm{sinc} a(y-x). \qquad(3.28)$$
 

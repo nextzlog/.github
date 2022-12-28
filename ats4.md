@@ -60,8 +60,8 @@ ATS-4型の特色は、**ドメイン特化言語**による規約の定義を�
 
 |-|-|
 |---|---|
-|[電通大コンテスト](https://www.ja1zgp.com)の例 | [https://github.com/nextzlog/ats4/blob/master/conf/rules/uec.rb](https://github.com/nextzlog/ats4/blob/master/conf/rules/uec.rb) |
-|[多摩川コンテスト](http://apollo.c.ooco.jp)の例 | [https://github.com/nextzlog/ats4/blob/master/conf/rules/tama.rb](https://github.com/nextzlog/ats4/blob/master/conf/rules/tama.rb)|
+|[電通大コンテスト](https://www.ja1zgp.com)の例 | [https://github.com/nextzlog/ats4/blob/master/conf/rules/JA1ZGP/uec.rb](https://github.com/nextzlog/ats4/blob/master/conf/rules/JA1ZGP/uec.rb) |
+|[多摩川コンテスト](http://apollo.c.ooco.jp)の例 | [https://github.com/nextzlog/ats4/blob/master/conf/rules/JI1YEG/tama.rb](https://github.com/nextzlog/ats4/blob/master/conf/rules/JI1YEG/tama.rb)|
 
 我が無線部では、全てのコンテストがATS-4型を活用する将来を構想しており、ATS-4型の移植は、無償で受け付ける。
 
