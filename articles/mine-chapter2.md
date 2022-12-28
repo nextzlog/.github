@@ -32,11 +32,11 @@ e^{z_K}
 最終層の活性化関数を適切に選ぶと、回帰や分類など、様々な問題に対応できる。特に分類問題の例は第2.3節に述べる。
 Fig. 2.1(2)は、活性化関数にシグモイド関数を利用し、論理和を求める例である。直線 $f(\boldsymbol{x})=0.5$ は分類の境界を表す。
 
-![images/slp.trans.svg](/images/slp.trans.svg)
+![images/slp.trans.png](/images/slp.trans.png)
 
 (1) activation functions.
 
-![images/slp.class.svg](/images/slp.class.svg)
+![images/slp.class.png](/images/slp.class.png)
 
 (2) OR learned by neuron.
 
@@ -84,11 +84,11 @@ for(n <- 1 to 1000000; x <- 0 to 1; y <- 0 to 1) model1.bp(Seq(x,y), Seq(x^y))
 複数の非線型変換を持つ恩恵で、線型分離が困難な分類問題にも対応できる。具体例として、排他的論理和を学習する。
 通常の結果をFig. 2.2(1)に、各層の変数 $\boldsymbol{x}$ に定数項を含む場合の結果を(2)に示す。定数項の有無で、境界が変化した。
 
-![images/mlp.class.svg](/images/mlp.class.svg)
+![images/mlp.class.png](/images/mlp.class.png)
 
 (1) Hidden + Hidden.
 
-![images/mlp.const.svg](/images/mlp.const.svg)
+![images/mlp.const.png](/images/mlp.const.png)
 
 (2) Offset + Offset.
 
@@ -214,11 +214,11 @@ val model = new Offset(3, new Softmax, ()=>new PlainSGD, new Output(4, _-_))
 
 Fig. 2.3は、国際信号旗の*Z*旗を学習する例である。問題が簡単なので、単層の方が多層よりも正確な*Z*旗を学習できる。
 
-![images/slp.zflag.svg](/images/slp.zflag.svg)
+![images/slp.zflag.png](/images/slp.zflag.png)
 
 (1) 2-layer perceptron
 
-![images/mlp.zflag.svg](/images/mlp.zflag.svg)
+![images/mlp.zflag.png](/images/mlp.zflag.png)
 
 (2) 3-layer perceptron
 
@@ -238,11 +238,11 @@ E(x,y) = x^2 - y^2. \qquad(2.12)$$
 原点 $\boldsymbol{O}$ に嵌ると、Fig. 2.4(1)のように最適化が止まる。しかし、 $y\neq0$ に動けば、勾配が負になり、最適化を再開できる。
 鞍点は頻繁に現れる。Fig. 2.4(2)は、5通りの初期値で排他的論理和を学習した際の誤差 $E_\mathrm{sq}$ の推移で、停滞が見られる。
 
-![images/sgd.avoid.svg](/images/sgd.avoid.svg)
+![images/sgd.avoid.png](/images/sgd.avoid.png)
 
 (1) saddle point avoidance mechanism.
 
-![images/sgd.speed.svg](/images/sgd.speed.svg)
+![images/sgd.speed.png](/images/sgd.speed.png)
 
 (2) loss diminution through training.
 
@@ -337,7 +337,7 @@ for(step <- 1 to 100000) model1.init -> x.zip(y).foreach(model1.bp(_,_) -> param
 
 Fig. 2.5に予測した波形と真の波形を示す。学習の初期段階では、歪な波形だが、学習が進むと、綺麗な正弦波に近付く。
 
-![images/rnn.phase.svg](/images/rnn.phase.svg)
+![images/rnn.phase.png](/images/rnn.phase.png)
 
 Fig. 2.5 sine curve prediction.
 

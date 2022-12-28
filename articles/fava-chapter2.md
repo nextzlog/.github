@@ -121,7 +121,7 @@ class Rule[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
 理論的には、任意の遷移規則を初期状態で受け取り、模倣する万能機械も構築できる。その例が**ワイヤワールド**である。
 黒の基板に黄色の配線を作ると、信号が配線を巡り、記憶素子を含む、様々な論理回路を模倣する。Fig. 2.1に例を示す。
 
-![images/wire.count.svg](/images/wire.count.svg)
+![images/wire.count.png](/images/wire.count.png)
 
 Fig. 2.1 Wireworld logic circuits.
 
@@ -157,15 +157,15 @@ x_n,y_n &\in \Sigma,\\
 この動作は、任意の逐次処理型の計算機と等価であり、並列処理型のセルオートマトンと並んで、計算機の頂点に立つ。
 特に、**帰納的に枚挙可能**な集合の計算が得意である。2進数で与えられた自然数の後続を求める手順を、Fig. 2.2に示す。
 
-![images/tape.plus1.svg](/images/tape.plus1.svg)
+![images/tape.plus1.png](/images/tape.plus1.png)
 
 (1) 100=011+001.
 
-![images/tape.plus2.svg](/images/tape.plus2.svg)
+![images/tape.plus2.png](/images/tape.plus2.png)
 
 (2) 110=101+001.
 
-![images/tape.plus3.svg](/images/tape.plus3.svg)
+![images/tape.plus3.png](/images/tape.plus3.png)
 
 (3) 111=110+001.
 
@@ -242,7 +242,7 @@ $$\texttt{1 2 + 10 20 - *}. \qquad(2.5)$$
 手順をFig. 2.3に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
 その再帰計算や条件分岐も、指定された長さだけ記号列を遡る**分岐命令**があれば実現できる。詳細は第6章に解説する。
 
-![images/pola.anime.svg](/images/pola.anime.svg)
+![images/pola.anime.png](/images/pola.anime.png)
 
 Fig. 2.3 1 2 + 10 20 - *.
 

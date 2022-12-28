@@ -97,7 +97,7 @@ $ ./dusk/test/dmm/dmm.plot
 
 Fig. 5.1に結果を示す。MeltdownやSpectreの対策により、Intel Xeon E5-2699 v3の性能が制限される前に測定した。
 
-![scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg](/scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg)
+![scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png](/scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png)
 
 Fig. 5.1 dense matrix multiplication,  $8192\times8192\times8192$ , vectorized by AVX.
 

@@ -7,11 +7,11 @@ published: true
 **サポートベクターマシン**は、分類問題に対し、各クラスの集団からの距離 $d$ が最大になる境界を学習する分類器である。
 Fig. 3.1(1)に線型分離可能な問題の、(2)に線型分離が困難な問題の例を示す。まずは、線型分離可能な場合を解説する。
 
-![images/svm.model.svg](/images/svm.model.svg)
+![images/svm.model.png](/images/svm.model.png)
 
 (1) linear problem.
 
-![images/svm.round.svg](/images/svm.round.svg)
+![images/svm.round.png](/images/svm.round.png)
 
 (2) curved problem.
 
@@ -166,11 +166,11 @@ class SMO(data: Seq[Data], k: (Data, Data) => Double, C: Double = 1e-10) extends
 
 Fig. 3.2に学習の例を示す。綺麗な境界を学習できた。(2)では、誤分類によりサポートベクトルが消える様子がわかる。
 
-![images/svm.line1.svg](/images/svm.line1.svg)
+![images/svm.line1.png](/images/svm.line1.png)
 
 (1) sample data separable by a line.
 
-![images/svm.line2.svg](/images/svm.line2.svg)
+![images/svm.line2.png](/images/svm.line2.png)
 
 (2) sample data with outlier points.
 
@@ -228,11 +228,11 @@ $$\forall a_i,b_j \in \mathbb{R} \colon
 要するに、正定値性を満たす任意の対称関数 $k$ に対し、内積が関数 $k$ で定義された空間 $H_k$ が存在し、内積を計算できる。
 最も汎用的な例は、式 3.16の**ガウシアンカーネル**である。Fig. 3.3に、線型分離が困難な問題を学習した結果を示す。
 
-![images/svm.kern1.svg](/images/svm.kern1.svg)
+![images/svm.kern1.png](/images/svm.kern1.png)
 
 (1) diamond-shaped samples.
 
-![images/svm.kern2.svg](/images/svm.kern2.svg)
+![images/svm.kern2.png](/images/svm.kern2.png)
 
 (2) two concentric circles.
 

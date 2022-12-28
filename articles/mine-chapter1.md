@@ -12,11 +12,11 @@ $$\forall\boldsymbol{x},\boldsymbol{y}\colon \left(\boldsymbol{x},\boldsymbol{y}
 教師あり学習で、目的変数 $\boldsymbol{y}$ が、**クラス**と呼ばれる離散値を取る場合を**分類**と呼ぶ。その初歩的な例が**最近傍法**である。
 最近傍法では、未知の点 $\boldsymbol{x}$ のクラスは、 $\boldsymbol{x}$ の至近距離にある既知の $K$ 個の点の多数決で決まる。Fig. 1.1(1)に例を示す。
 
-![images/knn.model.svg](/images/knn.model.svg)
+![images/knn.model.png](/images/knn.model.png)
 
 (1)  $k$  nearest neighbor diameters.
 
-![images/knn.class.svg](/images/knn.class.svg)
+![images/knn.class.png](/images/knn.class.png)
 
 (2)  $k\!=\!10$  region segmentation.
 
@@ -88,11 +88,11 @@ class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], 
 
 Fig. 1.2は、多項式基底とガウス基底を利用して、各々の基底に適した形状の曲線に対し、線型回帰を行った結果である。
 
-![images/lbf.power.svg](/images/lbf.power.svg)
+![images/lbf.power.png](/images/lbf.power.png)
 
 (1)  $\left\lbrace x^3,x^2,x,1\right\rbrace $ 
 
-![images/lbf.gauss.svg](/images/lbf.gauss.svg)
+![images/lbf.gauss.png](/images/lbf.gauss.png)
 
 (2)  $G(x \vert \pm5, 1)$ 
 
@@ -146,11 +146,11 @@ class NaiveBayes[D<:Seq[W],W,C](texts: Seq[D], classes: Seq[C]) {
 
 Fig. 1.3(1)は、百科事典で各地方の記事から固有名詞を抽出して学習し、都道府県の記事の地方を推定した結果である。
 
-![images/nbc.jmap8.svg](/images/nbc.jmap8.svg)
+![images/nbc.jmap8.png](/images/nbc.jmap8.png)
 
 (1) 8-regional division.
 
-![images/nbc.jmap2.svg](/images/nbc.jmap2.svg)
+![images/nbc.jmap2.png](/images/nbc.jmap2.png)
 
 (2) 2-regional division.
 
