@@ -66,9 +66,9 @@ fava$ compile(1 + 2)
 Push(1) Push(2) Add
 ```
 
-## [(2) 計算モデルを作る](https://zenn.dev/nextzlog/articles/fava-chapter2)
-## [(3) ラムダ計算の理論](https://zenn.dev/nextzlog/articles/fava-chapter3)
-## [(4) 簡単なコンパイラ](https://zenn.dev/nextzlog/articles/fava-chapter4)
-## [(5) 自作言語の仕様書](https://zenn.dev/nextzlog/articles/fava-chapter5)
-## [(6) 命令セットを作る](https://zenn.dev/nextzlog/articles/fava-chapter6)
-## [(7) コンパイラを作る](https://zenn.dev/nextzlog/articles/fava-chapter7)
+## [2 計算モデルを作る](https://zenn.dev/nextzlog/articles/fava-chapter2)
+## [3 ラムダ計算の理論](https://zenn.dev/nextzlog/articles/fava-chapter3)
+## [4 簡単なコンパイラ](https://zenn.dev/nextzlog/articles/fava-chapter4)
+## [5 自作言語の仕様書](https://zenn.dev/nextzlog/articles/fava-chapter5)
+## [6 命令セットを作る](https://zenn.dev/nextzlog/articles/fava-chapter6)
+## [7 コンパイラを作る](https://zenn.dev/nextzlog/articles/fava-chapter7)

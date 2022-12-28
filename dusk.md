@@ -77,7 +77,7 @@ Fig. 1.2 work-stealing scheduler on shared-memory architecture.
 
 保有するタスクを消化した場合は、他のプロセッサにある、最も粗粒度な塊を、即ち、最古のタスクを奪って実行する。
 
-## [(2) 並列スケジューラの実装](https://zenn.dev/nextzlog/articles/dusk-chapter2)
-## [(3) キャッシュ効率の最適化](https://zenn.dev/nextzlog/articles/dusk-chapter3)
-## [(4) 行列積の並列処理の評価](https://zenn.dev/nextzlog/articles/dusk-chapter4)
-## [(5) 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)
+## [2 並列スケジューラの実装](https://zenn.dev/nextzlog/articles/dusk-chapter2)
+## [3 キャッシュ効率の最適化](https://zenn.dev/nextzlog/articles/dusk-chapter3)
+## [4 行列積の並列処理の評価](https://zenn.dev/nextzlog/articles/dusk-chapter4)
+## [5 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)

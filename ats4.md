@@ -63,6 +63,6 @@ ATS-4型の特色は、**ドメイン特化言語**による規約の定義を�
 
 我が無線部では、全てのコンテストがATS-4型を活用する将来を構想しており、ATS-4型の移植は、無償で受け付ける。
 
-## [(2) 従来方式](https://zenn.dev/nextzlog/articles/ats4-chapter2)
-## [(3) 書類提出](https://zenn.dev/nextzlog/articles/ats4-chapter3)
-## [(4) 推奨書式](https://zenn.dev/nextzlog/articles/ats4-chapter4)
+## [2 従来方式](https://zenn.dev/nextzlog/articles/ats4-chapter2)
+## [3 書類提出](https://zenn.dev/nextzlog/articles/ats4-chapter3)
+## [4 推奨書式](https://zenn.dev/nextzlog/articles/ats4-chapter4)

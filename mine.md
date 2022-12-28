@@ -159,8 +159,8 @@ Fig. 1.3 Japanese map division into regions based on classification of Wikipedia
 
 Fig. 1.3(2)は、東日本と西日本の記事を学習して、都道府県を分類した結果である。単純だが、高精度な分類ができる。
 
-## [(2) ニューラルネットワーク](https://zenn.dev/nextzlog/articles/mine-chapter2)
-## [(3) サポートベクターマシン](https://zenn.dev/nextzlog/articles/mine-chapter3)
-## [(4) 決定木の学習と汎化性能](https://zenn.dev/nextzlog/articles/mine-chapter4)
-## [(5) 潜在的ディリクレ配分法](https://zenn.dev/nextzlog/articles/mine-chapter5)
-## [(6) 混合正規分布と最尤推定](https://zenn.dev/nextzlog/articles/mine-chapter6)
+## [2 ニューラルネットワーク](https://zenn.dev/nextzlog/articles/mine-chapter2)
+## [3 サポートベクターマシン](https://zenn.dev/nextzlog/articles/mine-chapter3)
+## [4 決定木の学習と汎化性能](https://zenn.dev/nextzlog/articles/mine-chapter4)
+## [5 潜在的ディリクレ配分法](https://zenn.dev/nextzlog/articles/mine-chapter5)
+## [6 混合正規分布と最尤推定](https://zenn.dev/nextzlog/articles/mine-chapter6)
