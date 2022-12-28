@@ -38,22 +38,22 @@ Chapelでは、module宣言で**名前空間**を定義する。関数の外に�
 
 ```
 module Foo {
-	writeln("initilize Foo");
-	proc main() {
-		writeln("This is Foo");
-	}
+  writeln("initilize Foo");
+  proc main() {
+    writeln("This is Foo");
+  }
 }
 module Bar {
-	writeln("initilize Bar");
-	proc main() {
-		writeln("This is Bar");
-	}
+  writeln("initilize Bar");
+  proc main() {
+    writeln("This is Bar");
+  }
 }
 import baz.Foo;
 import baz.Bar;
 proc main() {
-	Foo.main();
-	Bar.main();
+  Foo.main();
+  Bar.main();
 }
 ```
 

@@ -9,9 +9,9 @@ published: true
 
 ```scala
 trait AST {
-	def res(implicit env: Seq[DefST]): Type
-	def gen(implicit env: Seq[DefST]): Seq[Code]
-	def acc(unify: => Unit)(v: Type) = util.Try(unify).map(_ => v).get
+  def res(implicit env: Seq[DefST]): Type
+  def gen(implicit env: Seq[DefST]): Seq[Code]
+  def acc(unify: => Unit)(v: Type) = util.Try(unify).map(_ => v).get
 }
 ```
 
@@ -24,8 +24,8 @@ resは、第7.3節で実装する型推論を実行して、式の型を決定�
 
 ```scala
 case class LitST(value: Any) extends AST {
-	def res(implicit env: Seq[DefST]) = Atom(value.getClass)
-	def gen(implicit env: Seq[DefST]) = Seq(Push(value))
+  def res(implicit env: Seq[DefST]) = Atom(value.getClass)
+  def gen(implicit env: Seq[DefST]) = Seq(Push(value))
 }
 ```
 
@@ -33,8 +33,8 @@ case class LitST(value: Any) extends AST {
 
 ```scala
 case class StrST(string: String) extends AST {
-	def res(implicit env: Seq[DefST]) = Atom(classOf[String])
-	def gen(implicit env: Seq[DefST]) = LitST(StringContext.processEscapes(string)).gen
+  def res(implicit env: Seq[DefST]) = Atom(classOf[String])
+  def gen(implicit env: Seq[DefST]) = LitST(StringContext.processEscapes(string)).gen
 }
 ```
 
@@ -42,9 +42,9 @@ case class StrST(string: String) extends AST {
 
 ```scala
 case class UnST(op: String, expr: AST) extends AST {
-	def res(implicit env: Seq[DefST]) = acc(Form(v).unify(Form(expr.res)))(v)
-	def gen(implicit env: Seq[DefST]) = expr.gen :+ UnOp.table(op, v.prune)
-	val v = new Link
+  def res(implicit env: Seq[DefST]) = acc(Form(v).unify(Form(expr.res)))(v)
+  def gen(implicit env: Seq[DefST]) = expr.gen :+ UnOp.table(op, v.prune)
+  val v = new Link
 }
 ```
 
@@ -52,9 +52,9 @@ case class UnST(op: String, expr: AST) extends AST {
 
 ```scala
 case class AddST(op: String, e1: AST, e2: AST) extends AST {
-	def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
-	def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ AddOp.table(op, v.prune)
-	val v = new Link
+  def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
+  def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ AddOp.table(op, v.prune)
+  val v = new Link
 }
 ```
 
@@ -62,9 +62,9 @@ case class AddST(op: String, e1: AST, e2: AST) extends AST {
 
 ```scala
 case class MulST(op: String, e1: AST, e2: AST) extends AST {
-	def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
-	def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ MulOp.table(op, v.prune)
-	val v = new Link
+  def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
+  def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ MulOp.table(op, v.prune)
+  val v = new Link
 }
 ```
 
@@ -75,11 +75,11 @@ case class MulST(op: String, e1: AST, e2: AST) extends AST {
 
 ```scala
 case class IfST(c: AST, e: (AST, AST)) extends AST {
-	def pos(pos: Seq[Code]) = (Skin(2 + pos.size) +: pos)
-	def neg(neg: Seq[Code]) = (Skip(1 + neg.size) +: neg)
-	def res(implicit env: Seq[DefST]) = acc(Form(Bt, v, v).unify(Form(c.res, e._1.res, e._2.res)))(v)
-	def gen(implicit env: Seq[DefST]) = c.gen ++ pos(e._1.gen) ++ neg(e._2.gen)
-	val v = new Link
+  def pos(pos: Seq[Code]) = (Skin(2 + pos.size) +: pos)
+  def neg(neg: Seq[Code]) = (Skip(1 + neg.size) +: neg)
+  def res(implicit env: Seq[DefST]) = acc(Form(Bt, v, v).unify(Form(c.res, e._1.res, e._2.res)))(v)
+  def gen(implicit env: Seq[DefST]) = c.gen ++ pos(e._1.gen) ++ neg(e._2.gen)
+  val v = new Link
 }
 ```
 
@@ -88,11 +88,11 @@ case class IfST(c: AST, e: (AST, AST)) extends AST {
 
 ```scala
 case class DefST(params: Seq[String], value: AST) extends AST {
-	val args = params.map(_ -> new Link).toMap
-	def get(name: String, depth: Int) = Load(depth, params.indexOf(name)) -> args(name)
-	def res(implicit env: Seq[DefST]) = Form(params.map(args) :+ value.res(env :+ this) :_*)
-	def gen(implicit env: Seq[DefST]) = tag(value.gen(env :+ this))
-	def tag(codes: Seq[Code]) = Def(codes.size + 2, params.size) +: codes :+ Ret
+  val args = params.map(_ -> new Link).toMap
+  def get(name: String, depth: Int) = Load(depth, params.indexOf(name)) -> args(name)
+  def res(implicit env: Seq[DefST]) = Form(params.map(args) :+ value.res(env :+ this) :_*)
+  def gen(implicit env: Seq[DefST]) = tag(value.gen(env :+ this))
+  def tag(codes: Seq[Code]) = Def(codes.size + 2, params.size) +: codes :+ Ret
 }
 ```
 
@@ -101,13 +101,13 @@ case class DefST(params: Seq[String], value: AST) extends AST {
 
 ```scala
 case class StIdST(val name: String) extends AST {
-	def resolve(env: Seq[DefST], nest: Int = 0): (Load, Link) = {
-		if(env.last.params.contains(name)) env.last.get(name, nest)
-		else if(env.size >= 2) resolve(env.init, nest + 1)
-		else sys.error(s"parameter $name is not declared")
-	}
-	def res(implicit env: Seq[DefST]) = resolve(env)._2.prune
-	def gen(implicit env: Seq[DefST]) = Seq(resolve(env)._1)
+  def resolve(env: Seq[DefST], nest: Int = 0): (Load, Link) = {
+    if(env.last.params.contains(name)) env.last.get(name, nest)
+    else if(env.size >= 2) resolve(env.init, nest + 1)
+    else sys.error(s"parameter $name is not declared")
+  }
+  def res(implicit env: Seq[DefST]) = resolve(env)._2.prune
+  def gen(implicit env: Seq[DefST]) = Seq(resolve(env)._1)
 }
 ```
 
@@ -116,9 +116,9 @@ case class StIdST(val name: String) extends AST {
 
 ```scala
 case class LzIdST(val name: StIdST) extends AST {
-	def res(implicit env: Seq[DefST]) = name.res
-	def gen(implicit env: Seq[DefST]) = (name.gen ++ head ++ name.gen ++ tail)
-	val (head, tail) = List(Nil, Skin(6), Ref, Call(0)) -> List(Fix, Set, Get)
+  def res(implicit env: Seq[DefST]) = name.res
+  def gen(implicit env: Seq[DefST]) = (name.gen ++ head ++ name.gen ++ tail)
+  val (head, tail) = List(Nil, Skin(6), Ref, Call(0)) -> List(Fix, Set, Get)
 }
 ```
 
@@ -126,8 +126,8 @@ case class LzIdST(val name: StIdST) extends AST {
 
 ```scala
 case class LzArgST(body: AST) extends AST {
-	def res(implicit env: Seq[DefST]) = body.res
-	def gen(implicit env: Seq[DefST]) = DefST(Seq(), body).gen :+ Arg
+  def res(implicit env: Seq[DefST]) = body.res
+  def gen(implicit env: Seq[DefST]) = DefST(Seq(), body).gen :+ Arg
 }
 ```
 
@@ -135,9 +135,9 @@ CallST型は、関数適用を表す。まず、関数を参照する式の、�
 
 ```scala
 case class CallST(f: AST, args: Seq[AST]) extends AST {
-	def res(implicit env: Seq[DefST]) = acc(Form(args.map(_.res) :+ v :_*).prune.unify(f.res))(v)
-	def gen(implicit env: Seq[DefST]) = f.gen ++ args.map(_.gen).flatten :+ Call(args.size)
-	val v = new Link
+  def res(implicit env: Seq[DefST]) = acc(Form(args.map(_.res) :+ v :_*).prune.unify(f.res))(v)
+  def gen(implicit env: Seq[DefST]) = f.gen ++ args.map(_.gen).flatten :+ Call(args.size)
+  val v = new Link
 }
 ```
 
@@ -148,8 +148,8 @@ unifyには、制約条件の右辺を渡す。再帰処理を通じて、制約
 
 ```scala
 trait Type {
-	def prune = this
-	def unify(t: Type): Unit
+  def prune = this
+  def unify(t: Type): Unit
 }
 ```
 
@@ -157,10 +157,10 @@ trait Type {
 
 ```scala
 case class Atom(atom: Class[_]) extends Type {
-	def unify(t: Type) = t.prune match {
-		case t: Link => t.unify(this)
-		case t: Type => require(this == t)
-	}
+  def unify(t: Type) = t.prune match {
+    case t: Link => t.unify(this)
+    case t: Type => require(this == t)
+  }
 }
 ```
 
@@ -168,14 +168,14 @@ case class Atom(atom: Class[_]) extends Type {
 
 ```scala
 case class Form(dom: Type*) extends Type {
-	def unify(t: Type) = t.prune match {
-		case t: Form => t.align(this)
-		case t: Type => t.unify(this)
-	}
-	def align(t: Form) = {
-		require(this.dom.size == t.dom.size)
-		dom.zip(t.dom).map(_.prune.unify(_))
-	}
+  def unify(t: Type) = t.prune match {
+    case t: Form => t.align(this)
+    case t: Type => t.unify(this)
+  }
+  def align(t: Form) = {
+    require(this.dom.size == t.dom.size)
+    dom.zip(t.dom).map(_.prune.unify(_))
+  }
 }
 ```
 
@@ -184,11 +184,11 @@ case class Form(dom: Type*) extends Type {
 
 ```scala
 class Link(var to: Option[Type] = None) extends Type {
-	def unify(t: Type) = t.prune match {
-		case t: Form => to = Some(Loop(t, this).prune)
-		case t: Type => to = Option.when(this != t)(t)
-	}
-	override def prune = to.map(_.prune).getOrElse(this)
+  def unify(t: Type) = t.prune match {
+    case t: Form => to = Some(Loop(t, this).prune)
+    case t: Type => to = Option.when(this != t)(t)
+  }
+  override def prune = to.map(_.prune).getOrElse(this)
 }
 ```
 
@@ -197,11 +197,11 @@ class Link(var to: Option[Type] = None) extends Type {
 
 ```scala
 case class Loop(form: Form, link: Link) extends Type {
-	def unify(t: Type) = t match {
-		case t: Form => link.unify(t)
-		case t: Type => require(this == t)
-	}
-	override def prune = if(form.dom.contains(link)) this else form
+  def unify(t: Type) = t match {
+    case t: Form => link.unify(t)
+    case t: Type => require(this == t)
+  }
+  override def prune = if(form.dom.contains(link)) this else form
 }
 ```
 
@@ -221,25 +221,25 @@ object St extends Atom(classOf[java.lang.String])
 
 ```scala
 object FavaPEGs extends PEGs {
-	def expr: PEG[AST] = (cond / or) <~ ("//" ~ ".*$".r).?
-	def cond = (or <~ "?") ~ (expr ~ (":" ~> expr)) ^ IfST
-	def or   = new Fold(and, "|" ^ (op => LogST(op, _, _)))
-	def and  = new Fold(eql, "&" ^ (op => LogST(op, _, _)))
-	def eql  = new Fold(rel, """(!|=)=""".r ^ (op => EqlST(op, _, _)))
-	def rel  = new Fold(add, """[<>]=?""".r ^ (op => RelST(op, _, _)))
-	def add  = new Fold(mul, """[\+\-]""".r ^ (op => AddST(op, _, _)))
-	def mul  = new Fold(unr, """[\*/%]""".r ^ (op => MulST(op, _, _)))
-	def unr  = ("+" / "-" / "!").* ~ call ^ ((o,e) => o.foldRight(e)(UnST))
-	def call = fact ~ args.* ^ ((f,a) => a.foldLeft(f)(CallST))
-	def args = "(" ~> new Sep(expr ^ LzArgST, ",") <~")"
-	def fact = func / bool / text / real / int / name / ("(" ~> expr <~ ")")
-	def func = pars ~ ("=>" ~> expr) ^ ((p,e) => DefST(p, e))
-	def pars = "(" ~> new Sep(name, ",") <~ ")" ^ (_.map(_.name.name))
-	def bool = ("true" / "false") ^ (_.toBoolean) ^ LitST
-	def text = ("\"" ~> """([^"\\]|\\[\\'"bfnrt])*""".r <~ "\"") ^ StrST
-	def int  = """\d+""".r ^ (_.toInt) ^ LitST
-	def real = """(\d+\.\d*|\d*\.\d+)""".r ^ (_.toDouble) ^ LitST
-	def name = """[@A-Z_a-z][@0-9A-Z_a-z]*""".r ^ StIdST ^ LzIdST
+  def expr: PEG[AST] = (cond / or) <~ ("//" ~ ".*$".r).?
+  def cond = (or <~ "?") ~ (expr ~ (":" ~> expr)) ^ IfST
+  def or   = new Fold(and, "|" ^ (op => LogST(op, _, _)))
+  def and  = new Fold(eql, "&" ^ (op => LogST(op, _, _)))
+  def eql  = new Fold(rel, """(!|=)=""".r ^ (op => EqlST(op, _, _)))
+  def rel  = new Fold(add, """[<>]=?""".r ^ (op => RelST(op, _, _)))
+  def add  = new Fold(mul, """[\+\-]""".r ^ (op => AddST(op, _, _)))
+  def mul  = new Fold(unr, """[\*/%]""".r ^ (op => MulST(op, _, _)))
+  def unr  = ("+" / "-" / "!").* ~ call ^ ((o,e) => o.foldRight(e)(UnST))
+  def call = fact ~ args.* ^ ((f,a) => a.foldLeft(f)(CallST))
+  def args = "(" ~> new Sep(expr ^ LzArgST, ",") <~")"
+  def fact = func / bool / text / real / int / name / ("(" ~> expr <~ ")")
+  def func = pars ~ ("=>" ~> expr) ^ ((p,e) => DefST(p, e))
+  def pars = "(" ~> new Sep(name, ",") <~ ")" ^ (_.map(_.name.name))
+  def bool = ("true" / "false") ^ (_.toBoolean) ^ LitST
+  def text = ("\"" ~> """([^"\\]|\\[\\'"bfnrt])*""".r <~ "\"") ^ StrST
+  def int  = """\d+""".r ^ (_.toInt) ^ LitST
+  def real = """(\d+\.\d*|\d*\.\d+)""".r ^ (_.toDouble) ^ LitST
+  def name = """[@A-Z_a-z][@0-9A-Z_a-z]*""".r ^ StIdST ^ LzIdST
 }
 ```
 

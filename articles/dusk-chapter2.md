@@ -18,48 +18,48 @@ forkは、タスクを分岐する。joinは、指定のタスクが終わるま
 
 ```dlang
 public shared class Dawn(Ret, Args...) {
-	import std.parallelism, std.range;
-	alias Ret function(Args) Func;
-	private shared Deque[] stacks;
-	private const size_t numCores;
+  import std.parallelism, std.range;
+  alias Ret function(Args) Func;
+  private shared Deque[] stacks;
+  private const size_t numCores;
 
-	this(size_t numCores = totalCPUs) {
-		this.numCores = numCores;
-		foreach(i; iota(numCores)) {
-			stacks ~= new shared Deque;
-		}
-	}
+  this(size_t numCores = totalCPUs) {
+    this.numCores = numCores;
+    foreach(i; iota(numCores)) {
+      stacks ~= new shared Deque;
+    }
+  }
 
-	public auto core(size_t index = coreId) {
-		return stacks[index % numCores];
-	}
+  public auto core(size_t index = coreId) {
+    return stacks[index % numCores];
+  }
 
-	public auto fork(alias func)(Args args) {
-		return core.add(new Task(&func, args));
-	}
+  public auto fork(alias func)(Args args) {
+    return core.add(new Task(&func, args));
+  }
 
-	public auto join(Task* task) {
-		while(!task.isDone) spin(core.pop);
-		return task.result;
-	}
+  public auto join(Task* task) {
+    while(!task.isDone) spin(core.pop);
+    return task.result;
+  }
 
-	private auto spin(Task* task) {
-		if(task !is null) return task.invoke;
-		foreach(index; iota(1, numCores)) {
-			auto found = core(coreId + index).poll;
-			if(found !is null) return found.invoke;
-		}
-	}
+  private auto spin(Task* task) {
+    if(task !is null) return task.invoke;
+    foreach(index; iota(1, numCores)) {
+      auto found = core(coreId + index).poll;
+      if(found !is null) return found.invoke;
+    }
+  }
 
-	public auto boot(alias func)(Args args) {
-		auto root = new Task(&func, args);
-		auto cpus = iota(numCores);
-		foreach(c; taskPool.parallel(cpus, 1)) {
-			if((coreId = c) == 0) root.invoke;
-			else join(root);
-		}
-		return root.result;
-	}
+  public auto boot(alias func)(Args args) {
+    auto root = new Task(&func, args);
+    auto cpus = iota(numCores);
+    foreach(c; taskPool.parallel(cpus, 1)) {
+      if((coreId = c) == 0) root.invoke;
+      else join(root);
+    }
+    return root.result;
+  }
 ```
 
 ### 2.2 タスクの実装
@@ -68,32 +68,32 @@ public shared class Dawn(Ret, Args...) {
 命令の**アウトオブオーダー実行**が原因で、関数を実行する前にdoneが書き換わる場合があり、**メモリバリア**で対策した。
 
 ```dlang
-	private static final struct Task {
-		import core.atomic;
-		private bool done;
-		private Func func;
-		private Args args;
-		private Ret value;
+  private static final struct Task {
+    import core.atomic;
+    private bool done;
+    private Func func;
+    private Args args;
+    private Ret value;
 
-		this(Func func, Args args) {
-			this.func = func;
-			this.args = args;
-			this.done = false;
-		}
+    this(Func func, Args args) {
+      this.func = func;
+      this.args = args;
+      this.done = false;
+    }
 
-		public bool isDone() {
-			return atomicLoad(*(cast(shared) &done));
-		}
+    public bool isDone() {
+      return atomicLoad(*(cast(shared) &done));
+    }
 
-		public void invoke() {
-			value = func(args);
-			atomicStore(*(cast(shared) &done), true);
-		}
+    public void invoke() {
+      value = func(args);
+      atomicStore(*(cast(shared) &done), true);
+    }
 
-		public auto result() {
-			return value;
-		}
-	}
+    public auto result() {
+      return value;
+    }
+  }
 ```
 
 ### 2.3 キューの実装
@@ -101,30 +101,30 @@ public shared class Dawn(Ret, Args...) {
 各プロセッサが保有するタスクを格納する両端キューを実装する。プロセッサ間での競合を防ぐため、**排他制御**を行う。
 
 ```dlang
-	private synchronized final class Deque {
-		private Task*[] buffer;
+  private synchronized final class Deque {
+    private Task*[] buffer;
 
-		public Task* add(Task* task) {
-			buffer ~= cast(shared) task;
-			return task;
-		}
+    public Task* add(Task* task) {
+      buffer ~= cast(shared) task;
+      return task;
+    }
 
-		public Task* pop() {
-			if(!buffer.empty) {
-				auto task = buffer[$-1];
-				buffer = buffer[0..$-1];
-				return cast(Task*) task;
-			} else return null;
-		}
+    public Task* pop() {
+      if(!buffer.empty) {
+        auto task = buffer[$-1];
+        buffer = buffer[0..$-1];
+        return cast(Task*) task;
+      } else return null;
+    }
 
-		public Task* poll() {
-			if(!buffer.empty) {
-				auto task = buffer[0];
-				buffer = buffer[1..$];
-				return cast(Task*) task;
-			} else return null;
-		}
-	}
+    public Task* poll() {
+      if(!buffer.empty) {
+        auto task = buffer[0];
+        buffer = buffer[1..$];
+        return cast(Task*) task;
+      } else return null;
+    }
+  }
 }
 ```
 

@@ -28,9 +28,9 @@ shared Dawn!(int, int, int, int, int, int, int, int) sched;
 
 ```dlang
 void dmm_leaf(int i1, int i2, int j1, int j2, int k1, int k2) {
-	foreach(i,iN; enumerate(iota(i1 * PADDED, i2 * PADDED, PADDED), i1))
-	foreach(j,jN; enumerate(iota(j1 * PADDED, j2 * PADDED, PADDED), j1))
-		C[iN+j].atomicOp!"+="(A[iN+k1..iN+k2].dotProduct(B[jN+k1..jN+k2]));
+  foreach(i,iN; enumerate(iota(i1 * PADDED, i2 * PADDED, PADDED), i1))
+  foreach(j,jN; enumerate(iota(j1 * PADDED, j2 * PADDED, PADDED), j1))
+    C[iN+j].atomicOp!"+="(A[iN+k1..iN+k2].dotProduct(B[jN+k1..jN+k2]));
 }
 ```
 
@@ -41,26 +41,26 @@ void dmm_leaf(int i1, int i2, int j1, int j2, int k1, int k2) {
 
 ```dlang
 int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
-	auto axes = [i2 - i1, j2 - j1, k2 - k1];
-	if(axes.maxElement <= grain) {
-		dmm_leaf(i1, i2, j1, j2, k1, k2);
-	} else if(axes.maxIndex == 0) {
-		auto t1 = sched.fork!dmm_dawn(i1, (i1+i2)/2, j1, j2, k1, k2, grain);
-		auto t2 = sched.fork!dmm_dawn((i1+i2)/2, i2, j1, j2, k1, k2, grain);
-		sched.join(t1);
-		sched.join(t2);
-	} else if(axes.maxIndex == 1) {
-		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, (j1+j2)/2, k1, k2, grain);
-		auto t2 = sched.fork!dmm_dawn(i1, i2, (j1+j2)/2, j2, k1, k2, grain);
-		sched.join(t1);
-		sched.join(t2);
-	} else if(axes.maxIndex == 2) {
-		auto t1 = sched.fork!dmm_dawn(i1, i2, j1, j2, k1, (k1+k2)/2, grain);
-		auto t2 = sched.fork!dmm_dawn(i1, i2, j1, j2, (k1+k2)/2, k2, grain);
-		sched.join(t1);
-		sched.join(t2);
-	}
-	return 0;
+  auto axes = [i2 - i1, j2 - j1, k2 - k1];
+  if(axes.maxElement <= grain) {
+    dmm_leaf(i1, i2, j1, j2, k1, k2);
+  } else if(axes.maxIndex == 0) {
+    auto t1 = sched.fork!dmm_dawn(i1, (i1+i2)/2, j1, j2, k1, k2, grain);
+    auto t2 = sched.fork!dmm_dawn((i1+i2)/2, i2, j1, j2, k1, k2, grain);
+    sched.join(t1);
+    sched.join(t2);
+  } else if(axes.maxIndex == 1) {
+    auto t1 = sched.fork!dmm_dawn(i1, i2, j1, (j1+j2)/2, k1, k2, grain);
+    auto t2 = sched.fork!dmm_dawn(i1, i2, (j1+j2)/2, j2, k1, k2, grain);
+    sched.join(t1);
+    sched.join(t2);
+  } else if(axes.maxIndex == 2) {
+    auto t1 = sched.fork!dmm_dawn(i1, i2, j1, j2, k1, (k1+k2)/2, grain);
+    auto t2 = sched.fork!dmm_dawn(i1, i2, j1, j2, (k1+k2)/2, k2, grain);
+    sched.join(t1);
+    sched.join(t2);
+  }
+  return 0;
 }
 ```
 
@@ -71,31 +71,31 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 
 ```dlang
 void dmm_pool(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
-	auto axes = [i2 - i1, j2 - j1, k2 - k1];
-	if(axes[axes.maxIndex] <= grain) {
-		dmm_leaf(i1, i2, j1, j2, k1, k2);
-	} else if(axes.maxIndex == 0) {
-		auto t1 = task!dmm_pool(i1, (i1+i2)/2, j1, j2, k1, k2, grain);
-		auto t2 = task!dmm_pool((i1+i2)/2, i2, j1, j2, k1, k2, grain);
-		taskPool.put(t1);
-		taskPool.put(t2);
-		t1.workForce;
-		t2.workForce;
-	} else if(axes.maxIndex == 1) {
-		auto t1 = task!dmm_pool(i1, i2, j1, (j1+j2)/2, k1, k2, grain);
-		auto t2 = task!dmm_pool(i1, i2, (j1+j2)/2, j2, k1, k2, grain);
-		taskPool.put(t1);
-		taskPool.put(t2);
-		t1.workForce;
-		t2.workForce;
-	} else if(axes.maxIndex == 2) {
-		auto t1 = task!dmm_pool(i1, i2, j1, j2, k1, (k1+k2)/2, grain);
-		auto t2 = task!dmm_pool(i1, i2, j1, j2, (k1+k2)/2, k2, grain);
-		taskPool.put(t1);
-		taskPool.put(t2);
-		t1.workForce;
-		t2.workForce;
-	}
+  auto axes = [i2 - i1, j2 - j1, k2 - k1];
+  if(axes[axes.maxIndex] <= grain) {
+    dmm_leaf(i1, i2, j1, j2, k1, k2);
+  } else if(axes.maxIndex == 0) {
+    auto t1 = task!dmm_pool(i1, (i1+i2)/2, j1, j2, k1, k2, grain);
+    auto t2 = task!dmm_pool((i1+i2)/2, i2, j1, j2, k1, k2, grain);
+    taskPool.put(t1);
+    taskPool.put(t2);
+    t1.workForce;
+    t2.workForce;
+  } else if(axes.maxIndex == 1) {
+    auto t1 = task!dmm_pool(i1, i2, j1, (j1+j2)/2, k1, k2, grain);
+    auto t2 = task!dmm_pool(i1, i2, (j1+j2)/2, j2, k1, k2, grain);
+    taskPool.put(t1);
+    taskPool.put(t2);
+    t1.workForce;
+    t2.workForce;
+  } else if(axes.maxIndex == 2) {
+    auto t1 = task!dmm_pool(i1, i2, j1, j2, k1, (k1+k2)/2, grain);
+    auto t2 = task!dmm_pool(i1, i2, j1, j2, (k1+k2)/2, k2, grain);
+    taskPool.put(t1);
+    taskPool.put(t2);
+    t1.workForce;
+    t2.workForce;
+  }
 }
 ```
 
@@ -105,15 +105,15 @@ void dmm_pool(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 
 ```dlang
 void dmm_gr3d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
-	const int iN = (i2 - i1) / grain;
-	const int jN = (j2 - j1) / grain;
-	const int kN = (k2 - k1) / grain;
-	foreach(ch; parallel(iota(0, iN * jN * kN), 1)) {
-		const int i = i1 + ch / kN / jN * grain;
-		const int j = j1 + ch / kN % jN * grain;
-		const int k = k1 + ch % kN * grain;
-		dmm_leaf(i, i + grain, j, j + grain, k, k + grain);
-	}
+  const int iN = (i2 - i1) / grain;
+  const int jN = (j2 - j1) / grain;
+  const int kN = (k2 - k1) / grain;
+  foreach(ch; parallel(iota(0, iN * jN * kN), 1)) {
+    const int i = i1 + ch / kN / jN * grain;
+    const int j = j1 + ch / kN % jN * grain;
+    const int k = k1 + ch % kN * grain;
+    dmm_leaf(i, i + grain, j, j + grain, k, k + grain);
+  }
 }
 ```
 
@@ -121,13 +121,13 @@ void dmm_gr3d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 
 ```dlang
 void dmm_gr2d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
-	const int iN = (i2 - i1) / grain;
-	const int jN = (j2 - j1) / grain;
-	foreach(ch; parallel(iota(0, iN * jN), 1)) {
-		const int i = i1 + ch / jN * grain;
-		const int j = j1 + ch % jN * grain;
-		dmm_leaf(i, i + grain, j, j + grain, k1, k2);
-	}
+  const int iN = (i2 - i1) / grain;
+  const int jN = (j2 - j1) / grain;
+  foreach(ch; parallel(iota(0, iN * jN), 1)) {
+    const int i = i1 + ch / jN * grain;
+    const int j = j1 + ch % jN * grain;
+    dmm_leaf(i, i + grain, j, j + grain, k1, k2);
+  }
 }
 ```
 
@@ -137,14 +137,14 @@ void dmm_gr2d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 
 ```dlang
 void main() {
-	import std.datetime.stopwatch;
-	defaultPoolThreads = totalCPUs;
-	sched = new typeof(sched);
-	foreach(i; iota(A.length)) A[i] = uniform(0, 1);
-	foreach(i; iota(B.length)) B[i] = uniform(0, 1);
-	auto watch = StopWatch(AutoStart.yes);
-	sched.boot!dmm_dawn(0, N, 0, N, 0, N, 128);
-	writeln(2.0 / watch.peek.total!"nsecs" * N * N * N, "GFLOPS");
+  import std.datetime.stopwatch;
+  defaultPoolThreads = totalCPUs;
+  sched = new typeof(sched);
+  foreach(i; iota(A.length)) A[i] = uniform(0, 1);
+  foreach(i; iota(B.length)) B[i] = uniform(0, 1);
+  auto watch = StopWatch(AutoStart.yes);
+  sched.boot!dmm_dawn(0, N, 0, N, 0, N, 128);
+  writeln(2.0 / watch.peek.total!"nsecs" * N * N * N, "GFLOPS");
 }
 ```
 
@@ -160,7 +160,7 @@ Fig. 4.1は、2個のIntel Xeon E5-2699 v3を搭載した、NUMA型の共有メ�
 
 ![scales/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.png](/images/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.png)
 
-Fig. 4.1 dense matrix multiplication,  $8192  imes8192  imes8192$ .
+Fig. 4.1 dense matrix multiplication,  $8192\times8192\times8192$ .
 
 同じ並列化でも、提案実装と既存実装の性能には差がある。その差を解釈する。まず、排他制御の所要時間を $D$ とする。
 排他制御を $M/D/1$ の待ち行列とし、 $N$ 個のプロセッサが**ポアソン到着**すると、待ち時間 $w$ の期待値は式 4.1となる。

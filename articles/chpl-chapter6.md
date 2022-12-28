@@ -13,8 +13,8 @@ Chapelでは、構造体を定義して、構造体に変数や関数を定義�
 
 ```
 class Num {
-	var r: real;
-	var i: imag;
+  var r: real;
+  var i: imag;
 }
 var num: Num = new Num();
 num.r = 816.07;
@@ -26,8 +26,8 @@ writeln(num.r);
 
 ```
 record Num {
-	var r: real;
-	var i: imag;
+  var r: real;
+  var i: imag;
 }
 var num: Num;
 num.r = 816.07;
@@ -39,8 +39,8 @@ writeln(num.r);
 
 ```
 union Num {
-	var r: real;
-	var i: imag;
+  var r: real;
+  var i: imag;
 }
 var num: Num;
 num.r = 816.07;
@@ -54,8 +54,8 @@ writeln(num.i);
 
 ```
 record Stack {
-	type eltType;
-	param size: int;
+  type eltType;
+  param size: int;
 }
 var a: Stack(eltType = uint, size = 12);
 var b: Stack(eltType = real, size = 24);
@@ -69,10 +69,10 @@ writeln("b is ", b.type: string); // b is Stack(real(64), 24)
 
 ```
 record User {
-	var name: string;
-	proc set(name) {
-		this.name = name;
-	}
+  var name: string;
+  proc set(name) {
+    this.name = name;
+  }
 }
 var user: User;
 user.set("Alicia");
@@ -84,11 +84,11 @@ writeln(user.name);
 
 ```
 record User {
-	var name: string;
+  var name: string;
 }
 proc User.name ref {
-	writeln(".name");
-	return this.name;
+  writeln(".name");
+  return this.name;
 }
 var user: User;
 user.name = "Jane";
@@ -99,7 +99,7 @@ thisメソッドが定義された構造体は、関数と同様に振る舞う�
 
 ```
 class Add {
-	proc this(a: int, b: int): int return a + b;
+  proc this(a: int, b: int): int return a + b;
 }
 const add = new Add();
 writeln(add(123, 45)); // 168
@@ -110,12 +110,12 @@ initメソッドは、フィールドを初期化できる。定数の場合は�
 
 ```
 class Add {
-	const x: real;
-	const y: real;
-	proc init(x, y) {
-		this.x = x;
-		this.y = y;
-	}
+  const x: real;
+  const y: real;
+  proc init(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }
 const add = new Add(x = 1, y = 2);
 writeln("x, y: ", (add.x, add.y));
@@ -125,11 +125,11 @@ initメソッドは、省略しても自動的に定義される。また、dein
 
 ```
 class Sub {
-	const x: real = 0;
-	const y: real = 0;
-	proc deinit() {
-		writeln("deleted");
-	}
+  const x: real = 0;
+  const y: real = 0;
+  proc deinit() {
+    writeln("deleted");
+  }
 }
 const sub = new Sub(x = 1, y = 2);
 writeln("x, y: ", (sub.x, sub.y));
@@ -142,9 +142,9 @@ Chapelのクラスには、**所有権**の概念がある。所有権を持つ�
 
 ```
 class Hello {
-	proc deinit() {
-		writeln("See you");
-	}
+  proc deinit() {
+    writeln("See you");
+  }
 }
 var hello: owned Hello = new owned Hello();
 var hallo: borrowed Hello = hello.borrow();
@@ -155,9 +155,9 @@ sharedで修飾した場合は、変数の間でインスタンスが共有さ�
 
 ```
 class Hello {
-	proc deinit() {
-		writeln("See you");
-	}
+  proc deinit() {
+    writeln("See you");
+  }
 }
 var hello = new shared Hello();
 var hallo = new unmanaged Hello();
@@ -173,10 +173,10 @@ unmanagedで修飾した場合は、所有権による管理を受けず、delet
 
 ```
 class Foo {
-	proc foo() return "foo!";
+  proc foo() return "foo!";
 }
 class Bar: Foo {
-	override proc foo() return super.foo() + "bar!";
+  override proc foo() return super.foo() + "bar!";
 }
 const foo = new Foo();
 const bar = new Bar();
@@ -192,10 +192,10 @@ writeln(bar.foo()); // foo!bar!
 
 ```
 class Duck {
-	proc quack() return "quack!";
+  proc quack() return "quack!";
 }
 class Kamo {
-	proc quack() return "quack!";
+  proc quack() return "quack!";
 }
 proc voice(x) return x.quack();
 writeln(voice(new Duck())); // quack!

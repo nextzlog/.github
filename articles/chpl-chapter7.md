@@ -131,7 +131,7 @@ A[8, 10] = 114.514;
 
 ```
 proc update(arr: [] int) {
-	arr = [2, 3, 4];
+  arr = [2, 3, 4];
 }
 var A = [1, 2, 3];
 var B = A;

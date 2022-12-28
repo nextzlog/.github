@@ -34,7 +34,7 @@ $$\forall \boldsymbol{x},\boldsymbol{y},\boldsymbol{z} \in \mathbb{R}^D \colon
 
 ```scala
 class KNN[D,T](k: Int, data: Seq[(D,T)], d: (D,D)=>Double) {
-	def apply(x: D) = data.sortBy((p,t)=>d(x,p)).take(k).groupBy((p,t)=>t).maxBy((g,s)=>s.size)._1
+  def apply(x: D) = data.sortBy((p,t)=>d(x,p)).take(k).groupBy((p,t)=>t).maxBy((g,s)=>s.size)._1
 }
 ```
 
@@ -80,9 +80,9 @@ $$\hat{\boldsymbol{w}} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}) = \bolds
 
 ```scala
 class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], epochs: Int = 1000) {
-	val w = Array.fill[Double](p.size)(0)
-	def apply(x: Double) = w.zip(p.map(_(x))).map(_ * _).sum
-	for(n <- 1 to epochs; (x,y) <- data) w.zip(p).map(_ + e * (y - this(x)) * _(x)).copyToArray(w)
+  val w = Array.fill[Double](p.size)(0)
+  def apply(x: Double) = w.zip(p.map(_(x))).map(_ * _).sum
+  for(n <- 1 to epochs; (x,y) <- data) w.zip(p).map(_ + e * (y - this(x)) * _(x)).copyToArray(w)
 }
 ```
 
@@ -135,12 +135,12 @@ N_c = \displaystyle\sum_{w \in V} N_{wc}. \qquad(1.9)$$
 
 ```scala
 class NaiveBayes[D<:Seq[W],W,C](texts: Seq[D], classes: Seq[C]) {
-	val nw = scala.collection.mutable.Map[(W,C),Double]().withDefaultValue(1)
-	val pc = classes.groupBy(identity).map(_ -> _.size.toDouble / texts.size)
-	def pwc(c: C)(w: W) = nw(w,c) / texts.flatten.distinct.map(nw(_,c)).sum
-	def pcd(d: D)(c: C) = math.log(pc(c)) + d.map(pwc(c)).map(math.log).sum
-	def apply(d: D) = classes.distinct.maxBy(pcd(d))
-	for((d,c) <- texts.zip(classes); w <- d) nw(w,c) += 1
+  val nw = scala.collection.mutable.Map[(W,C),Double]().withDefaultValue(1)
+  val pc = classes.groupBy(identity).map(_ -> _.size.toDouble / texts.size)
+  def pwc(c: C)(w: W) = nw(w,c) / texts.flatten.distinct.map(nw(_,c)).sum
+  def pcd(d: D)(c: C) = math.log(pc(c)) + d.map(pwc(c)).map(math.log).sum
+  def apply(d: D) = classes.distinct.maxBy(pcd(d))
+  for((d,c) <- texts.zip(classes); w <- d) nw(w,c) += 1
 }
 ```
 

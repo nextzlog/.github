@@ -12,9 +12,9 @@ Chapelは、[qthreads](https://github.com/qthreads/qthreads)の**軽量スレッ
 
 ```
 sync {
-	begin writeln("1st parallel task");
-	begin writeln("2nd parallel task");
-	begin writeln("3rd parallel task");
+  begin writeln("1st parallel task");
+  begin writeln("2nd parallel task");
+  begin writeln("3rd parallel task");
 }
 writeln("task 1, 2, 3 are finished");
 ```
@@ -23,9 +23,9 @@ begin文は、入れ子にできる。糖衣構文として、cobegin文でも�
 
 ```
 cobegin {
-	writeln("1st parallel task");
-	writeln("2nd parallel task");
-	writeln("3rd parallel task");
+  writeln("1st parallel task");
+  writeln("2nd parallel task");
+  writeln("3rd parallel task");
 }
 writeln("task 1, 2, 3 are finished");
 ```
@@ -36,8 +36,8 @@ writeln("task 1, 2, 3 are finished");
 var a: string;
 var b: string;
 sync {
-	begin with(ref a) a = "1st parallel task";
-	begin with(ref b) b = "2nd parallel task";
+  begin with(ref a) a = "1st parallel task";
+  begin with(ref b) b = "2nd parallel task";
 }
 writeln(a);
 writeln(b);
@@ -47,14 +47,14 @@ sync文やcobegin文による待機は、僅かな負荷を生じるので、効
 
 ```
 inline proc string.shambles: void {
-	proc traverse(a: int, b: int) {
-		if b > a {
-			const mid = (a + b) / 2;
-			begin traverse(a, 0 + mid);
-			begin traverse(1 + mid, b);
-		} else writeln(this(a));
-	}
-	sync traverse(0, this.size - 1);
+  proc traverse(a: int, b: int) {
+    if b > a {
+      const mid = (a + b) / 2;
+      begin traverse(a, 0 + mid);
+      begin traverse(1 + mid, b);
+    } else writeln(this(a));
+  }
+  sync traverse(0, this.size - 1);
 }
 ```
 
@@ -62,8 +62,8 @@ serial文は、条件式がtrueの場合に、並列処理を逐次処理に切�
 
 ```
 serial true {
-	begin writeln("1st serial task");
-	begin writeln("2nd serial task");
+  begin writeln("1st serial task");
+  begin writeln("2nd serial task");
 }
 ```
 
@@ -86,7 +86,7 @@ forall文は、タスクを生成する*leader*と、末端の逐次処理を担
 
 ```
 iter foo(rng): int {
-	for i in rng do yield i;
+  for i in rng do yield i;
 }
 ```
 
@@ -94,13 +94,13 @@ fooイテレータを多重に定義して、以下の派生型を実装する�
 
 ```
 iter foo(param tag, rng): range where tag == iterKind.leader {
-	if rng.size > 16 {
-		const mid = (rng.high + rng.low) / 2;
-		cobegin {
-			for i in foo(tag, rng(..mid+0)) do yield i;
-			for i in foo(tag, rng(mid+1..)) do yield i;
-		}
-	} else yield rng;
+  if rng.size > 16 {
+    const mid = (rng.high + rng.low) / 2;
+    cobegin {
+      for i in foo(tag, rng(..mid+0)) do yield i;
+      for i in foo(tag, rng(mid+1..)) do yield i;
+    }
+  } else yield rng;
 }
 ```
 
@@ -108,7 +108,7 @@ iter foo(param tag, rng): range where tag == iterKind.leader {
 
 ```
 iter foo(param tag, rng, followThis): int where tag == iterKind.follower {
-	for i in followThis do yield i;
+  for i in followThis do yield i;
 }
 ```
 
@@ -125,9 +125,9 @@ Chapelでは、分散メモリ環境の構成単位を**ロケール**と呼ぶ�
 
 ```
 coforall l in Locales do on l {
-	writeln(here == l);
-	writeln(here.name);
-	writeln(here.numPUs());
+  writeln(here == l);
+  writeln(here.name);
+  writeln(here.numPUs());
 }
 ```
 
@@ -169,8 +169,8 @@ for l in Locales do on l do for (i, j) in B.localSubdomain() do writeln(B(i, j).
 config const N = 80;
 var sum: int;
 do {
-	coforall n in 1..N with(ref sum) do sum -= n * n;
-	coforall n in 1..N with(ref sum) do sum += n * n;
+  coforall n in 1..N with(ref sum) do sum -= n * n;
+  coforall n in 1..N with(ref sum) do sum += n * n;
 } while sum == 0;
 writeln(sum);
 ```
@@ -181,8 +181,8 @@ writeln(sum);
 config const N = 80;
 var sum: atomic int;
 do {
-	coforall n in 1..N do sum.sub(n * n);
-	coforall n in 1..N do sum.add(n * n);
+  coforall n in 1..N do sum.sub(n * n);
+  coforall n in 1..N do sum.add(n * n);
 } while sum.read() == 0; // infinite loop
 writeln(sum);
 ```
@@ -196,14 +196,14 @@ writeEFで値を書き込むと、状態が*full*に遷移する。これは**�
 config const N = 80;
 var sum: sync int = 0;
 do {
-	coforall n in 1..N do {
-		const v = sum.readFE();
-		sum.writeEF(v + n * n);
-	}
-	coforall n in 1..N do {
-		const v = sum.readFE();
-		sum.writeEF(v - n * n);
-	}
+  coforall n in 1..N do {
+    const v = sum.readFE();
+    sum.writeEF(v + n * n);
+  }
+  coforall n in 1..N do {
+    const v = sum.readFE();
+    sum.writeEF(v - n * n);
+  }
 } while sum.readFF() == 0; // infinite loop
 writeln(sum.readFF());
 ```

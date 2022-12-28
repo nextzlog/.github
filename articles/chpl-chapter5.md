@@ -13,7 +13,7 @@ Chapelの関数には、**手続き**と**イテレータ**と演算子の3種�
 
 ```
 proc foo(x: int, y: int): int {
-	return x + y;
+  return x + y;
 }
 writeln(foo(1, 2));
 ```
@@ -53,11 +53,11 @@ writeln(sum(1, 2, 3) + sum((...(100, 200)))); // 306
 
 ```
 proc factorial(num: int): int {
-	proc tc(n, accum: int): int {
-		if n == 0 then return accum;
-		return tc(n - 1, n * accum);
-	}
-	return tc(num, 1);
+  proc tc(n, accum: int): int {
+    if n == 0 then return accum;
+    return tc(n - 1, n * accum);
+  }
+  return tc(num, 1);
 }
 writeln(factorial(10)); // 3628800
 ```
@@ -100,9 +100,9 @@ inoutやoutで宣言された引数の値は、関数から戻る際に書き戻
 
 ```
 proc intents(inout x: int, in y: int, out z: int, ref v: int): void {
-	x += y;
-	z += y;
-	v += y;
+  x += y;
+  z += y;
+  v += y;
 }
 var a: int = 1;
 var b: int = 2;
@@ -164,8 +164,8 @@ throw文は、異常の発生を通知する。この異常を**例外**と呼�
 
 ```
 proc foo(message: string) throws {
-	defer writeln("See you");
-	throw new Error(message);
+  defer writeln("See you");
+  throw new Error(message);
 }
 ```
 
@@ -173,10 +173,10 @@ catch文は、try文の内側で例外が発生した場合には、その例外
 
 ```
 try {
-	foo("Hello,");
-	foo("world!");
+  foo("Hello,");
+  foo("world!");
 } catch e {
-	writeln(e);
+  writeln(e);
 }
 ```
 
@@ -196,12 +196,12 @@ theseを実装した構造体も、イテレータとして機能する。for文
 
 ```
 iter iterator(): string {
-	yield "EMURATED";
-	yield "EMURATED";
-	yield "EMURATED";
+  yield "EMURATED";
+  yield "EMURATED";
+  yield "EMURATED";
 }
 iter int.these() const ref: int {
-	for i in 1..this do yield i;
+  for i in 1..this do yield i;
 }
 var repetition: int = 10;
 for i in iterator() do writeln(i);

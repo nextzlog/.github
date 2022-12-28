@@ -9,8 +9,8 @@ Chapelの構文には、Fortranの影響が見られる。**文**の区切りに
 
 ```
 {
-	var foo = 12;
-	writeln(foo);
+  var foo = 12;
+  writeln(foo);
 }
 var foo = 13;
 writeln(foo);
@@ -23,9 +23,9 @@ if文は、**条件分岐**を行う。条件式はbool型である。then節が
 ```
 const age = 18;
 if age < 18 then {
-	writeln("Adults Only");
+  writeln("Adults Only");
 } else {
-	writeln("Yeah, Right");
+  writeln("Yeah, Right");
 }
 ```
 
@@ -33,9 +33,9 @@ select文は、**多分岐**を行う。条件式が合致したwhen節かotherw
 
 ```
 select "cat" {
-	when "cat" do writeln("meow");
-	when "dog" do writeln("bowwow");
-	otherwise writeln("gobblegobble");
+  when "cat" do writeln("meow");
+  when "dog" do writeln("bowwow");
+  otherwise writeln("gobblegobble");
 }
 ```
 

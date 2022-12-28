@@ -8,10 +8,10 @@ qxmlは、ATS-4型の内部で使われる書式である。[ADIF](https://adif.
 
 ```java
 <list xmlns:qxsl="qxsl.org">
-	<item qxsl:time="2017-06-04T00:00:00Z" qxsl:call="QP3GES" qxsl:band="14000" qxsl:mode="CW">
-		<rcvd qxsl:code="100105" qxsl:rstq="599"/>
-		<sent qxsl:code="100110" qxsl:rstq="599"/>
-	</item>
+  <item qxsl:time="2017-06-04T00:00:00Z" qxsl:call="QP3GES" qxsl:band="14000" qxsl:mode="CW">
+    <rcvd qxsl:code="100105" qxsl:rstq="599"/>
+    <sent qxsl:code="100110" qxsl:rstq="599"/>
+  </item>
 </list>
 ```
 

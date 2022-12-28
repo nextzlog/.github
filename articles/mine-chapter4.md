@@ -9,15 +9,15 @@ published: true
 
 $$y \approx f(\boldsymbol{x}) =
 \begin{cases}
-0 &   ext{if \(\mathrm{wavy}(\boldsymbol{x}) = 1\)} \\
-  ext{otherwise}
+0 & \text{if \(\mathrm{wavy}(\boldsymbol{x}) = 1\)} \\
+\text{otherwise}
 \left\lbrace 
 \begin{aligned}
-& 0 &&   ext{if \(\mathrm{rain}(\boldsymbol{x}) = 1\)} \\
-& 1 &&   ext{if \(\mathrm{rain}(\boldsymbol{x}) = 0\)} \\
+& 0 && \text{if \(\mathrm{rain}(\boldsymbol{x}) = 1\)} \\
+& 1 && \text{if \(\mathrm{rain}(\boldsymbol{x}) = 0\)} \\
 \end{aligned}
 \right\rbrace 
-&   ext{if \(\mathrm{wavy}(\boldsymbol{x}) = 0\)} \\
+& \text{if \(\mathrm{wavy}(\boldsymbol{x}) = 0\)} \\
 \end{cases} \qquad(4.1)$$
 
 決定木の学習では、意思決定の事例の集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
@@ -75,12 +75,12 @@ trait Node[T] extends (Seq[Int] => T)
 
 ```scala
 case class Question[T](x: Seq[(Seq[Int], T)], limit: Double = 1e-5) extends Node[T] {
-	lazy val m = x.groupBy(_._2).maxBy(_._2.size)._1
-	lazy val p = x.groupBy(_._2).map(_._2.size.toDouble / x.size)
-	lazy val ent = p.map(p => -p * math.log(p)).sum / math.log(2)
-	lazy val division = x.head._1.indices.map(split).minBy(_.ent)
-	def apply(x: Seq[Int]) = if(ent - division.ent < limit) m else division(x)
-	def split(v: Int) = x.map(_._1(v)).toSet.map(Division(x,v,_)).minBy(_.ent)
+  lazy val m = x.groupBy(_._2).maxBy(_._2.size)._1
+  lazy val p = x.groupBy(_._2).map(_._2.size.toDouble / x.size)
+  lazy val ent = p.map(p => -p * math.log(p)).sum / math.log(2)
+  lazy val division = x.head._1.indices.map(split).minBy(_.ent)
+  def apply(x: Seq[Int]) = if(ent - division.ent < limit) m else division(x)
+  def split(v: Int) = x.map(_._1(v)).toSet.map(Division(x,v,_)).minBy(_.ent)
 }
 ```
 
@@ -89,10 +89,10 @@ case class Question[T](x: Seq[(Seq[Int], T)], limit: Double = 1e-5) extends Node
 
 ```scala
 case class Division[T](x: Seq[(Seq[Int], T)], axis: Int, value: Int) extends Node[T] {
-	val sn1 = Question(x.filter(_._1(axis) >  value))
-	val sn2 = Question(x.filter(_._1(axis) <= value))
-	val ent = (sn1.ent * sn1.x.size + sn2.ent * sn2.x.size) / x.size
-	def apply(x: Seq[Int]) = if(x(axis) >= value) sn1(x) else sn2(x)
+  val sn1 = Question(x.filter(_._1(axis) >  value))
+  val sn2 = Question(x.filter(_._1(axis) <= value))
+  val ent = (sn1.ent * sn1.x.size + sn2.ent * sn2.x.size) / x.size
+  def apply(x: Seq[Int]) = if(x(axis) >= value) sn1(x) else sn2(x)
 }
 ```
 
@@ -133,8 +133,8 @@ $$\mathbf{V}\!\left[\,\hat{f}(\boldsymbol{x})\,\right] = \displaystyle\frac{1}{T
 
 ```scala
 case class Bagging[T](x: Seq[(Seq[Int], T)], t: Int, n: Int) extends Node[T] {
-	val f = Seq.fill(t)(Question(Seq.fill(n)(x(util.Random.nextInt(x.size)))))
-	def apply(x: Seq[Int]) = f.map(_(x)).groupBy(identity).maxBy(_._2.size)._1
+  val f = Seq.fill(t)(Question(Seq.fill(n)(x(util.Random.nextInt(x.size)))))
+  def apply(x: Seq[Int]) = f.map(_(x)).groupBy(identity).maxBy(_._2.size)._1
 }
 ```
 
@@ -173,8 +173,8 @@ f(\boldsymbol{x},k)
 
 $$f(\boldsymbol{x},k) =
 \begin{cases}
-1&   ext{if \(y=k\)},\\
-\displaystyle\frac{1}{1-K}&   ext{if \(y\neq k\)}.
+1& \text{if \(y=k\)},\\
+\displaystyle\frac{1}{1-K}& \text{if \(y\neq k\)}.
 \end{cases} \qquad(4.15)$$
 
 式 4.13を分解すると、式 4.16を得る。この関数 $q_T$ を確率分布として、弱学習器 $f_T$ が学習する集合を無作為に選ぶ。
@@ -199,10 +199,10 @@ E_T = q_T(\boldsymbol{x},y) \mathbb{I}(\hat{f}_T(\boldsymbol{x}) \neq y). \qquad
 
 ```scala
 case class AdaBoost[T](x: Seq[(Seq[Int], T)], m: Int) extends Node[T] {
-	val k = x.map(_._2).toSet
-	val t = Seq(AdaStage(x, Seq.fill(x.size)(1.0 / x.size), m)).toBuffer
-	def apply(x: Seq[Int]) = k.maxBy(y => t.map(_.score(x, y)).sum)
-	while(t.last.best.error < 0.5) t += AdaStage(x, t.last.next, m)
+  val k = x.map(_._2).toSet
+  val t = Seq(AdaStage(x, Seq.fill(x.size)(1.0 / x.size), m)).toBuffer
+  def apply(x: Seq[Int]) = k.maxBy(y => t.map(_.score(x, y)).sum)
+  while(t.last.best.error < 0.5) t += AdaStage(x, t.last.next, m)
 }
 ```
 
@@ -210,11 +210,11 @@ case class AdaBoost[T](x: Seq[(Seq[Int], T)], m: Int) extends Node[T] {
 
 ```scala
 case class AdaStage[T](x: Seq[(Seq[Int], T)], p: Seq[Double], m: Int) extends Node[T] {
-	val best = List.fill(m)(Resample(x, p.map(_ / p.sum))).minBy(_.error)
-	val gain = math.log((1 / best.error - 1) * (x.map(_._2).toSet.size - 1))
-	val next = x.map(score).map(gain - _).map(math.exp).zip(p).map(_ * _)
-	def score(x: Seq[Int], y: T) = if(this(x) == y) gain else 0
-	def apply(x: Seq[Int]) = best(x)
+  val best = List.fill(m)(Resample(x, p.map(_ / p.sum))).minBy(_.error)
+  val gain = math.log((1 / best.error - 1) * (x.map(_._2).toSet.size - 1))
+  val next = x.map(score).map(gain - _).map(math.exp).zip(p).map(_ * _)
+  def score(x: Seq[Int], y: T) = if(this(x) == y) gain else 0
+  def apply(x: Seq[Int]) = best(x)
 }
 ```
 
@@ -222,12 +222,12 @@ case class AdaStage[T](x: Seq[(Seq[Int], T)], p: Seq[Double], m: Int) extends No
 
 ```scala
 case class Resample[T](x: Seq[(Seq[Int], T)], p: Seq[Double]) extends Node[T] {
-	val data = Seq[(Seq[Int], T)]().toBuffer
-	def reject(i: Int) = if(util.Random.nextDouble * p.max < p(i)) x(i) else null
-	while(data.size < p.size) data += reject(util.Random.nextInt(p.size)) -= null
-	def error = x.map((x, y) => this(x) != y).zip(p).filter(_._1).map(_._2).sum
-	def apply(x: Seq[Int]) = quest(x)
-	val quest = Question(data.toList)
+  val data = Seq[(Seq[Int], T)]().toBuffer
+  def reject(i: Int) = if(util.Random.nextDouble * p.max < p(i)) x(i) else null
+  while(data.size < p.size) data += reject(util.Random.nextInt(p.size)) -= null
+  def error = x.map((x, y) => this(x) != y).zip(p).filter(_._1).map(_._2).sum
+  def apply(x: Seq[Int]) = quest(x)
+  val quest = Question(data.toList)
 }
 ```
 
@@ -252,8 +252,8 @@ Fig. 4.2 region segmentation by ensemble learning.
 
 ```scala
 abstract class Node(val s: String, val w: Int) {
-	def decode(bits: String, root: Node = this): String
-	def encode(text: String, root: Node = this): String
+  def decode(bits: String, root: Node = this): String
+  def encode(text: String, root: Node = this): String
 }
 ```
 
@@ -262,8 +262,8 @@ abstract class Node(val s: String, val w: Int) {
 
 ```scala
 case class Atom(ch: String, freq: Int) extends Node(ch, freq) {
-	def decode(bits: String, root: Node) = if(bits.isEmpty) ch else ch ++ root.decode(bits, root)
-	def encode(text: String, root: Node) = if(text.size < 2) "" else root.encode(text.tail, root)
+  def decode(bits: String, root: Node) = if(bits.isEmpty) ch else ch ++ root.decode(bits, root)
+  def encode(text: String, root: Node) = if(text.size < 2) "" else root.encode(text.tail, root)
 }
 ```
 
@@ -271,8 +271,8 @@ case class Atom(ch: String, freq: Int) extends Node(ch, freq) {
 
 ```scala
 case class Code(node: Node, bit: String) extends Node(node.s, node.w) {
-	def decode(bits: String, root: Node) = node.decode(bits.tail, root)
-	def encode(text: String, root: Node) = bit++node.encode(text, root)
+  def decode(bits: String, root: Node) = node.decode(bits.tail, root)
+  def encode(text: String, root: Node) = bit++node.encode(text, root)
 }
 ```
 
@@ -280,8 +280,8 @@ case class Code(node: Node, bit: String) extends Node(node.s, node.w) {
 
 ```scala
 case class Fork(nodes: Seq[Code]) extends Node(nodes.map(_.s).mkString, nodes.map(_.w).sum) {
-	def decode(bits: String, root: Node) = nodes.find(_.bit.head == bits.head).get.decode(bits, root)
-	def encode(text: String, root: Node) = nodes.find(_.s.contains(text.head)).get.encode(text, root)
+  def decode(bits: String, root: Node) = nodes.find(_.bit.head == bits.head).get.decode(bits, root)
+  def encode(text: String, root: Node) = nodes.find(_.s.contains(text.head)).get.encode(text, root)
 }
 ```
 
@@ -290,9 +290,9 @@ case class Fork(nodes: Seq[Code]) extends Node(nodes.map(_.s).mkString, nodes.ma
 
 ```scala
 implicit class Huffman(nodes: Seq[Node]) {
-	def fork: Seq[Code] = nodes.zipWithIndex.map(_->_.toString).map(Code(_,_))
-	def join: Seq[Node] = Seq(Fork(nodes.take(2).fork)).union(nodes.tail.tail)
-	def tree: Seq[Node] = if(nodes.size <= 1) nodes else join.sortBy(_.w).tree
+  def fork: Seq[Code] = nodes.zipWithIndex.map(_->_.toString).map(Code(_,_))
+  def join: Seq[Node] = Seq(Fork(nodes.take(2).fork)).union(nodes.tail.tail)
+  def tree: Seq[Node] = if(nodes.size <= 1) nodes else join.sortBy(_.w).tree
 }
 ```
 
@@ -300,8 +300,8 @@ implicit class Huffman(nodes: Seq[Node]) {
 
 ```scala
 implicit class Symbols(source: String) {
-	def countFreq = source.split("").groupBy(identity).mapValues(_.size)
-	def toHuffman = countFreq.toSeq.map(Atom(_,_)).sortBy(_.w).tree.head
+  def countFreq = source.split("").groupBy(identity).mapValues(_.size)
+  def toHuffman = countFreq.toSeq.map(Atom(_,_)).sortBy(_.w).tree.head
 }
 ```
 

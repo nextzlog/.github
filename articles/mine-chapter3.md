@@ -40,8 +40,8 @@ y (\boldsymbol{w} \cdot \boldsymbol{x} + c) \geq 1 - \xi,
 \enspace\mathrm{where}\enspace
 \xi =
 \begin{cases}
-0 &   ext{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) > 1\)}, \\
-\left|y - (\boldsymbol{w} \cdot \boldsymbol{x} + c)\right| \geq 0 &   ext{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) \leq 1\)}.
+0 & \text{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) > 1\)}, \\
+\left|y - (\boldsymbol{w} \cdot \boldsymbol{x} + c)\right| \geq 0 & \text{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) \leq 1\)}.
 \end{cases} \qquad(3.4)$$
 
 式 3.4は、誤分類された点 $\boldsymbol{x}$ に対し、罰を与える役割がある。 $\xi$ を**ヒンジ損失**と呼ぶ。最終的に式 3.5を最小化する。
@@ -85,11 +85,11 @@ $$\displaystyle\frac{\partial L}{\partial w} = \displaystyle\frac{\partial L}{\p
 Fig. 3.1(1)を振り返ると、 $C=0$ の場合は、式 3.7より、境界から距離 $d$ の点だけが $\lambda>0$ となり、加重 $\boldsymbol{w}$ に寄与する。
 その点を**サポートベクトル**と呼ぶ。式 3.6に式 3.8を代入すると、都合よく $\xi$ や $C$ が消去され、式 3.9が得られる。
 
-$$  ilde{L}(\lambda) =
+$$\tilde{L}(\lambda) =
 \min_{\boldsymbol{w},c} L(\boldsymbol{w},c, \lambda) =
 \displaystyle\sum_{i=1}^N \lambda_i \left\lbrace 1 - \displaystyle\frac{1}{2} \displaystyle\sum_{j=1}^N \lambda_j y_i y_j (\boldsymbol{x}_i \cdot \boldsymbol{x}_j)\right\rbrace  \leq f(\boldsymbol{w}). \qquad(3.9)$$
 
-式 3.9の $  ilde{L}$ の最大化を $f(\boldsymbol{w})$ の**ラグランジュ双対問題**と呼ぶ。 $  ilde{L}$ と $f(\boldsymbol{w})$ の最適値は合致する。これを**強双対性**と呼ぶ。
+式 3.9の $\tilde{L}$ の最大化を $f(\boldsymbol{w})$ の**ラグランジュ双対問題**と呼ぶ。 $\tilde{L}$ と $f(\boldsymbol{w})$ の最適値は合致する。これを**強双対性**と呼ぶ。
 
 ### 3.2 逐次的な最適化
 
@@ -106,9 +106,9 @@ $$y_i \delta_i + y_j \delta_j = 0,
 \right\rbrace 
 \Leftarrow 0 = \displaystyle\sum_{i=1}^N \lambda_i y_i. \qquad(3.10)$$
 
-2点 $\boldsymbol{x}_i,\boldsymbol{x}_j$ に対し、 $  ilde{L}$ の極大値を求める。式 3.10に注意して、式 3.9を $\delta_i,\delta_j$ で偏微分すると、式 3.11が得られる。
+2点 $\boldsymbol{x}_i,\boldsymbol{x}_j$ に対し、 $\tilde{L}$ の極大値を求める。式 3.10に注意して、式 3.9を $\delta_i,\delta_j$ で偏微分すると、式 3.11が得られる。
 
-$$\displaystyle\frac{\partial   ilde{L}}{\partial \delta_i} = y_i (y_i-y_j)-\delta_i \left|\boldsymbol{x}_i-\boldsymbol{x}_j\right|^2-y_i \displaystyle\sum_{n=1}^N \lambda_n y_n \boldsymbol{x}_n \cdot (\boldsymbol{x}_i-\boldsymbol{x}_j). \qquad(3.11)$$
+$$\displaystyle\frac{\partial \tilde{L}}{\partial \delta_i} = y_i (y_i-y_j)-\delta_i \left|\boldsymbol{x}_i-\boldsymbol{x}_j\right|^2-y_i \displaystyle\sum_{n=1}^N \lambda_n y_n \boldsymbol{x}_n \cdot (\boldsymbol{x}_i-\boldsymbol{x}_j). \qquad(3.11)$$
 
 乗数 $\lambda_i,\lambda_j$ の移動量は式 3.12となる。ただし、式 3.7を満たす必要があり、 $0\leq\lambda\leq C$ の範囲で**クリッピング**を行う。
 
@@ -128,11 +128,11 @@ $$c = -\displaystyle\frac{1}{2} \left\lbrace
 
 ```scala
 case class Data(x: Seq[Double], t: Int, var l: Double = 0) {
-	def kkt(svm: SVM, C: Double) = t * svm(this) match {
-		case e if e < 1 => l >= C
-		case e if e > 1 => l == 0
-		case _ => true
-	}
+  def kkt(svm: SVM, C: Double) = t * svm(this) match {
+    case e if e < 1 => l >= C
+    case e if e > 1 => l == 0
+    case _ => true
+  }
 }
 ```
 
@@ -140,9 +140,9 @@ case class Data(x: Seq[Double], t: Int, var l: Double = 0) {
 
 ```scala
 class SVM(data: Seq[Data], k: (Data, Data) => Double) {
-	var const = 0.0
-	def group(t: Int) = data.filter(_.t == t).map(apply)
-	def apply(x: Data) = data.map(d => d.l * d.t * k(x,d)).sum + const
+  var const = 0.0
+  def group(t: Int) = data.filter(_.t == t).map(apply)
+  def apply(x: Data) = data.map(d => d.l * d.t * k(x,d)).sum + const
 }
 ```
 
@@ -150,17 +150,17 @@ class SVM(data: Seq[Data], k: (Data, Data) => Double) {
 
 ```scala
 class SMO(data: Seq[Data], k: (Data, Data) => Double, C: Double = 1e-10) extends SVM(data,k) {
-	while(data.filterNot(_.kkt(this,C)).size >= 2) {
-		val a = data(util.Random.nextInt(data.size))
-		val b = data(util.Random.nextInt(data.size))
-		val min = math.max(-a.l, if(a.t == b.t) b.l - this.C else -b.l)
-		val max = math.min(-a.l, if(a.t == b.t) b.l - this.C else -b.l) + C
-		val prod = this(Data(a.x.zip(b.x).map(_-_), 0)) - this.const
-		val best = -a.t * (prod - a.t + b.t) / (k(a,a) - 2 * k(a,b) + k(b,b))
-		if(!best.isNaN) a.l += a.t * a.t * math.max(min, math.min(max, best))
-		if(!best.isNaN) b.l -= a.t * b.t * math.max(min, math.min(max, best))
-		this.const = -0.5 * (group(+1).min + group(-1).max) + this.const
-	}
+  while(data.filterNot(_.kkt(this,C)).size >= 2) {
+    val a = data(util.Random.nextInt(data.size))
+    val b = data(util.Random.nextInt(data.size))
+    val min = math.max(-a.l, if(a.t == b.t) b.l - this.C else -b.l)
+    val max = math.min(-a.l, if(a.t == b.t) b.l - this.C else -b.l) + C
+    val prod = this(Data(a.x.zip(b.x).map(_-_), 0)) - this.const
+    val best = -a.t * (prod - a.t + b.t) / (k(a,a) - 2 * k(a,b) + k(b,b))
+    if(!best.isNaN) a.l += a.t * a.t * math.max(min, math.min(max, best))
+    if(!best.isNaN) b.l -= a.t * b.t * math.max(min, math.min(max, best))
+    this.const = -0.5 * (group(+1).min + group(-1).max) + this.const
+  }
 }
 ```
 
@@ -206,7 +206,7 @@ e^x = \displaystyle\sum_{n=0}^\infty \displaystyle\frac{x^n}{n!}. \qquad(3.16)$$
 内積を計算可能な写像 $\Phi$ を使うことで、陽に $\Phi$ を計算せずに、仮想的な高次元空間に写像する技法を**カーネル法**と呼ぶ。
 理論的には、**正定値性**を満たす対称関数 $k$ に対し、内積が $k$ で定義される**再生核ヒルベルト空間**への写像 $\Phi$ が存在する。
 
-$$k \colon \mathbb{M}   imes \mathbb{M}   o \mathbb{R},
+$$k \colon \mathbb{M} \times \mathbb{M} \to \mathbb{R},
 \enspace\mathrm{where}\enspace
 k(\boldsymbol{x}_i,\boldsymbol{x}_j) = k(\boldsymbol{x}_j,\boldsymbol{x}_i). \qquad(3.17)$$
 
@@ -309,7 +309,7 @@ f(x). \qquad(3.29)$$
 積分変換と機械学習の関係は興味深く、特に、深層学習の優れた性能の理由を積分変換に求める研究は、注目に値する。
 簡単な例では、式 3.30に示す**シグモイドカーネル**の挙動は、式 2.1で加重 $\boldsymbol{w}$ が固定されたニューロンと等価になる。
 
-$$k(\boldsymbol{w},\boldsymbol{x}) =   anh {}^t\boldsymbol{w} \boldsymbol{x}. \qquad(3.30)$$
+$$k(\boldsymbol{w},\boldsymbol{x}) = \tanh {}^t\boldsymbol{w} \boldsymbol{x}. \qquad(3.30)$$
 
 深層学習は、勾配法を通じて加重 $\boldsymbol{w}$ を最適化するため、自在に最適化される高次元空間の層を持つのと等価だと言える。
 

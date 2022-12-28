@@ -18,22 +18,22 @@ const size_t N = 256;
 double[N][N] A, B, C;
 
 void dmm_slow() {
-	foreach(i; iota(N)) foreach(j; iota(N)) foreach(k; iota(N)) C[i][j] += A[i][k] * B[k][j];
+  foreach(i; iota(N)) foreach(j; iota(N)) foreach(k; iota(N)) C[i][j] += A[i][k] * B[k][j];
 }
 
 void dmm_fast() {
-	foreach(i; iota(N)) foreach(j; iota(N)) foreach(k; iota(N)) C[i][j] += A[i][k] * B[j][k];
+  foreach(i; iota(N)) foreach(j; iota(N)) foreach(k; iota(N)) C[i][j] += A[i][k] * B[j][k];
 }
 
 void main() {
-	const size_t trial = 10;
-	foreach(i; iota(N)) foreach(j; iota(N)) A[i][j] = uniform(0, 1);
-	foreach(i; iota(N)) foreach(j; iota(N)) B[i][j] = uniform(0, 1);
-	foreach(i; iota(N)) foreach(j; iota(N)) C[i][j] = uniform(0, 1);
-	auto slow = 2.0 * trial / benchmark!dmm_slow(trial)[0].total!"nsecs" * N * N * N;
-	auto fast = 2.0 * trial / benchmark!dmm_fast(trial)[0].total!"nsecs" * N * N * N;
-	writefln("slow: %.5fGFLOPS", slow);
-	writefln("fast: %.5fGFLOPS", fast);
+  const size_t trial = 10;
+  foreach(i; iota(N)) foreach(j; iota(N)) A[i][j] = uniform(0, 1);
+  foreach(i; iota(N)) foreach(j; iota(N)) B[i][j] = uniform(0, 1);
+  foreach(i; iota(N)) foreach(j; iota(N)) C[i][j] = uniform(0, 1);
+  auto slow = 2.0 * trial / benchmark!dmm_slow(trial)[0].total!"nsecs" * N * N * N;
+  auto fast = 2.0 * trial / benchmark!dmm_fast(trial)[0].total!"nsecs" * N * N * N;
+  writefln("slow: %.5fGFLOPS", slow);
+  writefln("fast: %.5fGFLOPS", fast);
 }
 ```
 

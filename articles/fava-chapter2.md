@@ -95,17 +95,17 @@ println(if(ZLO.test("ZLLLLLLLLLLLLLLLLO").isDefined) "OK" else "NO")
 単体の有限状態機械は、再帰計算が苦手である。しかし、その集合体である**セルオートマトン**は、任意の計算ができる。
 構成単位を**セル**と呼ぶ。各セルは、近傍 $k$ 個のセルの状態を参照し、式 2.1に示す遷移規則 $\delta$ に従って、状態遷移する。
 
-$$\delta: Q^k   o Q. \qquad(2.1)$$
+$$\delta: Q^k \to Q. \qquad(2.1)$$
 
 空間的な自由を得た恩恵で、再帰構造を持つ計算に対応する。例えば、**フラクタル図形**を描画する遷移規則が存在する。
 さて、2次元のセルオートマトンの実装例を、以下に示す。引数は、遷移規則と、縦横に並んだセルの最初の状態である。
 
 ```scala
 class Grid[S](rule: Rule[S], data: Array[Array[S]]) {
-	def update = {
-		val next = rule(data.map(_.toSeq).toSeq)
-		next.zip(data).foreach(_.copyToArray(_))
-	}
+  def update = {
+    val next = rule(data.map(_.toSeq).toSeq)
+    next.zip(data).foreach(_.copyToArray(_))
+  }
 }
 ```
 
@@ -113,8 +113,8 @@ class Grid[S](rule: Rule[S], data: Array[Array[S]]) {
 
 ```scala
 class Rule[S](rule: Seq[Seq[S]] => S, d: Int = 1) {
-	def ROI[V](i: Int)(s: Seq[V]) = Range.inclusive(i - d, i + d).map(Math.floorMod(_, s.size)).map(s)
-	def apply(s: Seq[Seq[S]]) = s.indices.map(x => s(x).indices.map(y => rule(ROI(x)(s).map(ROI(y)))))
+  def ROI[V](i: Int)(s: Seq[V]) = Range.inclusive(i - d, i + d).map(Math.floorMod(_, s.size)).map(s)
+  def apply(s: Seq[Seq[S]]) = s.indices.map(x => s(x).indices.map(y => rule(ROI(x)(s).map(ROI(y)))))
 }
 ```
 
@@ -129,12 +129,12 @@ Fig. 2.1は**カウンタ**である。左側の**発振回路**から周期的�
 
 ```scala
 object WireWorldRule extends Rule[Char](ROI => (ROI(1)(1), ROI.flatten.count(_ == 'H')) match {
-	case ('W', 1) => 'H'
-	case ('W', 2) => 'H'
-	case ('W', _) => 'W'
-	case ('H', _) => 'T'
-	case ('T', _) => 'W'
-	case ('B', _) => 'B'
+  case ('W', 1) => 'H'
+  case ('W', 2) => 'H'
+  case ('W', _) => 'W'
+  case ('H', _) => 'T'
+  case ('T', _) => 'W'
+  case ('B', _) => 'B'
 })
 ```
 
@@ -176,24 +176,24 @@ Fig. 2.2 numerical increment operation on a Turing machine ( $k=1$ ).
 
 ```scala
 class UTM[V](data1: Seq[V], data2: Seq[V], b1: V, b2: V, mL: V, mR: V, var s1: V, var s2: Int = 0) {
-	val tape1 = data1.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
-	val tape2 = data2.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
-	var hd1, hd2 = 0
-	def r1 = tape1.getOrElse(hd1, b1) 
-	def r2 = tape2.getOrElse(hd2, b2)
-	def apply(sop: V) = Iterator.continually(s2 match {
-		case 0 if r2 == s1 => (s1 = s1, s2 = 1, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
-		case 0 if r2 != s1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 5) 
-		case 1 if r2 == r1 => (s1 = s1, s2 = 2, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
-		case 1 if r2 != r1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 4) 
-		case 2 if r2 != b2 => (s1 = r2, s2 = 3, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
-		case 3 if r2 != b2 => (s1 = s1, s2 = 4, tape1(hd1) = r2, hd1 += 0, hd2 += 1) 
-		case 4 if r2 == b1 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
-		case 4 if r2 == mL => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 -= 1, hd2 += 1) 
-		case 4 if r2 == mR => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 1, hd2 += 1) 
-		case 5 if r2 == b2 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
-		case 5 if r2 != b2 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 -= 1) 
-	}).takeWhile(t => s1 != sop || s2 != 0).map(t => tape1.values.mkString)
+  val tape1 = data1.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
+  val tape2 = data2.zipWithIndex.map(_.swap).to(collection.mutable.SortedMap)
+  var hd1, hd2 = 0
+  def r1 = tape1.getOrElse(hd1, b1) 
+  def r2 = tape2.getOrElse(hd2, b2)
+  def apply(sop: V) = Iterator.continually(s2 match {
+    case 0 if r2 == s1 => (s1 = s1, s2 = 1, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+    case 0 if r2 != s1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 5) 
+    case 1 if r2 == r1 => (s1 = s1, s2 = 2, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+    case 1 if r2 != r1 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 4) 
+    case 2 if r2 != b2 => (s1 = r2, s2 = 3, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+    case 3 if r2 != b2 => (s1 = s1, s2 = 4, tape1(hd1) = r2, hd1 += 0, hd2 += 1) 
+    case 4 if r2 == b1 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+    case 4 if r2 == mL => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 -= 1, hd2 += 1) 
+    case 4 if r2 == mR => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 1, hd2 += 1) 
+    case 5 if r2 == b2 => (s1 = s1, s2 = 0, tape1(hd1) = r1, hd1 += 0, hd2 += 1) 
+    case 5 if r2 != b2 => (s1 = s1, s2 = 5, tape1(hd1) = r1, hd1 += 0, hd2 -= 1) 
+  }).takeWhile(t => s1 != sop || s2 != 0).map(t => tape1.values.mkString)
 }
 ```
 
@@ -222,7 +222,7 @@ y^*_n &\in \Gamma^*,\\
 \right. \qquad(2.3)$$
 
 記号 $\sigma_n$ を受け取ると、スタックの先頭の記号 $x_n$ を取り除き、先頭に記号列 $y^*_n$ を順番に積んで、状態 $q_{n+1}$ に遷移する。
-再帰計算を活用した例として、第2.1節で実装した正規表現の拡張を考える。以下の関数ZLOは、記号列 $  exttt{Z}^n  exttt{L}  exttt{O}^n$ を表す。
+再帰計算を活用した例として、第2.1節で実装した正規表現の拡張を考える。以下の関数ZLOは、記号列 $\texttt{Z}^n\texttt{L}\texttt{O}^n$ を表す。
 
 ```scala
 def ZLO: R[Char] = Cat(One('Z'), Cat(Alt(One('L'), new R(ZLO.test(_))), One('O')))
@@ -237,7 +237,7 @@ $$(1 + 2) * (10 - 20). \qquad(2.4)$$
 演算子には優先順位があるため、式を左から読むだけでは、計算は困難である。数値を保持する記憶装置も必要である。
 前者は、式 2.5の**逆ポーランド記法**で解決する。演算子に優先順位はなく、出現する順番に、直前の数値に適用される。
 
-$$  exttt{1 2 + 10 20 - *}. \qquad(2.5)$$
+$$\texttt{1 2 + 10 20 - *}. \qquad(2.5)$$
 
 手順をFig. 2.3に示す。逆ポーランド記法は、式の読み返しを伴う再帰計算や条件分岐を除き、任意の計算を実行できる。
 その再帰計算や条件分岐も、指定された長さだけ記号列を遡る**分岐命令**があれば実現できる。詳細は第6章に解説する。
@@ -250,13 +250,13 @@ Fig. 2.3 1 2 + 10 20 - *.
 
 ```scala
 object ArithStackMachine extends collection.mutable.Stack[Int]() {
-	def apply(program: String): Int = program.split(" +").map {
-		case "+" => push(((a: Int, b: Int) => b + a)(pop(), pop()))
-		case "-" => push(((a: Int, b: Int) => b - a)(pop(), pop()))
-		case "*" => push(((a: Int, b: Int) => b * a)(pop(), pop()))
-		case "/" => push(((a: Int, b: Int) => b / a)(pop(), pop()))
-		case num => this.push(num.toInt)
-	}.lastOption.map(_ => pop()).last
+  def apply(program: String): Int = program.split(" +").map {
+    case "+" => push(((a: Int, b: Int) => b + a)(pop(), pop()))
+    case "-" => push(((a: Int, b: Int) => b - a)(pop(), pop()))
+    case "*" => push(((a: Int, b: Int) => b * a)(pop(), pop()))
+    case "/" => push(((a: Int, b: Int) => b / a)(pop(), pop()))
+    case num => this.push(num.toInt)
+  }.lastOption.map(_ => pop()).last
 }
 ```
 

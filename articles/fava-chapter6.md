@@ -63,7 +63,7 @@ Def(11,1) Load(0,0) Nil Skin(6) Ref Call(0) Load(0,0) Fix Set Get Ret Def(3,0) P
 
 ```scala
 class Code(op: FaVM => Unit) {
-	def apply(vm: FaVM) = (op(vm), vm.pc += 1)
+  def apply(vm: FaVM) = (op(vm), vm.pc += 1)
 }
 ```
 
@@ -90,10 +90,10 @@ case class Promise(thunk: Closure, var cache: Any = null, var empty: Boolean = t
 
 ```scala
 case class Env(local: Seq[Any], out: Env = null) {
-	def apply(depth: Int, index: Int): Any = depth match {
-		case 0 => this.local(index)
-		case d => out(d - 1, index)
-	}
+  def apply(depth: Int, index: Int): Any = depth match {
+    case 0 => this.local(index)
+    case d => out(d - 1, index)
+  }
 }
 ```
 
@@ -111,9 +111,9 @@ case class Load(nest: Int, id: Int) extends Code(vm => vm.data.push(vm.call.env(
 
 ```scala
 class FaVM(val codes: Seq[Code], var pc: Int = 0) {
-	val call = new Stack[Env]
-	val data = new Stack[Any]
-	while(pc < codes.size) codes(pc)(this)
+  val call = new Stack[Env]
+  val data = new Stack[Any]
+  while(pc < codes.size) codes(pc)(this)
 }
 ```
 
@@ -121,10 +121,10 @@ Stack型はスタックを実装する。指定された個数の値を取り出
 
 ```scala
 class Stack[E] extends collection.mutable.Stack[E] {
-	def popN(n: Int) = Seq.fill(n)(pop).reverse
-	def popAs[Type]: Type = pop.asInstanceOf[Type]
-	def topAs[Type]: Type = top.asInstanceOf[Type]
-	def env = (this :+ null).top.asInstanceOf[Env]
+  def popN(n: Int) = Seq.fill(n)(pop).reverse
+  def popAs[Type]: Type = pop.asInstanceOf[Type]
+  def topAs[Type]: Type = top.asInstanceOf[Type]
+  def env = (this :+ null).top.asInstanceOf[Env]
 }
 ```
 
@@ -226,8 +226,8 @@ Def命令は、指定された個数の引数を取る関数を生成する。�
 
 ```scala
 case class Def(size: Int, narg: Int) extends Jump(vm => Some {
-	vm.data.push(Closure(vm.pc + 1, narg, vm.call.env))
-	vm.pc + size
+  vm.data.push(Closure(vm.pc + 1, narg, vm.call.env))
+  vm.pc + size
 })
 ```
 
@@ -235,8 +235,8 @@ Ret命令は、関数定義の最後に配置される。関数の環境を廃�
 
 ```scala
 case object Ret extends Jump(vm => Some {
-	vm.call.remove(0).asInstanceOf[Env]
-	vm.data.remove(1).asInstanceOf[Int]
+  vm.call.remove(0).asInstanceOf[Env]
+  vm.data.remove(1).asInstanceOf[Int]
 })
 ```
 
@@ -244,12 +244,12 @@ Call命令は、指定された個数の引数で環境を構築する。関数�
 
 ```scala
 case class Call(argc: Int) extends Jump(vm => Some {
-	val args = vm.data.popN(argc)
-	val func = vm.data.popAs[Closure]
-	require(args.length == func.narg)
-	vm.call.push(Env(args, func.out))
-	vm.data.push(vm.pc + 1)
-	func.from
+  val args = vm.data.popN(argc)
+  val func = vm.data.popAs[Closure]
+  require(args.length == func.narg)
+  vm.call.push(Env(args, func.out))
+  vm.data.push(vm.pc + 1)
+  func.from
 })
 ```
 

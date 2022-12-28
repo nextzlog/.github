@@ -39,28 +39,28 @@ namespace sun {
 class Task;
 
 void launch(void (*pad)(void)) {
-	using funct = param(*)(param);
-	root((funct)pad, (void*)NULL);
+  using funct = param(*)(param);
+  root((funct)pad, (void*)NULL);
 }
 
 template<typename Arg> void salvo(void (*f)(Arg), Arg a, Arg b) {
-	using funct = void*(*)(void*);
-	extern Task* dawn(funct fn, void* a);
-	extern void* dusk(Task* waitingtask);
-	auto t1 = dawn((funct) f, (void*) a); // fork
-	auto t2 = dawn((funct) f, (void*) b); // fork
-	dusk(t2); // join
-	dusk(t1); // join
+  using funct = void*(*)(void*);
+  extern Task* dawn(funct fn, void* a);
+  extern void* dusk(Task* waitingtask);
+  auto t1 = dawn((funct) f, (void*) a); // fork
+  auto t2 = dawn((funct) f, (void*) b); // fork
+  dusk(t2); // join
+  dusk(t1); // join
 }
 
 template<typename Idx> void burst(Idx round, void (*body)(Idx)) {
-	using funct = void*(*)(void*);
-	extern Task* dawn(funct fn, void* a);
-	extern void* dusk(Task* waitingtask);
-	Task** th = new Task*[round];
-	for(Idx i=0;i<round;i++) th[i] = dawn((funct)body, (void*)i);
-	for(Idx i=0;i<round;i++) dusk(th[i]);
-	delete th;
+  using funct = void*(*)(void*);
+  extern Task* dawn(funct fn, void* a);
+  extern void* dusk(Task* waitingtask);
+  Task** th = new Task*[round];
+  for(Idx i=0;i<round;i++) th[i] = dawn((funct)body, (void*)i);
+  for(Idx i=0;i<round;i++) dusk(th[i]);
+  delete th;
 }
 };
 ```
@@ -99,7 +99,7 @@ Fig. 5.1に結果を示す。MeltdownやSpectreの対策により、Intel Xeon E
 
 ![scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png](/images/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png)
 
-Fig. 5.1 dense matrix multiplication,  $8192  imes8192  imes8192$ , vectorized by AVX.
+Fig. 5.1 dense matrix multiplication,  $8192\times8192\times8192$ , vectorized by AVX.
 
 PDRWSは、第4.1節のタスク並列処理に相当し、3軸を粒度 $128$ まで再帰的に並列化して、末端でSIMD命令を使用した。
 QUEUEは、第4.3節のデータ並列処理に相当し、2軸を粒度 $128$ まで格子状に並列化して、同様にSIMD命令を使用した。

@@ -18,12 +18,12 @@ published: true
 
 ```dlang
 void dmm_data(shared double[][] A, shared double[][] B, shared double[][] C) {
-	import core.atomic, std.numeric, std.parallelism, std.range;
-	foreach(i; parallel(iota(A.length))) {
-	foreach(j; parallel(iota(B.length))) {
-		C[i][j].atomicOp!"+="(A[i][].dotProduct(B[j][]));
-	}
-	}
+  import core.atomic, std.numeric, std.parallelism, std.range;
+  foreach(i; parallel(iota(A.length))) {
+  foreach(j; parallel(iota(B.length))) {
+    C[i][j].atomicOp!"+="(A[i][].dotProduct(B[j][]));
+  }
+  }
 }
 ```
 
@@ -32,20 +32,20 @@ void dmm_data(shared double[][] A, shared double[][] B, shared double[][] C) {
 
 ```dlang
 void dmm_simd(shared double[][] A, shared double[][] B, shared double[][] C) {
-	import core.simd, std.parallelism, std.range;
-	foreach(i; parallel(iota(A.length)))
-	foreach(j; parallel(iota(B.length))) {
-		double2 u = 0;
-		foreach(k; iota(0, A[i].length, 2)) {
-			auto a = *cast(double2*) &A[i][k];
-			auto b = *cast(double2*) &B[j][k];
-			auto w = __simd(XMM.LODUPD, a);
-			auto x = __simd(XMM.LODUPD, b);
-			w = cast(double2)__simd(XMM.MULPD, w, x);
-			u = cast(double2)__simd(XMM.ADDPD, w, u);
-		}
-		C[i][j] = u[0] + u[1];
-	}
+  import core.simd, std.parallelism, std.range;
+  foreach(i; parallel(iota(A.length)))
+  foreach(j; parallel(iota(B.length))) {
+    double2 u = 0;
+    foreach(k; iota(0, A[i].length, 2)) {
+      auto a = *cast(double2*) &A[i][k];
+      auto b = *cast(double2*) &B[j][k];
+      auto w = __simd(XMM.LODUPD, a);
+      auto x = __simd(XMM.LODUPD, b);
+      w = cast(double2)__simd(XMM.MULPD, w, x);
+      u = cast(double2)__simd(XMM.ADDPD, w, u);
+    }
+    C[i][j] = u[0] + u[1];
+  }
 }
 ```
 

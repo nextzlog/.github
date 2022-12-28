@@ -17,7 +17,7 @@ $$\boldsymbol{y}_n = \boldsymbol{x}_{n+1} = f_n(\boldsymbol{z}_n) = f_n(W_n\bold
 式 2.2で、第 $n$ 層は前の層から値 $\boldsymbol{x}_n$ を受容し、行列 $W_n$ で加重して活性化関数 $f_n$ を適用し、後続の層に値 $\boldsymbol{y}_n$ を渡す。
 活性化関数には、**シグモイド関数**が広く利用される。式 2.3に定義する。これは、2クラスの分類器のように振る舞う。
 
-$$f_\mathrm{sigm}(z) = \displaystyle\frac{1}{1 + e^{-z}} = \displaystyle\frac{1}{2}  anh\displaystyle\frac{z}{2} + \displaystyle\frac{1}{2}. \qquad(2.3)$$
+$$f_\mathrm{sigm}(z) = \displaystyle\frac{1}{1 + e^{-z}} = \displaystyle\frac{1}{2}\tanh\displaystyle\frac{z}{2} + \displaystyle\frac{1}{2}. \qquad(2.3)$$
 
 代表的な活性化関数の例をFig. 2.1(1)に示す。他には、式 2.4に示す**ソフトマックス関数**も特に最終層で利用される。
 
@@ -108,7 +108,7 @@ abstract class SGD(var w: Double = math.random) extends (Double => Unit)
 
 ```scala
 class PlainSGD(e: Double = 0.01) extends SGD {
-	def apply(dE: Double): Unit = this.w -= e * dE
+  def apply(dE: Double): Unit = this.w -= e * dE
 }
 ```
 
@@ -116,8 +116,8 @@ class PlainSGD(e: Double = 0.01) extends SGD {
 
 ```scala
 trait Act {
-	def fp(z: Seq[Double]): Seq[Double]
-	def bp(y: Seq[Double]): Seq[Double]
+  def fp(z: Seq[Double]): Seq[Double]
+  def bp(y: Seq[Double]): Seq[Double]
 }
 ```
 
@@ -125,8 +125,8 @@ trait Act {
 
 ```scala
 class Sigmoid extends Act {
-	def fp(z: Seq[Double]) = z.map(z => 1 / (1 + math.exp(-z)))
-	def bp(z: Seq[Double]) = this.fp(z).map(y => y * (1.0 - y))
+  def fp(z: Seq[Double]) = z.map(z => 1 / (1 + math.exp(-z)))
+  def bp(z: Seq[Double]) = this.fp(z).map(y => y * (1.0 - y))
 }
 ```
 
@@ -134,8 +134,8 @@ class Sigmoid extends Act {
 
 ```scala
 abstract class Neuron(val dim: Int) {
-	def fp(x: Seq[Double]): Seq[Double]
-	def bp(x: Seq[Double], t: Seq[Double]): Seq[Double]
+  def fp(x: Seq[Double]): Seq[Double]
+  def bp(x: Seq[Double], t: Seq[Double]): Seq[Double]
 }
 ```
 
@@ -143,8 +143,8 @@ abstract class Neuron(val dim: Int) {
 
 ```scala
 class Output(dim: Int = 1, loss: (Double,Double)=>Double = _-_) extends Neuron(dim) {
-	def fp(x: Seq[Double]) = x
-	def bp(x: Seq[Double], t: Seq[Double]) = x.zip(t).map(loss.tupled)
+  def fp(x: Seq[Double]) = x
+  def bp(x: Seq[Double], t: Seq[Double]) = x.zip(t).map(loss.tupled)
 }
 ```
 
@@ -152,14 +152,14 @@ class Output(dim: Int = 1, loss: (Double,Double)=>Double = _-_) extends Neuron(d
 
 ```scala
 class Hidden(dim: Int, act: Act, weight: ()=>SGD, next: Neuron) extends Neuron(dim) {
-	lazy val w = List.fill(next.dim, dim)(weight())
-	def fp(x: Seq[Double]) = next.fp(act.fp(wx(x)))
-	def wx(x: Seq[Double]) = w.map(_.map(_.w).zip(x).map(_ * _).sum)
-	def bp(x: Seq[Double], t: Seq[Double]) = ((z: Seq[Double]) => {
-		val bp = next.bp(act.fp(z),t).zip(act.bp(z)).map(_ * _)
-		for((w,g) <- w.zip(bp); (sgd,x) <- w.zip(x)) sgd(x * g)
-		w.transpose.map(_.zip(bp).map(_.w * _).sum)
-	})(wx(x))
+  lazy val w = List.fill(next.dim, dim)(weight())
+  def fp(x: Seq[Double]) = next.fp(act.fp(wx(x)))
+  def wx(x: Seq[Double]) = w.map(_.map(_.w).zip(x).map(_ * _).sum)
+  def bp(x: Seq[Double], t: Seq[Double]) = ((z: Seq[Double]) => {
+    val bp = next.bp(act.fp(z),t).zip(act.bp(z)).map(_ * _)
+    for((w,g) <- w.zip(bp); (sgd,x) <- w.zip(x)) sgd(x * g)
+    w.transpose.map(_.zip(bp).map(_.w * _).sum)
+  })(wx(x))
 }
 ```
 
@@ -167,9 +167,9 @@ class Hidden(dim: Int, act: Act, weight: ()=>SGD, next: Neuron) extends Neuron(d
 
 ```scala
 class Offset(dim: Int, act: Act, weight: ()=>SGD, next: Neuron) extends Neuron(dim) {
-	lazy val body = new Hidden(dim + 1, act, weight, next)
-	def fp(x: Seq[Double]) = body.fp(x.padTo(dim + 1, 1d))
-	def bp(x: Seq[Double], t: Seq[Double]) = body.bp(x.padTo(dim + 1, 1d), t).init
+  lazy val body = new Hidden(dim + 1, act, weight, next)
+  def fp(x: Seq[Double]) = body.fp(x.padTo(dim + 1, 1d))
+  def bp(x: Seq[Double], t: Seq[Double]) = body.bp(x.padTo(dim + 1, 1d), t).init
 }
 ```
 
@@ -201,8 +201,8 @@ $$\displaystyle\frac{\partial E_\mathrm{CE}}{\partial z^k}
 
 ```scala
 class Softmax extends Act {
-	def fp(z: Seq[Double]) = z.map(math.exp(_)/z.map(math.exp).sum)
-	def bp(z: Seq[Double]) = Seq.fill(z.size)(1.0)
+  def fp(z: Seq[Double]) = z.map(math.exp(_)/z.map(math.exp).sum)
+  def bp(z: Seq[Double]) = Seq.fill(z.size)(1.0)
 }
 ```
 
@@ -255,7 +255,7 @@ $$\Delta w = -\displaystyle\frac{\eta}{t\sqrt{\underset{}{\mathbf{E}}\!\left[\,(
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
-\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t &= \displaystyle\frac{1}{t} \displaystyle\sum_{  au=0}^t (\nabla E_  au)^2, \\
+\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t &= \displaystyle\frac{1}{t} \displaystyle\sum_{\tau=0}^t (\nabla E_\tau)^2, \\
 \underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_0 &= \varepsilon.
 \end{aligned}
 \right. \qquad(2.13)$$
@@ -276,13 +276,13 @@ $$\Delta w_{mt} = -\displaystyle\frac{\sqrt{\underset{}{\mathbf{E}}\!\left[\,(\D
 
 ```scala
 class AdaDelta(r: Double = 0.95, e: Double = 1e-8) extends SGD {
-	var eW, eE = 0.0
-	def apply(dE: Double) = {
-		lazy val v = math.sqrt(eW + e) / math.sqrt(eE + e)
-		this.eE = r * eE + (1 - r) * math.pow(1 * dE, 2.0)
-		this.eW = r * eW + (1 - r) * math.pow(v * dE, 2.0)
-		this.w -= v * dE
-	}
+  var eW, eE = 0.0
+  def apply(dE: Double) = {
+    lazy val v = math.sqrt(eW + e) / math.sqrt(eE + e)
+    this.eE = r * eE + (1 - r) * math.pow(1 * dE, 2.0)
+    this.eW = r * eW + (1 - r) * math.pow(v * dE, 2.0)
+    this.w -= v * dE
+  }
 }
 ```
 
@@ -298,13 +298,13 @@ $$\boldsymbol{y}^t = f(\boldsymbol{z}^t) = f(W_i\boldsymbol{x}^t+W_h\boldsymbol{
 
 ```scala
 class RNN(dim: Int, hidden: Neuron, output: Neuron, value: Double = 0) extends Neuron(dim) {
-	val hist = Seq[Seq[Double]]().toBuffer
-	val loop = Seq[Seq[Double]]().toBuffer
-	def fp(x: Seq[Double]) = output.fp(hp(x).last)
-	def tt(x: Seq[Double]) = hist.zip(loop).map(_++_).foldRight(x)
-	def hp(x: Seq[Double]) = loop.append(hidden.fp(hist.append(x).last++loop.last))
-	def bp(x: Seq[Double], t: Seq[Double]) = tt(output.bp(hp(x).last,t))(hidden.bp)
-	def init = hist.clear -> loop.clear -> loop.append(Seq.fill(hidden.dim)(value))
+  val hist = Seq[Seq[Double]]().toBuffer
+  val loop = Seq[Seq[Double]]().toBuffer
+  def fp(x: Seq[Double]) = output.fp(hp(x).last)
+  def tt(x: Seq[Double]) = hist.zip(loop).map(_++_).foldRight(x)
+  def hp(x: Seq[Double]) = loop.append(hidden.fp(hist.append(x).last++loop.last))
+  def bp(x: Seq[Double], t: Seq[Double]) = tt(output.bp(hp(x).last,t))(hidden.bp)
+  def init = hist.clear -> loop.clear -> loop.append(Seq.fill(hidden.dim)(value))
 }
 ```
 
@@ -313,8 +313,8 @@ class RNN(dim: Int, hidden: Neuron, output: Neuron, value: Double = 0) extends N
 
 ```scala
 class DelaySGD(sgd: SGD = new PlainSGD, var d: Double = 0) extends SGD {
-	def apply(dE: Double) = (sgd.w = w, sgd(dE), d += sgd.w - w)
-	def force = (w += d, d = 0)
+  def apply(dE: Double) = (sgd.w = w, sgd(dE), d += sgd.w - w)
+  def force = (w += d, d = 0)
 }
 ```
 
