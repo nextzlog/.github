@@ -108,6 +108,8 @@ func onEditor(key int) {
 		</h4>
 		<p class="card-text" itemprop="headline">汎用的なドメイン特化言語であらゆる書式の交信記録の処理とコンテストの得点計算に対応します。</p>
 		<a class="card-link" href="https://nextzlog.github.io/qxsl/doc">API</a>
+		<a class="card-link" href="https://github.com/nextzlog/qxsl/blob/master/ELVA.md">ElvaLISP</a>
+		<a class="card-link" href="https://github.com/nextzlog/qxsl/blob/master/src/main/resources/qxsl/ruler/allja1.lisp">allja1.lisp</a>
 	</div>
 </div>
 
