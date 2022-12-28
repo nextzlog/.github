@@ -160,7 +160,7 @@ Fig. 4.1は、2個のIntel Xeon E5-2699 v3を搭載した、NUMA型の共有メ�
 
 ![scales/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.png](/images/dawn.dmm.rank8192.gran128.pad32.ldc.xeon.e5.2699.v3.core36.png)
 
-Fig. 4.1 dense matrix multiplication,  $8192\times8192\times8192$ .
+Fig. 4.1 dense matrix multiplication,  $8192  imes8192  imes8192$ .
 
 同じ並列化でも、提案実装と既存実装の性能には差がある。その差を解釈する。まず、排他制御の所要時間を $D$ とする。
 排他制御を $M/D/1$ の待ち行列とし、 $N$ 個のプロセッサが**ポアソン到着**すると、待ち時間 $w$ の期待値は式 4.1となる。

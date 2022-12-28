@@ -29,7 +29,7 @@ $$n := \lambda sx.(s^{\circ n}x) \enspace \lambda x.(x+1) \enspace 0,
 \left\lbrace 
 \begin{aligned}
 a + b &:= \lambda ab.\lambda sx.as(bsx),\\
-a \times b &:= \lambda ab.\lambda sx.a(bs)x.
+a   imes b &:= \lambda ab.\lambda sx.a(bs)x.
 \end{aligned}
 \right. \qquad(3.4)$$
 
@@ -87,16 +87,16 @@ $$\mathbb{Z}{}f
 **型付きラムダ計算**は、命題論理の規則に従って、式の型を推論し、型の矛盾や無限再帰を形式的に検出する体系である。
 簡単に命題論理を復習する。命題 $P$ が命題 $Q$ を、命題 $Q$ が命題 $R$ を含意する場合に、式 3.12の**三段論法**が成立する。
 
-$$\displaystyle\frac{\begin{matrix}P \to Q & Q \to R\end{matrix}}{P \to R}. \qquad(3.12)$$
+$$\displaystyle\frac{\begin{matrix}P   o Q & Q   o R\end{matrix}}{P   o R}. \qquad(3.12)$$
 
 命題論理では、命題の妥当性は、演繹の累積で証明される。この過程は、命題の集合 $\Gamma$ を仮定して、式 3.13で表せる。
 
-$$\Gamma \vdash P \to R,
+$$\Gamma \vdash P   o R,
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
-P \to Q \in \Gamma, \\
-Q \to R \in \Gamma.
+P   o Q \in \Gamma, \\
+Q   o R \in \Gamma.
 \end{aligned}
 \right. \qquad(3.13)$$
 
@@ -105,13 +105,13 @@ Q \to R \in \Gamma.
 
 $$\displaystyle\frac{\begin{matrix}\Gamma(x) := \sigma\end{matrix}}{\Gamma \vdash x: \sigma}. \qquad(3.14)$$
 
-関数 $f$ の型を推論しよう。過程を式 3.15に示す。関数は、含意の記号 $\to$ を利用して、定義域と値域の組で表現できる。
+関数 $f$ の型を推論しよう。過程を式 3.15に示す。関数は、含意の記号 $  o$ を利用して、定義域と値域の組で表現できる。
 
-$$\displaystyle\frac{\begin{matrix}x: \sigma \vdash E: \tau & f := \lambda x. E\end{matrix}}{\Gamma \vdash f: \sigma \to \tau} \qquad(3.15)$$
+$$\displaystyle\frac{\begin{matrix}x: \sigma \vdash E:   au & f := \lambda x. E\end{matrix}}{\Gamma \vdash f: \sigma   o   au} \qquad(3.15)$$
 
-式 3.15を含意 $\to$ の**導入規則**と呼ぶ。最後に、関数 $f$ の適用 $fx$ の型を推論する。式 3.16を含意 $\to$ の**除去規則**と呼ぶ。
+式 3.15を含意 $  o$ の**導入規則**と呼ぶ。最後に、関数 $f$ の適用 $fx$ の型を推論する。式 3.16を含意 $  o$ の**除去規則**と呼ぶ。
 
-$$\displaystyle\frac{\begin{matrix}\Gamma \vdash f: \sigma \to \tau & \Gamma \vdash x: \sigma\end{matrix}}{\Gamma \vdash f x: \tau} \qquad(3.16)$$
+$$\displaystyle\frac{\begin{matrix}\Gamma \vdash f: \sigma   o   au & \Gamma \vdash x: \sigma\end{matrix}}{\Gamma \vdash f x:   au} \qquad(3.16)$$
 
 型推論の過程では、型変数が満たす制約条件の組が生成され、その全てを満たす型が解となる。式 3.17の例で考える。
 
@@ -121,65 +121,65 @@ $$(\lambda x.xy)(zy). \qquad(3.17)$$
 
 $$\displaystyle\frac{\begin{matrix}
 \displaystyle\frac{\begin{matrix}
-\displaystyle\frac{\begin{matrix}x: \alpha & y: \beta\end{matrix}}{xy: \mu \mid \alpha = \beta \to \mu}
+\displaystyle\frac{\begin{matrix}x: \alpha & y: \beta\end{matrix}}{xy: \mu \mid \alpha = \beta   o \mu}
 \end{matrix}}{
-\lambda x.xy: \alpha \to \mu \mid \alpha = \beta \to \mu
+\lambda x.xy: \alpha   o \mu \mid \alpha = \beta   o \mu
 }
 &
-\displaystyle\frac{\begin{matrix}z: \gamma & y: \beta\end{matrix}}{zy: \nu \mid \gamma = \beta \to \nu}
+\displaystyle\frac{\begin{matrix}z: \gamma & y: \beta\end{matrix}}{zy: \nu \mid \gamma = \beta   o \nu}
 \end{matrix}}{
 (\lambda x.xy)(zy): \sigma
-\mid \alpha \to \mu = \nu \to \sigma
-\mid \alpha = \beta \to \mu
-\mid \gamma = \beta \to \nu
+\mid \alpha   o \mu = \nu   o \sigma
+\mid \alpha = \beta   o \mu
+\mid \gamma = \beta   o \nu
 } \qquad(3.18)$$
 
 代数学の要領で制約条件を消去し、解を得る作業を**単一化**と呼ぶ。特に、関数の型を分解する。式 3.19に過程を示す。
 
 $$\displaystyle\frac{\begin{matrix}
-\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha \to \mu = \nu \to \sigma\end{matrix}}{\mu = \sigma} & \alpha = \beta \to \mu\end{matrix}}{\alpha = \beta \to \sigma}
+\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha   o \mu = \nu   o \sigma\end{matrix}}{\mu = \sigma} & \alpha = \beta   o \mu\end{matrix}}{\alpha = \beta   o \sigma}
 &
-\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha \to \mu = \nu \to \sigma\end{matrix}}{\alpha = \nu} & \gamma = \beta \to \nu\end{matrix}}{\gamma = \beta \to \alpha}
+\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha   o \mu = \nu   o \sigma\end{matrix}}{\alpha = \nu} & \gamma = \beta   o \nu\end{matrix}}{\gamma = \beta   o \alpha}
 \end{matrix}}{
-\gamma = \beta \to \beta \to \sigma
+\gamma = \beta   o \beta   o \sigma
 } \qquad(3.19)$$
 
 式 3.19の例では、全ての制約条件を消去できた。それでも、型変数 $\beta,\sigma$ は任意の型になり得る。これを**多相型**と呼ぶ。
 なお、再帰関数の型推論では、式 3.20に示す**同値再帰型**が出現する。無闇に式 3.20を展開すると、無限再帰に陥る。
 
-$$\sigma = \sigma \to \tau. \qquad(3.20)$$
+$$\sigma = \sigma   o   au. \qquad(3.20)$$
 
 式 3.9を例に考える。式 3.21に示す推論により、型 $\phi,\psi$ は再帰型と判明する。その時点で推論を終える必要がある。
 
 $$\displaystyle\frac{\begin{matrix}
 \displaystyle\frac{\begin{matrix}
 \displaystyle\frac{\begin{matrix}
-\displaystyle\frac{\begin{matrix}x: \phi\end{matrix}}{xx: \mu \mid \phi = \phi \to \mu} & f: \eta
+\displaystyle\frac{\begin{matrix}x: \phi\end{matrix}}{xx: \mu \mid \phi = \phi   o \mu} & f: \eta
 \end{matrix}}{
 f(xx): \rho
-\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
+\mid \eta = \mu   o \rho \mid \phi = \phi   o \mu
 }
 \end{matrix}}{
-\lambda x.f(xx): \phi \to \rho
-\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
+\lambda x.f(xx): \phi   o \rho
+\mid \eta = \mu   o \rho \mid \phi = \phi   o \mu
 }
 &
 \displaystyle\frac{\begin{matrix}
 \displaystyle\frac{\begin{matrix}
-\displaystyle\frac{\begin{matrix}x: \psi\end{matrix}}{xx: \nu \mid \psi = \psi \to \nu} & f: \eta
+\displaystyle\frac{\begin{matrix}x: \psi\end{matrix}}{xx: \nu \mid \psi = \psi   o \nu} & f: \eta
 \end{matrix}}{
-f(xx): \tau
-\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+f(xx):   au
+\mid \eta = \nu   o   au \mid \psi = \psi   o \nu
 }
 \end{matrix}}{
-\lambda x.f(xx): \psi \to \tau
-\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+\lambda x.f(xx): \psi   o   au
+\mid \eta = \nu   o   au \mid \psi = \psi   o \nu
 }
 \end{matrix}}{
 (\lambda x.f(xx))(\lambda x.f(xx)): \sigma
-\mid \phi \to \rho = (\psi \to \tau) \to \sigma
-\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
-\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+\mid \phi   o \rho = (\psi   o   au)   o \sigma
+\mid \eta = \mu   o \rho \mid \phi = \phi   o \mu
+\mid \eta = \nu   o   au \mid \psi = \psi   o \nu
 } \qquad(3.21)$$
 
 同値再帰型を表す特殊な型変数を実装すれば、再帰関数の型推論も可能だが、誤った式に意図せず型が付く場合もある。

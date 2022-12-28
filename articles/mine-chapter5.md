@@ -12,25 +12,25 @@ published: true
 話題 $z$ は観測できず、潜在的な情報である。また、話題 $z$ の分布は、記事の主題に応じて変化する。その点を考慮しよう。
 具体的には、単語 $w$ の出現が、試行1回の**多項分布**に従うと考える。また、単語 $w$ と話題 $z$ が従う確率分布を仮定する。
 
-$$P\left(w,z,\phi,\theta\right) =
-P\left(w\,\middle|\,\phi\right) P\left(\phi\right) P\left(z\,\middle|\,\theta\right) P\left(\theta\right) =
-\left(\displaystyle\prod_{v=1}^V \phi_{zv}^{N_v}\right) \mathrm{Dir}\left(\phi\,\middle|\,\nu\right) \left(\displaystyle\prod_{k=1}^K \theta_k^{N_k}\right) \mathrm{Dir}\left(\theta\,\middle|\,\alpha\right). \qquad(5.1)$$
+$$P\left(w,z,\phi,  heta\right) =
+P\left(w\,\middle|\,\phi\right) P\left(\phi\right) P\left(z\,\middle|\,  heta\right) P\left(  heta\right) =
+\left(\displaystyle\prod_{v=1}^V \phi_{zv}^{N_v}\right) \mathrm{Dir}\left(\phi\,\middle|\,\nu\right) \left(\displaystyle\prod_{k=1}^K   heta_k^{N_k}\right) \mathrm{Dir}\left(  heta\,\middle|\,\alpha\right). \qquad(5.1)$$
 
-変数 $N_v,N_k$ は、単語 $v$ と話題 $k$ の出現の数で、総和は $1$ である。変数 $\phi_v,\theta_k$ は、単語 $v$ と話題 $k$ が出現する確率である。
-式 5.2の多項分布は、話題 $k$ が確率 $\theta_k$ で現れる記事から $N$ 語を取得して、話題 $k$ の単語が $N_k$ 個となる確率を与える。
+変数 $N_v,N_k$ は、単語 $v$ と話題 $k$ の出現の数で、総和は $1$ である。変数 $\phi_v,  heta_k$ は、単語 $v$ と話題 $k$ が出現する確率である。
+式 5.2の多項分布は、話題 $k$ が確率 $  heta_k$ で現れる記事から $N$ 語を取得して、話題 $k$ の単語が $N_k$ 個となる確率を与える。
 
-$$P\left(z\,\middle|\,\theta\right) =
-N! \displaystyle\prod_{k=1}^K \displaystyle\frac{\theta_k^{N_k}}{N_k!},
+$$P\left(z\,\middle|\,  heta\right) =
+N! \displaystyle\prod_{k=1}^K \displaystyle\frac{  heta_k^{N_k}}{N_k!},
 \enspace\mathrm{where}\enspace
 \displaystyle\sum_{k=1}^K N_k = N. \qquad(5.2)$$
 
-式 5.3の**ディリクレ分布**は、話題 $k$ の単語が $N_k-1$ 個だった場合に、実際に話題 $k$ が確率 $\theta_k$ で出現する確率を与える。
+式 5.3の**ディリクレ分布**は、話題 $k$ の単語が $N_k-1$ 個だった場合に、実際に話題 $k$ が確率 $  heta_k$ で出現する確率を与える。
 これは、変数 $N$ を連続量に拡張した多項分布である。式 5.3に従う話題 $z$ の推定を、**潜在的ディリクレ配分法**と呼ぶ。
 
-$$P\left(\theta\right) =
-\mathrm{Dir}\left(\theta\,\middle|\,N\right) =
-\Gamma\left(\displaystyle\sum_{k=1}^K N_k\right) \displaystyle\prod_{k=1}^K \displaystyle\frac{\theta_k^{N_k-1}}{\Gamma\left(N_k\right)} =
-\displaystyle\frac{1}{\mathrm{B}\left(N\right)} \displaystyle\prod_{k=1}^K \theta_k^{N_k-1}. \qquad(5.3)$$
+$$P\left(  heta\right) =
+\mathrm{Dir}\left(  heta\,\middle|\,N\right) =
+\Gamma\left(\displaystyle\sum_{k=1}^K N_k\right) \displaystyle\prod_{k=1}^K \displaystyle\frac{  heta_k^{N_k-1}}{\Gamma\left(N_k\right)} =
+\displaystyle\frac{1}{\mathrm{B}\left(N\right)} \displaystyle\prod_{k=1}^K   heta_k^{N_k-1}. \qquad(5.3)$$
 
 式 5.3で、関数 $\Gamma$ は**ガンマ関数**で、自然数の階乗 $(n-1)!$ を複素数の階乗に拡張した関数である。式 5.4に定義する。
 
@@ -44,33 +44,33 @@ $$\mathrm{B}\left(N\right) =
 \enspace\mathrm{where}\enspace
 \displaystyle\sum_{k=1}^K x_k = 1. \qquad(5.5)$$
 
-式 5.5から、式 5.6が簡単に導ける。式 5.6の性質は、確率 $\theta$ を実際の記事から推定する際に、重要な役割を果たす。
+式 5.5から、式 5.6が簡単に導ける。式 5.6の性質は、確率 $  heta$ を実際の記事から推定する際に、重要な役割を果たす。
 
 $$P\left(z\right) =
-\int P\left(z\,\middle|\,\theta\right) P\left(\theta\right) d\boldsymbol{\theta} =
+\int P\left(z\,\middle|\,  heta\right) P\left(  heta\right) d\boldsymbol{  heta} =
 N! \displaystyle\frac{\mathrm{B}\left(\hat{\alpha}\right)}{\mathrm{B}\left(\alpha\right)} \displaystyle\prod_{k=1}^K \displaystyle\frac{1}{N_k!},
 \enspace\mathrm{where}\enspace
 \hat{\alpha}_k = \alpha_k + N_k. \qquad(5.6)$$
 
-記事を学習すると、確率 $\theta_k$ の最適値は式 5.7に従う。これを事後確率と呼ぶ。また、式 5.2を確率 $\theta_k$ の尤度と呼ぶ。
-学習前では、どの話題の出現も均等と仮定し、式 5.3に従って、確率 $\theta_k$ に初期値を設定できる。これを事前確率と呼ぶ。
+記事を学習すると、確率 $  heta_k$ の最適値は式 5.7に従う。これを事後確率と呼ぶ。また、式 5.2を確率 $  heta_k$ の尤度と呼ぶ。
+学習前では、どの話題の出現も均等と仮定し、式 5.3に従って、確率 $  heta_k$ に初期値を設定できる。これを事前確率と呼ぶ。
 
-$$\theta_k \sim
-P\left(\theta\,\middle|\,z\right) =
-\displaystyle\frac{P\left(z\,\middle|\,\theta\right) P\left(\theta\right)}{P\left(z\right)} =
-\displaystyle\frac{1}{\mathrm{B}\left(\hat{\alpha}\right)} \displaystyle\prod_{k=1}^K \theta_k^{\hat{\alpha}_k-1}. \qquad(5.7)$$
+$$  heta_k \sim
+P\left(  heta\,\middle|\,z\right) =
+\displaystyle\frac{P\left(z\,\middle|\,  heta\right) P\left(  heta\right)}{P\left(z\right)} =
+\displaystyle\frac{1}{\mathrm{B}\left(\hat{\alpha}\right)} \displaystyle\prod_{k=1}^K   heta_k^{\hat{\alpha}_k-1}. \qquad(5.7)$$
 
 式 5.7は、観測を重視して、尤度を最適化する最尤推定と対照的で、観測の偏りを重視する。これを**ベイズ推定**と呼ぶ。
 最尤推定では、観測の偏りに起因した過学習が発生するが、その点が解消される。さて、式 5.5から式 5.8が導ける。
 
-$$\underset{}{\mathbf{E}}\!\left[\,\theta_k\,\right] \underset{}{\mathbf{E}}\!\left[\,\phi_{kv}\,\right] =
+$$\underset{}{\mathbf{E}}\!\left[\,  heta_k\,\right] \underset{}{\mathbf{E}}\!\left[\,\phi_{kv}\,\right] =
 \displaystyle\frac{\hat{\alpha}_k}{\left\|\hat{\alpha}\right\|_1}
 \displaystyle\frac{\hat{\nu}_{kv}}{\left\|\hat{\nu}_k\right\|_1},
 \enspace\mathrm{where}\enspace
 \left\|\hat{\alpha}\right\|_1 = \displaystyle\sum_{k=1}^K \alpha_k,\;
 \left\|\hat{\nu}_k\right\|_1 = \displaystyle\sum_{v=1}^V \nu_{kv}. \qquad(5.8)$$
 
-式 5.8に従う乱数により、変数 $z$ を何度も選び直すと、最終的に真の分布 $\theta$ に収束する。これを**モンテカルロ法**と呼ぶ。
+式 5.8に従う乱数により、変数 $z$ を何度も選び直すと、最終的に真の分布 $  heta$ に収束する。これを**モンテカルロ法**と呼ぶ。
 第6章で学ぶ変分ベイズ法と比較して、収束に時間を要するが、複雑な確率分布にも適用でき、並列処理も容易である。
 
 ### 5.2 潜在的な話題の学習

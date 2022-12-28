@@ -18,9 +18,9 @@ x_D
 例えば、正規分布 $\mathcal{N}$ を仮定する場合は、平均 $\boldsymbol{\mu}$ と分散 $S$ が母数に該当する。ただし、分散 $S$ とは分散共分散行列を指す。
 
 $$\mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},S\right) =
-\displaystyle\frac{1}{\tilde{\mathcal{N}}\left(S\right)} \exp \left\lbrace -\displaystyle\frac{1}{2} {}^t(\boldsymbol{x}-\boldsymbol{\mu}) S^{-1} (\boldsymbol{x}-\boldsymbol{\mu})\right\rbrace ,
+\displaystyle\frac{1}{  ilde{\mathcal{N}}\left(S\right)} \exp \left\lbrace -\displaystyle\frac{1}{2} {}^t(\boldsymbol{x}-\boldsymbol{\mu}) S^{-1} (\boldsymbol{x}-\boldsymbol{\mu})\right\rbrace ,
 \enspace\mathrm{where}\enspace
-\tilde{\mathcal{N}}\left(S\right) = \sqrt{(2\pi)^D\left|S\right|}. \qquad(6.2)$$
+  ilde{\mathcal{N}}\left(S\right) = \sqrt{(2\pi)^D\left|S\right|}. \qquad(6.2)$$
 
 正規分布では簡単なので、複数の正規分布の線型和を考えよう。式 6.3を**混合正規分布**と呼ぶ。定数 $w_k$ は加重である。
 
@@ -59,16 +59,16 @@ $$\min \mathcal{D} =
 \enspace\mathrm{where}\enspace
 \hat{z}_{nk} =
 \begin{cases}
-1,& \text{if \(\boldsymbol{x}_n     \in C_k\)},\\
-0,& \text{if \(\boldsymbol{x}_n \not\in C_k\)}.
+1,&   ext{if \(\boldsymbol{x}_n     \in C_k\)},\\
+0,&   ext{if \(\boldsymbol{x}_n \not\in C_k\)}.
 \end{cases} \qquad(6.5)$$
 
 式 6.5の最適化は、逐次的に行う。まず、重心 $\boldsymbol{\mu}_k$ を乱数で初期化する。次に、式 6.6に従って、変数 $z_{nk}$ を修正する。
 
 $$\hat{z}_{nk} =
 \begin{cases}
-1,& \text{if \(k=   \mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)},\\
-0,& \text{if \(k\neq\mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)}.
+1,&   ext{if \(k=   \mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)},\\
+0,&   ext{if \(k\neq\mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)}.
 \end{cases} \qquad(6.6)$$
 
 最後に、式 6.7により、重心 $\boldsymbol{\mu}_k$ を修正する。式 6.7は、変数 $z_{nk}$ を固定して、式 6.5を重心 $\boldsymbol{\mu}_k$ で微分すると導ける。
@@ -111,17 +111,17 @@ Fig. 6.2  $k$ -means clustering on Gaussian mixture model.
 第6.2節では、潜在変数 $z$ を、その値が確率的に決まる**確率変数**と考え、分散を含む、混合正規分布の母数を推定しよう。
 観測変数 $\boldsymbol{x}$ に対し、潜在変数 $z$ の確率は、式 6.8で求まる。観測に基づき推定した確率なので、これを事後確率と呼ぶ。
 
-$$P\left(z_{nk}\,\middle|\,\boldsymbol{x}_n,\theta\right) = \displaystyle\frac{w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)}{p\left(\boldsymbol{x}_n\right)} = \gamma_{nk}. \qquad(6.8)$$
+$$P\left(z_{nk}\,\middle|\,\boldsymbol{x}_n,  heta\right) = \displaystyle\frac{w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)}{p\left(\boldsymbol{x}_n\right)} = \gamma_{nk}. \qquad(6.8)$$
 
-次に、混合正規分布の尤度を定義する。尤度 $\mathcal{L}\left(\theta\right)$ は母数 $\theta$ の妥当性を表し、尤度の最大値を探す操作が最尤推定である。
+次に、混合正規分布の尤度を定義する。尤度 $\mathcal{L}\left(  heta\right)$ は母数 $  heta$ の妥当性を表し、尤度の最大値を探す操作が最尤推定である。
 
-$$\mathcal{L}\left(\theta\right) =
-P\left(\boldsymbol{x}\,\middle|\,\theta\right) =
+$$\mathcal{L}\left(  heta\right) =
+P\left(\boldsymbol{x}\,\middle|\,  heta\right) =
 \displaystyle\prod_{n=1}^N \displaystyle\sum_{k=1}^K w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right). \qquad(6.9)$$
 
 微分計算の都合により、尤度を対数化して、対数尤度を最小化する母数を計算しよう。重心 $\boldsymbol{\mu}_k$ による偏微分の例を示す。
 
-$$\displaystyle\frac{\partial }{\partial \boldsymbol{\mu}_k}\log\mathcal{L}\left(\theta\right) =
+$$\displaystyle\frac{\partial }{\partial \boldsymbol{\mu}_k}\log\mathcal{L}\left(  heta\right) =
 \displaystyle\frac{\partial }{\partial \boldsymbol{\mu}_k}\displaystyle\sum_{n=1}^N \log\displaystyle\sum_{k=1}^K w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right) =
 \displaystyle\sum_{n=1}^N \gamma_{nk} S_k^{-1} (\boldsymbol{x}_n - \boldsymbol{\mu}_k). \qquad(6.10)$$
 
@@ -146,37 +146,37 @@ $$\displaystyle\sum_{n=1}^N \gamma_n f(x_n) \geq f\left(\displaystyle\sum_{n=1}^
 
 対数が凹関数である点に注意して、式 6.12に式 6.9を代入して、式 6.13の関数 $Q$ を得る。これを**補助関数**と呼ぶ。
 
-$$\log \mathcal{L}\left(\theta\right) =
-\max_\gamma Q(\gamma,\theta) \geq
+$$\log \mathcal{L}\left(  heta\right) =
+\max_\gamma Q(\gamma,  heta) \geq
 \displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K \gamma_{nk} \log \displaystyle\frac{w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)}{\gamma_{nk}} =
-Q(\gamma,\theta). \qquad(6.13)$$
+Q(\gamma,  heta). \qquad(6.13)$$
 
-補助関数 $Q$ は、式 6.14に示す、変数 $\gamma,\theta$ の修正を交互に繰り返すと単調増加し、最終的に、有限な実数値に収束する。
+補助関数 $Q$ は、式 6.14に示す、変数 $\gamma,  heta$ の修正を交互に繰り返すと単調増加し、最終的に、有限な実数値に収束する。
 
 $$\left\lbrace 
 \begin{aligned}
-\hat{\gamma}^{t+1} &= \mathrm{arg\,max}_{\gamma} Q(\gamma,\theta^t), \\
-\hat{\theta}^{t+1} &= \mathrm{arg\,max}_{\theta} Q(\gamma^t,\theta).
+\hat{\gamma}^{t+1} &= \mathrm{arg\,max}_{\gamma} Q(\gamma,  heta^t), \\
+\hat{  heta}^{t+1} &= \mathrm{arg\,max}_{  heta} Q(\gamma^t,  heta).
 \end{aligned}
 \right. \qquad(6.14)$$
 
-式 6.14で、変数 $\gamma^t,\theta^t$ の最適値を求めると、式 6.8と式 6.11を得る。両者を交互に修正すると、尤度が最大化する。
+式 6.14で、変数 $\gamma^t,  heta^t$ の最適値を求めると、式 6.8と式 6.11を得る。両者を交互に修正すると、尤度が最大化する。
 式 6.8で変数 $\gamma$ を修正する操作は、式 6.15に示す、対数尤度の期待値を計算する操作である。これを*E-step*と呼ぶ。
 
-$$\underset{z}{\mathbf{E}}\!\left[\,\log P\left(\boldsymbol{x},z\,\middle|\,\theta\right)\,\right] =
-\int_z P\left(z\,\middle|\,\boldsymbol{x},\theta\right) \log P\left(\boldsymbol{x},z\,\middle|\,\theta\right) dz =
+$$\underset{z}{\mathbf{E}}\!\left[\,\log P\left(\boldsymbol{x},z\,\middle|\,  heta\right)\,\right] =
+\int_z P\left(z\,\middle|\,\boldsymbol{x},  heta\right) \log P\left(\boldsymbol{x},z\,\middle|\,  heta\right) dz =
 \displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K \gamma_{nk} \log \left\lbrace w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\right\rbrace . \qquad(6.15)$$
 
-式 6.11で変数 $\theta$ を修正する操作は、尤度を最大化する。これを*M-step*と呼び、両者を合わせて**期待値最大化法**と呼ぶ。
-なお、単位行列 $E$ と実数値 $\lambda$ を使って、分散を $\lambda E$ と置くと、極限 $\lambda\to0$ で式 6.16が成立し、変数 $\gamma_{nk}$ も $z_{nk}$ になる。
+式 6.11で変数 $  heta$ を修正する操作は、尤度を最大化する。これを*M-step*と呼び、両者を合わせて**期待値最大化法**と呼ぶ。
+なお、単位行列 $E$ と実数値 $\lambda$ を使って、分散を $\lambda E$ と置くと、極限 $\lambda  o0$ で式 6.16が成立し、変数 $\gamma_{nk}$ も $z_{nk}$ になる。
 
-$$\lim_{\lambda\to0} \lambda\log \left\lbrace w \mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},\lambda E\right)\right\rbrace  =
-\lim_{\lambda\to0} \left\lbrace \lambda\log w - \lambda\displaystyle\frac{D}{2} \log (2\pi\lambda) - \displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2\right\rbrace  =
+$$\lim_{\lambda  o0} \lambda\log \left\lbrace w \mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},\lambda E\right)\right\rbrace  =
+\lim_{\lambda  o0} \left\lbrace \lambda\log w - \lambda\displaystyle\frac{D}{2} \log (2\pi\lambda) - \displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2\right\rbrace  =
 -\displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2. \qquad(6.16)$$
 
 即ち、式 6.17が成立し、その最大化は式 6.5の最小化に帰結する。 $k$ -*means*は、期待値最大化法の特殊な例と言える。
 
-$$\lim_{\lambda\to0} \lambda \underset{\boldsymbol{z}}{\mathbf{E}}\!\left[\,\log P\left(\boldsymbol{x},z\,\middle|\,\theta\right)\,\right] =
+$$\lim_{\lambda  o0} \lambda \underset{\boldsymbol{z}}{\mathbf{E}}\!\left[\,\log P\left(\boldsymbol{x},z\,\middle|\,  heta\right)\,\right] =
 -\displaystyle\frac{1}{2} \displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K z_{nk} \left\|\boldsymbol{x}_n-\boldsymbol{\mu}_k\right\|^2. \qquad(6.17)$$
 
 また、期待値最大化法も、第6.4節で学ぶ変分ベイズ法の特殊な場合であり、第6.2節と酷似した式が、何度か登場する。
@@ -237,86 +237,86 @@ Fig. 6.3 expectation maximization on a Gaussian mixture model.
 第6.2節の最尤推定では、母数の最適値を推定した。第6.4節で議論するベイズ推定では、母数の確率分布を推定できる。
 特に、最適解が複数ある場合にも対応でき、過学習の抑制効果も期待できる。議論を始めるに当たり、尤度を定義しよう。
 
-$$\mathcal{L}\left(\theta\right) =
-p\left(\boldsymbol{x}\,\middle|\,\theta\right) =
+$$\mathcal{L}\left(  heta\right) =
+p\left(\boldsymbol{x}\,\middle|\,  heta\right) =
 \int p\left(\boldsymbol{x},z\right) dz =
-\int p\left(\boldsymbol{x}\,\middle|\,z\right) p\left(z\,\middle|\,\theta\right) dz. \qquad(6.18)$$
+\int p\left(\boldsymbol{x}\,\middle|\,z\right) p\left(z\,\middle|\,  heta\right) dz. \qquad(6.18)$$
 
-第6.4節では、潜在変数 $z$ に加え、母数 $\theta$ も確率変数に含める。母数 $\theta$ の確率分布に母数 $\phi$ を設定し、尤度を定義し直す。
+第6.4節では、潜在変数 $z$ に加え、母数 $  heta$ も確率変数に含める。母数 $  heta$ の確率分布に母数 $\phi$ を設定し、尤度を定義し直す。
 
 $$\mathcal{L}\left(\phi\right) =
 p\left(\boldsymbol{x}\,\middle|\,\phi\right) =
-\iint p\left(\boldsymbol{x},z,\theta\,\middle|\,\phi\right) dz d\theta =
-\iint p\left(\boldsymbol{x}\,\middle|\,z\right) p\left(z\,\middle|\,\theta\right) p\left(\theta\,\middle|\,\phi\right) dz d\theta. \qquad(6.19)$$
+\iint p\left(\boldsymbol{x},z,  heta\,\middle|\,\phi\right) dz d  heta =
+\iint p\left(\boldsymbol{x}\,\middle|\,z\right) p\left(z\,\middle|\,  heta\right) p\left(  heta\,\middle|\,\phi\right) dz d  heta. \qquad(6.19)$$
 
 式 6.18に対し、式 6.19を**周辺尤度**と呼ぶ。第6.2節と同様に、補助関数 $F$ を定義する。関数 $\hat{p}$ は、適当な分布である。
 
 $$\log \mathcal{L}\left(\phi\right) =
-\log \iint \hat{p}\left(z,\theta\right) \displaystyle\frac{p\left(\boldsymbol{x},z,\theta\right)}{\hat{p}\left(z,\theta\right)} dz d\theta \geq
-\iint \hat{p}\left(z,\theta\right) \log \displaystyle\frac{p\left(\boldsymbol{x},z,\theta\right)}{\hat{p}\left(z,\theta\right)} dz d\theta = F(\hat{p}). \qquad(6.20)$$
+\log \iint \hat{p}\left(z,  heta\right) \displaystyle\frac{p\left(\boldsymbol{x},z,  heta\right)}{\hat{p}\left(z,  heta\right)} dz d  heta \geq
+\iint \hat{p}\left(z,  heta\right) \log \displaystyle\frac{p\left(\boldsymbol{x},z,  heta\right)}{\hat{p}\left(z,  heta\right)} dz d  heta = F(\hat{p}). \qquad(6.20)$$
 
 補助関数 $F$ を最大化すると、尤度 $\mathcal{L}$ に収束する。その差は、式 6.21に示す**カルバック・ライブラー情報量**の形になる。
-式 6.21は、変数 $z,\theta$ が従う分布 $\hat{p}$ を仮定した場合の、分布 $\hat{p},p$ の平均情報量の差である。両者が同じ場合に $0$ となる。
+式 6.21は、変数 $z,  heta$ が従う分布 $\hat{p}$ を仮定した場合の、分布 $\hat{p},p$ の平均情報量の差である。両者が同じ場合に $0$ となる。
 
 $$\log \mathcal{L}\left(\boldsymbol{x}\right) - F(\hat{p}) =
-\iint \hat{p}\left(z,\theta\right) \log p\left(\boldsymbol{x}\right) dz d\theta - F(\hat{p}) =
-\iint \hat{p}\left(z,\theta\right) \log \displaystyle\frac{\hat{p}\left(z,\theta\right)}{p\left(z,\theta\,\middle|\,\boldsymbol{x}\right)} dz d\theta =
+\iint \hat{p}\left(z,  heta\right) \log p\left(\boldsymbol{x}\right) dz d  heta - F(\hat{p}) =
+\iint \hat{p}\left(z,  heta\right) \log \displaystyle\frac{\hat{p}\left(z,  heta\right)}{p\left(z,  heta\,\middle|\,\boldsymbol{x}\right)} dz d  heta =
 D\!\left(\hat{p}\|p\right) \geq 0. \qquad(6.21)$$
 
 関数 $\hat{p}$ を引数に取る関数 $F$ を、**汎関数**と呼ぶ。汎関数 $F$ の極値を与える引数 $\hat{p}$ を探索する問題は、**変分問題**と呼ばれる。
 残念ながら、複数の引数を取る関数 $\hat{p}$ の探索は難しく、式 6.22に示す**平均場近似**により、変数間の独立性を仮定する。
 
-$$\hat{p}\left(z,\theta\right) = f(z)g(\theta),
+$$\hat{p}\left(z,  heta\right) = f(z)g(  heta),
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
 \int f(z) dz &= 1,\\
-\int g(\theta) d\theta &= 1.
+\int g(  heta) d  heta &= 1.
 \end{aligned}
 \right. \qquad(6.22)$$
 
 関数 $f,g$ に対する汎関数 $F$ の変分問題を解く。ここで、式 6.23に示す**オイラー・ラグランジュ方程式**の特殊形を使う。
 
 $$\displaystyle\frac{\partial }{\partial f} \displaystyle\frac{\partial F}{\partial z} =
-\displaystyle\frac{\partial }{\partial f} \int f(z) g(\theta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,\theta\right)}{f(z)g(\theta)} d\theta = 0. \qquad(6.23)$$
+\displaystyle\frac{\partial }{\partial f} \int f(z) g(  heta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,  heta\right)}{f(z)g(  heta)} d  heta = 0. \qquad(6.23)$$
 
 関数 $f$ の値を固定し、単に変数と考えて偏微分すると、式 6.24を得る。関数 $g$ に対し、式 6.22の制約条件を使った。
 
-$$\displaystyle\frac{\partial }{\partial f} \int f(z) g(\theta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,\theta\right)}{f(z)g(\theta)} d\theta =
-\int g(\theta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,\theta\right)}{f(z)g(\theta)} d\theta - 1 = 0. \qquad(6.24)$$
+$$\displaystyle\frac{\partial }{\partial f} \int f(z) g(  heta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,  heta\right)}{f(z)g(  heta)} d  heta =
+\int g(  heta) \log \displaystyle\frac{p\left(\boldsymbol{x},z,  heta\right)}{f(z)g(  heta)} d  heta - 1 = 0. \qquad(6.24)$$
 
-式 6.24から、関数 $f$ の最適値を求める。式 6.22の近似で仮定した、変数 $z,\theta$ 間の独立性より、式 6.25が成立する。
+式 6.24から、関数 $f$ の最適値を求める。式 6.22の近似で仮定した、変数 $z,  heta$ 間の独立性より、式 6.25が成立する。
 
 $$\log f(z) =
-\log f(z) \int g(\theta) d\theta =
-\int g(\theta) \log f(z) d\theta. \qquad(6.25)$$
+\log f(z) \int g(  heta) d  heta =
+\int g(  heta) \log f(z) d  heta. \qquad(6.25)$$
 
 関数 $f,g$ の最適値 $\hat{f},\hat{g}$ は、式 6.26となる。関数 $f,g$ を交互に修正すると、補助関数 $F$ が増加し、周辺尤度に収束する。
 式 6.26は、式 6.14の*E-step*と*M-step*に対応し、第6.2節で学んだ期待値最大化法に対し、**変分ベイズ法**と呼ばれる。
 
 $$\left\lbrace 
 \begin{alignedat}{2}
-\hat{f}(z) &\propto \exp \int g(\theta) \log p\left(\boldsymbol{x},z,\theta\right) d\theta &&= \exp \underset{g}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,\theta\right)\,\right],\\
-\hat{g}(\theta) &\propto \exp \int f(z) \log p\left(\boldsymbol{x},z,\theta\right) dz &&= \exp \underset{f}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,\theta\right)\,\right].
+\hat{f}(z) &\propto \exp \int g(  heta) \log p\left(\boldsymbol{x},z,  heta\right) d  heta &&= \exp \underset{g}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,  heta\right)\,\right],\\
+\hat{g}(  heta) &\propto \exp \int f(z) \log p\left(\boldsymbol{x},z,  heta\right) dz &&= \exp \underset{f}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,  heta\right)\,\right].
 \end{alignedat}
 \right. \qquad(6.26)$$
 
-なお、母数 $\theta$ に対し、適当な事前分布を設定すると、分布 $\hat{g}$ と事前分布 $p$ の乖離を抑制し、過学習を防ぐ効果が生じる。
+なお、母数 $  heta$ に対し、適当な事前分布を設定すると、分布 $\hat{g}$ と事前分布 $p$ の乖離を抑制し、過学習を防ぐ効果が生じる。
 
 $$F(\hat{p}) =
-\iint f(z)g(\theta) \log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,\theta\right)}{f(z)} \displaystyle\frac{p\left(\theta\right)}{g(\theta)} dz d\theta =
-\underset{f,g}{\mathbf{E}}\!\left[\,\log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,\theta\right)}{f(z)}\,\right] - D\!\left(g(\theta)\|p\left(\theta\right)\right). \qquad(6.27)$$
+\iint f(z)g(  heta) \log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,  heta\right)}{f(z)} \displaystyle\frac{p\left(  heta\right)}{g(  heta)} dz d  heta =
+\underset{f,g}{\mathbf{E}}\!\left[\,\log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,  heta\right)}{f(z)}\,\right] - D\!\left(g(  heta)\|p\left(  heta\right)\right). \qquad(6.27)$$
 
 無限の個数の点 $\boldsymbol{x}_n$ を学習した場合の尤度は、**ラプラス近似**で式 6.28と近似でき、**ベイズ情報量基準**の形が出現する。
 
 $$F(\hat{p}) \simeq
-\underset{f,g}{\mathbf{E}}\!\left[\,\log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,\theta\right)}{f(z)}\,\right] - \displaystyle\frac{\hat{\left|\theta\right|}}{2} \log N + \log p\left(\hat{\theta}\right). \qquad(6.28)$$
+\underset{f,g}{\mathbf{E}}\!\left[\,\log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,  heta\right)}{f(z)}\,\right] - \displaystyle\frac{\hat{\left|  heta\right|}}{2} \log N + \log p\left(\hat{  heta}\right). \qquad(6.28)$$
 
-式 6.28には、疎な基底を学習し、母数の個数 $\left \vert \theta\right \vert$ を実質的に削減する**正則化**の効果があり、過学習の抑制が期待できる。
+式 6.28には、疎な基底を学習し、母数の個数 $\left \vert   heta\right \vert$ を実質的に削減する**正則化**の効果があり、過学習の抑制が期待できる。
 
 ### 6.5 母数の事前分布の設定
 
-潜在変数 $z$ や母数 $\theta$ の事前分布を注意深く設定すると、事前分布と事後分布が同じ形の分布になり、計算が容易になる。
+潜在変数 $z$ や母数 $  heta$ の事前分布を注意深く設定すると、事前分布と事後分布が同じ形の分布になり、計算が容易になる。
 これを**共役分布**と呼ぶ。混合正規分布の母数にも、共役分布が存在する。まず、潜在変数 $z$ が多項分布に従うと仮定する。
 
 $$p\left(z\,\middle|\,w\right) = \displaystyle\prod_{n=1}^N \displaystyle\prod_{k=1}^K w_k^{z_{nk}},
@@ -340,11 +340,11 @@ $$p\left(\boldsymbol{\mu}\,\middle|\,S\right) = \displaystyle\prod_{k=1}^K \math
 
 $$p\left(S\right) =
 \displaystyle\prod_{k=1}^K \mathcal{W}\left(S_k^{-1}\,\middle|\,W_k,\nu_k\right) =
-\displaystyle\prod_{k=1}^K \displaystyle\frac{1}{\tilde{\mathcal{W}}\left(W_k,\nu_k\right)} \left|S_k^{-1}\right|^{\frac{\nu_k-D-1}{2}} \exp\left\lbrace -\displaystyle\frac{1}{2}\mathrm{tr}\left(W_k^{-1}S_k^{-1}\right)\right\rbrace . \qquad(6.32)$$
+\displaystyle\prod_{k=1}^K \displaystyle\frac{1}{  ilde{\mathcal{W}}\left(W_k,\nu_k\right)} \left|S_k^{-1}\right|^{\frac{\nu_k-D-1}{2}} \exp\left\lbrace -\displaystyle\frac{1}{2}\mathrm{tr}\left(W_k^{-1}S_k^{-1}\right)\right\rbrace . \qquad(6.32)$$
 
 これは、分散 $W$ の $D$ 変量正規分布に従う $\nu$ 個の変数 $\boldsymbol{x}_n$ の直積 $\boldsymbol{x}_n{}^t\boldsymbol{x}_n$ の和の分布である。即ち、標本分散の分布である。
 
-$$\tilde{\mathcal{W}}\left(W_k,\nu_k\right) = 2^{\frac{\nu_kD}{2}} \pi^{\frac{D(D-1)}{4}} \left|W_k\right|^{\frac{\nu_k}{2}} \displaystyle\prod_{d=0}^{D-1} \Gamma\left(\displaystyle\frac{\nu_k-d}{2}\right). \qquad(6.33)$$
+$$  ilde{\mathcal{W}}\left(W_k,\nu_k\right) = 2^{\frac{\nu_kD}{2}} \pi^{\frac{D(D-1)}{4}} \left|W_k\right|^{\frac{\nu_k}{2}} \displaystyle\prod_{d=0}^{D-1} \Gamma\left(\displaystyle\frac{\nu_k-d}{2}\right). \qquad(6.33)$$
 
 Fig. 6.4は、Fig. 6.1と同じ散布図を、変分ベイズ法で学習した結果で、Fig. 6.1と同様に、確率密度関数を可視化した。
 
@@ -368,7 +368,7 @@ $$p\left(\boldsymbol{x},z,w,\boldsymbol{\mu},S\right) =
 p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right) p\left(w,\boldsymbol{\mu},S\right) =
 p\left(\boldsymbol{x}\,\middle|\,z,\boldsymbol{\mu},S\right) p\left(z\,\middle|\,w\right) p\left(w) p\left(\boldsymbol{\mu}\,\middle|\,S\right) p(S\right). \qquad(6.34)$$
 
-*E-step*を導く。母数 $\theta$ の事前分布を固定し、潜在変数 $z$ の分布を最適化する操作なので、その間に式 6.35が成立する。
+*E-step*を導く。母数 $  heta$ の事前分布を固定し、潜在変数 $z$ の分布を最適化する操作なので、その間に式 6.35が成立する。
 
 $$f(z) \propto
 \exp \underset{g}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] =
@@ -390,8 +390,8 @@ $$\underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,\log \mathcal{N}\left(\bold
 式 6.37に現れる、行列式 $\left \vert S\right \vert$ の対数の期待値は、式 6.32の確率密度関数を母数 $\nu_k$ で偏微分すれば、式 6.38となる。
 
 $$\underset{S}{\mathbf{E}}\!\left[\,\log \left|S_k\right|\,\right] =
-2 \int \displaystyle\frac{\partial \tilde{\mathcal{W}}}{\partial \nu_k}\displaystyle\frac{\mathcal{W}}{\tilde{\mathcal{W}}} dS - 2 \int \displaystyle\frac{\partial \mathcal{W}}{\partial \nu_k} dS =
-\displaystyle\frac{2}{\tilde{\mathcal{W}}} \displaystyle\frac{\partial \tilde{\mathcal{W}}}{\partial \nu_k} =
+2 \int \displaystyle\frac{\partial   ilde{\mathcal{W}}}{\partial \nu_k}\displaystyle\frac{\mathcal{W}}{  ilde{\mathcal{W}}} dS - 2 \int \displaystyle\frac{\partial \mathcal{W}}{\partial \nu_k} dS =
+\displaystyle\frac{2}{  ilde{\mathcal{W}}} \displaystyle\frac{\partial   ilde{\mathcal{W}}}{\partial \nu_k} =
 - D\log 2 - \log\left|W_k\right| - \displaystyle\sum_{d=0}^{D-1} \psi\left(\displaystyle\frac{\nu_k-d}{2}\right). \qquad(6.38)$$
 
 式 6.37に現れる、行列積の期待値は、母数 $\boldsymbol{\mu}$ が、式 6.31の正規分布に従う事実と因数分解により、式 6.39となる。
@@ -401,7 +401,7 @@ $$\underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,{}^t(\boldsymbol{x}_n - \bo
 
 *M-step*を導く。事後確率 $\gamma$ を式 6.40に代入し、事前分布と事後分布の共役性に注意して、母数の事後分布を求めよう。
 
-$$g(\theta) \propto \exp\left\lbrace \underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] + \log p\left(w) + \log p\left(\boldsymbol{\mu}\,\middle|\,S\right) + \log p(S\right)\right\rbrace . \qquad(6.40)$$
+$$g(  heta) \propto \exp\left\lbrace \underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] + \log p\left(w) + \log p\left(\boldsymbol{\mu}\,\middle|\,S\right) + \log p(S\right)\right\rbrace . \qquad(6.40)$$
 
 式 6.40で、変数 $\boldsymbol{x},z$ の結合確率の対数の期待値は、式 6.2の正規分布と式 6.29の多項分布より、式 6.41となる。
 
@@ -409,11 +409,11 @@ $$\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\b
 - \displaystyle\frac{1}{2} \displaystyle\sum_{k=1}^K \displaystyle\sum_{n=1}^N \gamma_{nk}
 \left\lbrace D \log 2\pi + \left|S_k\right| + {}^t(\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) S_k^{-1} (\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) - 2 \log w_k\right\rbrace . \qquad(6.41)$$
 
-共役性より、母数 $\theta$ の事後分布は、事前分布の母数 $\phi$ を、推定値 $\hat{\phi}$ に置換した場合と等値であり、式 6.42が成立する。
+共役性より、母数 $  heta$ の事後分布は、事前分布の母数 $\phi$ を、推定値 $\hat{\phi}$ に置換した場合と等値であり、式 6.42が成立する。
 
-$$\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\theta\,\middle|\,\boldsymbol{x},z\right)\,\right] =
-\log p\left(\theta\,\middle|\,\hat{\phi}\right) =
-\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,\theta\right)\,\right] + \log p\left(\theta\,\middle|\,\phi\right) - \underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\right)\,\right]. \qquad(6.42)$$
+$$\underset{z}{\mathbf{E}}\!\left[\,\log p\left(  heta\,\middle|\,\boldsymbol{x},z\right)\,\right] =
+\log p\left(  heta\,\middle|\,\hat{\phi}\right) =
+\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,  heta\right)\,\right] + \log p\left(  heta\,\middle|\,\phi\right) - \underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\right)\,\right]. \qquad(6.42)$$
 
 式 6.42より、母数 $\alpha,\sigma,\nu$ の推定値に対して、式 6.43が成立する。変数 $N_k$ は、集団 $C_k$ の要素の個数の期待値を表す。
 

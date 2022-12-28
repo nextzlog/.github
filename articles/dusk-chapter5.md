@@ -99,7 +99,7 @@ Fig. 5.1に結果を示す。MeltdownやSpectreの対策により、Intel Xeon E
 
 ![scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png](/images/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.png)
 
-Fig. 5.1 dense matrix multiplication,  $8192\times8192\times8192$ , vectorized by AVX.
+Fig. 5.1 dense matrix multiplication,  $8192  imes8192  imes8192$ , vectorized by AVX.
 
 PDRWSは、第4.1節のタスク並列処理に相当し、3軸を粒度 $128$ まで再帰的に並列化して、末端でSIMD命令を使用した。
 QUEUEは、第4.3節のデータ並列処理に相当し、2軸を粒度 $128$ まで格子状に並列化して、同様にSIMD命令を使用した。

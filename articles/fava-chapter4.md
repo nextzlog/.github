@@ -18,21 +18,21 @@ $$L(G) \subset \Sigma^* = \left\lbrace \langle\sigma_1,...,\sigma_n,...\rangle\m
 
 $$P = \left\lbrace 
 \begin{aligned}
-\mathtt{S} &\to \texttt{(S)},\\
-\mathtt{S} &\to \texttt{(f)},
+\mathtt{S} &  o   exttt{(S)},\\
+\mathtt{S} &  o   exttt{(f)},
 \end{aligned}
-\right.:(N\cup\Sigma)^*\to(N\cup\Sigma)^*. \qquad(4.2)$$
+\right.:(N\cup\Sigma)^*  o(N\cup\Sigma)^*. \qquad(4.2)$$
 
 生成規則は、左辺の記号列を右辺の記号列に置換する規則である。式 4.2の例では、記号Sから式 4.3が導出される。
 
-$$\texttt{(f)},
-\texttt{((f))},
-\texttt{(((f)))},
-\texttt{((((f))))},
-\texttt{(((((f)))))},
-\texttt{((((((f))))))},
-\texttt{(((((((f)))))))},
-\texttt{((((((((f))))))))},
+$$  exttt{(f)},
+  exttt{((f))},
+  exttt{(((f)))},
+  exttt{((((f))))},
+  exttt{(((((f)))))},
+  exttt{((((((f))))))},
+  exttt{(((((((f)))))))},
+  exttt{((((((((f))))))))},
 \ldots. \qquad(4.3)$$
 
 生成規則の両辺に出現できる記号 $\nu\!\in\!N$ を**非終端記号**と呼ぶ。また、右辺に限って出現する記号 $\sigma\!\in\!\Sigma$ を**終端記号**と呼ぶ。
@@ -43,7 +43,7 @@ $$G=(N,\Sigma,P,S),\enspace\mathrm{where}\enspace S\in N. \qquad(4.4)$$
 文法 $G$ に従う文を生成し、または文を開始記号 $S$ に帰する手順が定義され、曖昧性がなければ、文法 $G$ は**形式的**である。
 形式言語の中でも、生成規則が自由な言語を**帰納的可算言語**と呼び、式 4.5の制限を加えた言語を**文脈依存言語**と呼ぶ。
 
-$$\alpha A \beta \to \alpha \gamma \beta,
+$$\alpha A \beta   o \alpha \gamma \beta,
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
@@ -56,7 +56,7 @@ A &\in N,\\
 形式言語の中でも、式 4.6の制限を持ち、前後の文脈に依存せずに、生成規則が適用できる言語を**文脈自由言語**と呼ぶ。
 第2.4節で述べたプッシュダウンオートマトンを利用して、文に対して生成規則を再帰的に適用することで処理できる。
 
-$$A \to \alpha,
+$$A   o \alpha,
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
@@ -70,8 +70,8 @@ A &\in N,\\
 
 $$\left\lbrace 
 \begin{aligned}
-A &\to a,\\
-A &\to aB,
+A &  o a,\\
+A &  o aB,
 \end{aligned}
 \right.
 \enspace\mathrm{where}\enspace
@@ -85,11 +85,11 @@ A,B &\in N.
 形式言語の文は、適用した生成規則の木構造で表現できる。これを**構文木**と呼び、構文木を導く作業を**構文解析**と呼ぶ。
 特にLL法では、終端記号の列を読み進め、見つけた終端記号に適う生成規則を、開始記号 $S$ を起点に深さ優先探索する。
 
-$$(S=\texttt{add})\to(\texttt{mul + mul})\to(\texttt{num * num + num})\to(\texttt{1 * 2 + 3}). \qquad(4.8)$$
+$$(S=  exttt{add})  o(  exttt{mul + mul})  o(  exttt{num * num + num})  o(  exttt{1 * 2 + 3}). \qquad(4.8)$$
 
 LR法では、終端記号の列を読み進め、置換可能な部分を非終端記号に置換する。最終的に開始記号 $S$ に到達して終わる。
 
-$$(\texttt{1 * 2 + 3})\to(\texttt{num * num + num})\to(\texttt{mul + mul})\to(S=\texttt{add}). \qquad(4.9)$$
+$$(  exttt{1 * 2 + 3})  o(  exttt{num * num + num})  o(  exttt{mul + mul})  o(S=  exttt{add}). \qquad(4.9)$$
 
 通常、高水準言語は形式言語である。仮に自然言語を採用すると、翻訳する手順が曖昧になり、実装困難なためである。
 

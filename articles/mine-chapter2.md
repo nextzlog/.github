@@ -17,7 +17,7 @@ $$\boldsymbol{y}_n = \boldsymbol{x}_{n+1} = f_n(\boldsymbol{z}_n) = f_n(W_n\bold
 式 2.2で、第 $n$ 層は前の層から値 $\boldsymbol{x}_n$ を受容し、行列 $W_n$ で加重して活性化関数 $f_n$ を適用し、後続の層に値 $\boldsymbol{y}_n$ を渡す。
 活性化関数には、**シグモイド関数**が広く利用される。式 2.3に定義する。これは、2クラスの分類器のように振る舞う。
 
-$$f_\mathrm{sigm}(z) = \displaystyle\frac{1}{1 + e^{-z}} = \displaystyle\frac{1}{2}\tanh\displaystyle\frac{z}{2} + \displaystyle\frac{1}{2}. \qquad(2.3)$$
+$$f_\mathrm{sigm}(z) = \displaystyle\frac{1}{1 + e^{-z}} = \displaystyle\frac{1}{2}  anh\displaystyle\frac{z}{2} + \displaystyle\frac{1}{2}. \qquad(2.3)$$
 
 代表的な活性化関数の例をFig. 2.1(1)に示す。他には、式 2.4に示す**ソフトマックス関数**も特に最終層で利用される。
 
@@ -255,7 +255,7 @@ $$\Delta w = -\displaystyle\frac{\eta}{t\sqrt{\underset{}{\mathbf{E}}\!\left[\,(
 \enspace\mathrm{where}\enspace
 \left\lbrace 
 \begin{aligned}
-\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t &= \displaystyle\frac{1}{t} \displaystyle\sum_{\tau=0}^t (\nabla E_\tau)^2, \\
+\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t &= \displaystyle\frac{1}{t} \displaystyle\sum_{  au=0}^t (\nabla E_  au)^2, \\
 \underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_0 &= \varepsilon.
 \end{aligned}
 \right. \qquad(2.13)$$
