@@ -33,7 +33,7 @@ $$\forall \boldsymbol{x},\boldsymbol{y},\boldsymbol{z} \in \mathbb{R}^D \colon
 \boldsymbol{x} = \boldsymbol{y} \Leftrightarrow d(\boldsymbol{x},\boldsymbol{y}) = 0. \qquad(1.2)$$
 
 最近傍法は、他の著名な教師あり学習の手法と比較して、事前の学習が不要である点が特徴的で、**遅延学習**と呼ばれる。
-以上の議論に基づき、最近傍法を実装しよう。引数は、参照する近傍点の個数 $K$ と、集合 $\left\lbrace\boldsymbol{x},y\right\rbrace$ と、距離関数 $d$ である。
+以上の議論に基づき、最近傍法を実装しよう。引数は、参照する近傍点の個数 $K$ と、集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、距離関数 $d$ である。
 
 ```scala
 class KNN[D,T](k: Int, data: Seq[(D,T)], d: (D,D)=>Double) {
@@ -63,23 +63,23 @@ $$y \sim
 \mathcal{L}\left(f\right) =
 p\left(y\,\middle|\,\boldsymbol{x},f\right) =
 \mathcal{N}\left(y\,\middle|\,f(\boldsymbol{x}),\sigma^2\right) =
-\displaystyle\frac{1}{\sqrt{2\pi}\sigma}\exp\left\lbrace-\displaystyle\frac{(y-f(\boldsymbol{x}))^2}{2\sigma^2}\right\rbrace. \qquad(1.4)$$
+\displaystyle\frac{1}{\sqrt{2\pi}\sigma}\exp\left\lbrace -\displaystyle\frac{(y-f(\boldsymbol{x}))^2}{2\sigma^2}\right\rbrace . \qquad(1.4)$$
 
 式 1.4の確率は、確率 $f$ の妥当性と見做せる。これを**尤度**と呼ぶ。尤度の最大値を探せば、最適な関数 $\hat{f}$ が推定できる。
 これを**最尤推定**と呼び、機械学習の基本原理である。尤度の対数から、式 1.5が導出される。関数 $E$ を2乗誤差と呼ぶ。
 
 $$\hat{f} =
 \mathrm{arg\,max}_f \log p\left(y\,\middle|\,\boldsymbol{x},f\right) =
-\mathrm{arg\,min}_f \left\lbracey-f(\boldsymbol{x})\right\rbrace^2 =
+\mathrm{arg\,min}_f \left\lbrace y-f(\boldsymbol{x})\right\rbrace ^2 =
 \mathrm{arg\,min}_f E(\boldsymbol{w}). \qquad(1.5)$$
 
 誤差 $E$ を削減する方向に加重 $\boldsymbol{w}$ を動かす操作を繰り返すと、極小点に収束する。これを**勾配法**と呼ぶ。式 1.6に示す。
 
-$$\hat{\boldsymbol{w}} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}) = \boldsymbol{w} + \eta \displaystyle\sum_{n=1}^N \lbracey_n - {}^t\boldsymbol{w} \boldsymbol{\phi}(\boldsymbol{x}_n)\rbrace \boldsymbol{\phi}(\boldsymbol{x}_n),
+$$\hat{\boldsymbol{w}} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}) = \boldsymbol{w} + \eta \displaystyle\sum_{n=1}^N \lbrace y_n - {}^t\boldsymbol{w} \boldsymbol{\phi}(\boldsymbol{x}_n)\rbrace  \boldsymbol{\phi}(\boldsymbol{x}_n),
 \enspace\mathrm{where}\enspace
 \eta \ll \left|\displaystyle\frac{\boldsymbol{w}}{\nabla E(\boldsymbol{w})}\right|. \qquad(1.6)$$
 
-定数 $\eta$ を**学習率**と呼ぶ。以上の議論に基づき、線型回帰を実装する。引数は、学習率 $\eta$ と、集合 $\left\lbracex,y\right\rbrace$ と、基底 $\Phi$ である。
+定数 $\eta$ を**学習率**と呼ぶ。以上の議論に基づき、線型回帰を実装する。引数は、学習率 $\eta$ と、集合 $\left\lbrace x,y\right\rbrace $ と、基底 $\Phi$ である。
 
 ```scala
 class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], epochs: Int = 1000) {
@@ -93,7 +93,7 @@ Fig. 1.2は、多項式基底とガウス基底を利用して、各々の基底
 
 ![images/lbf.power.svg](images/lbf.power.svg)
 
-(1)  $\left\lbracex^3,x^2,x,1\right\rbrace$ 
+(1)  $\left\lbrace x^3,x^2,x,1\right\rbrace $ 
 
 ![images/lbf.gauss.svg](images/lbf.gauss.svg)
 
@@ -339,7 +339,7 @@ class Offset(dim: Int, act: Act, weight: ()=>SGD, next: Neuron) extends Neuron(d
 
 $$E_\mathrm{CE}(p,\hat{p}) =
 -\int p\left(\boldsymbol{y}\right) \log \hat{p}\left(\boldsymbol{y}\right) d\boldsymbol{y} =
--\int p\left(\boldsymbol{y}\right) \left\lbrace\log p\left(\boldsymbol{y}\right) - \log\displaystyle\frac{p\left(\boldsymbol{y}\right)}{\hat{p}\left(\boldsymbol{y}\right)}\right\rbrace d\boldsymbol{y} =
+-\int p\left(\boldsymbol{y}\right) \left\lbrace \log p\left(\boldsymbol{y}\right) - \log\displaystyle\frac{p\left(\boldsymbol{y}\right)}{\hat{p}\left(\boldsymbol{y}\right)}\right\rbrace  d\boldsymbol{y} =
 H(p) + D\!\left(p\|\hat{p}\right) \geq
 D\!\left(p\|\hat{p}\right). \qquad(2.9)$$
 
@@ -412,7 +412,7 @@ Fig. 2.4 comparison of PlainSGD and AdaDelta.
 
 $$\Delta w = -\displaystyle\frac{\eta}{t\sqrt{\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t}},
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t &= \displaystyle\frac{1}{t} \displaystyle\sum_{\tau=0}^t (\nabla E_\tau)^2, \\
 \underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_0 &= \varepsilon.
@@ -424,7 +424,7 @@ $$\Delta w = -\displaystyle\frac{\eta}{t\sqrt{\underset{}{\mathbf{E}}\!\left[\,(
 
 $$\Delta w_{mt} = -\displaystyle\frac{\sqrt{\underset{}{\mathbf{E}}\!\left[\,(\Delta w)^2\,\right]_t+\varepsilon}}{\sqrt{\underset{}{\mathbf{E}}\!\left[\,(\nabla E)^2\,\right]_t+\varepsilon}} \nabla E_{mt},
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \underset{}{\mathbf{E}}\!\left[\,x\,\right]_t &= \rho \underset{}{\mathbf{E}}\!\left[\,x\,\right]_{t-1} + (1-\rho) x_t, \\
 \underset{}{\mathbf{E}}\!\left[\,x\,\right]_0 &= 0.
@@ -519,13 +519,13 @@ Fig. 3.1 a support vector machine.
 
 Fig. 3.1(1)の分類器は、式 3.1に従って、説明変数 $\boldsymbol{x}$ に対し、目的変数 $y$ を推定する。 $\boldsymbol{w}$ は加重で、 $c$ は定数項である。
 
-$$\hat{y} = \mathrm{sign}\left(\boldsymbol{w} \cdot \boldsymbol{x}+c\right) \in \left\lbrace1,-1\right\rbrace. \qquad(3.1)$$
+$$\hat{y} = \mathrm{sign}\left(\boldsymbol{w} \cdot \boldsymbol{x}+c\right) \in \left\lbrace 1,-1\right\rbrace . \qquad(3.1)$$
 
 距離 $d$ の最適化は**制約付き最適化問題**であり、学習対象の集合 $\mathbb{T}$ に対して、式 3.2に示す制約条件を満たす必要がある。
 
 $$\forall \left(\boldsymbol{x},y\right) \in \mathbb{T} \colon y(\boldsymbol{w} \cdot \boldsymbol{x} + c) \geq 1,
 \enspace\mathrm{where}\enspace
-y\in\left\lbrace1,-1\right\rbrace. \qquad(3.2)$$
+y\in\left\lbrace 1,-1\right\rbrace . \qquad(3.2)$$
 
 距離 $d$ は式 3.3で求まる。式 3.2を念頭に、式を簡略化すると、距離 $d$ の最大化は加重 $\boldsymbol{w}$ の最小化と等価だと言える。
 
@@ -557,12 +557,12 @@ C>0. \qquad(3.5)$$
 式 3.5は、式 3.4を束縛条件として、**ラグランジュの未定乗数法**で最小化できる。条件が2個ある点に注意を要する。
 
 $$L(\boldsymbol{w},c,\xi,\lambda,\mu,\mathbb{T}) =
-f(\boldsymbol{w}) - \displaystyle\sum_{i=1}^N \lambda_n \lbracey_n(\boldsymbol{w} \cdot \boldsymbol{x}_n + c) - 1 + \xi_n\rbrace - \displaystyle\sum_{i=1}^N \mu_n \xi_n. \qquad(3.6)$$
+f(\boldsymbol{w}) - \displaystyle\sum_{i=1}^N \lambda_n \lbrace y_n(\boldsymbol{w} \cdot \boldsymbol{x}_n + c) - 1 + \xi_n\rbrace  - \displaystyle\sum_{i=1}^N \mu_n \xi_n. \qquad(3.6)$$
 
 式 3.4の条件は不等式なので、式 3.7の**カルーシュ・クーン・タッカー条件**を満たす場合のみ、未定乗数法が使える。
 
-$$\lambda_n \left\lbracey_n\left(\boldsymbol{w} \cdot \boldsymbol{x}_n + c\right) - 1 + \xi_n\right\rbrace = 0,\;
-\left\lbrace
+$$\lambda_n \left\lbrace y_n\left(\boldsymbol{w} \cdot \boldsymbol{x}_n + c\right) - 1 + \xi_n\right\rbrace  = 0,\;
+\left\lbrace 
 \begin{aligned}
 \lambda_n &\geq 0, \\
 \mu_n     &\geq 0, \\
@@ -574,7 +574,7 @@ $$\lambda_n \left\lbracey_n\left(\boldsymbol{w} \cdot \boldsymbol{x}_n + c\right
 
 $$\displaystyle\frac{\partial L}{\partial w} = \displaystyle\frac{\partial L}{\partial c} = \displaystyle\frac{\partial L}{\partial \lambda} = \displaystyle\frac{\partial L}{\partial \mu} = 0,
 \Rightarrow
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \boldsymbol{w}    &= \displaystyle\sum_{i=1}^N \lambda_n y_n \boldsymbol{x}_n, \\
 0         &= \displaystyle\sum_{i=1}^N \lambda_n y_n, \\
@@ -587,7 +587,7 @@ Fig. 3.1(1)を振り返ると、 $C=0$ の場合は、式 3.7より、境界か�
 
 $$\tilde{L}(\lambda) =
 \min_{\boldsymbol{w},c} L(\boldsymbol{w},c, \lambda) =
-\displaystyle\sum_{i=1}^N \lambda_i \left\lbrace1 - \displaystyle\frac{1}{2} \displaystyle\sum_{j=1}^N \lambda_j y_i y_j (\boldsymbol{x}_i \cdot \boldsymbol{x}_j)\right\rbrace \leq f(\boldsymbol{w}). \qquad(3.9)$$
+\displaystyle\sum_{i=1}^N \lambda_i \left\lbrace 1 - \displaystyle\frac{1}{2} \displaystyle\sum_{j=1}^N \lambda_j y_i y_j (\boldsymbol{x}_i \cdot \boldsymbol{x}_j)\right\rbrace  \leq f(\boldsymbol{w}). \qquad(3.9)$$
 
 式 3.9の $\tilde{L}$ の最大化を $f(\boldsymbol{w})$ の**ラグランジュ双対問題**と呼ぶ。 $\tilde{L}$ と $f(\boldsymbol{w})$ の最適値は合致する。これを**強双対性**と呼ぶ。
 
@@ -598,12 +598,12 @@ $$\tilde{L}(\lambda) =
 
 $$y_i \delta_i + y_j \delta_j = 0,
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \delta_i &= \hat{\lambda}_i - \lambda_i \\
 \delta_j &= \hat{\lambda}_j - \lambda_j
 \end{aligned}
-\right\rbrace
+\right\rbrace 
 \Leftarrow 0 = \displaystyle\sum_{i=1}^N \lambda_i y_i. \qquad(3.10)$$
 
 2点 $\boldsymbol{x}_i,\boldsymbol{x}_j$ に対し、 $\tilde{L}$ の極大値を求める。式 3.10に注意して、式 3.9を $\delta_i,\delta_j$ で偏微分すると、式 3.11が得られる。
@@ -612,13 +612,13 @@ $$\displaystyle\frac{\partial \tilde{L}}{\partial \delta_i} = y_i (y_i-y_j)-\del
 
 乗数 $\lambda_i,\lambda_j$ の移動量は式 3.12となる。ただし、式 3.7を満たす必要があり、 $0\leq\lambda\leq C$ の範囲で**クリッピング**を行う。
 
-$$\delta_i = -\displaystyle\frac{y_i}{\left|\boldsymbol{x}_i-\boldsymbol{x}_j\right|^2} \left\lbrace\displaystyle\sum_{n=1}^N \lambda_n y_n \boldsymbol{x}_n \cdot (\boldsymbol{x}_i-\boldsymbol{x}_j)-y_i+y_j\right\rbrace. \qquad(3.12)$$
+$$\delta_i = -\displaystyle\frac{y_i}{\left|\boldsymbol{x}_i-\boldsymbol{x}_j\right|^2} \left\lbrace \displaystyle\sum_{n=1}^N \lambda_n y_n \boldsymbol{x}_n \cdot (\boldsymbol{x}_i-\boldsymbol{x}_j)-y_i+y_j\right\rbrace . \qquad(3.12)$$
 
 なお、定数 $c$ の値は、 $y(\boldsymbol{w} \cdot \boldsymbol{x})$ を最小化する点 $\boldsymbol{x}$ に着目すると、式 3.13で計算できる。以上で、必要な数式が出揃った。
 
-$$c = -\displaystyle\frac{1}{2} \left\lbrace
+$$c = -\displaystyle\frac{1}{2} \left\lbrace 
 \min_{i|y_i=+1} \displaystyle\sum_{j=1}^N \lambda_j y_j \boldsymbol{x}_i \cdot \boldsymbol{x}_j +
-\max_{j|y_j=-1} \displaystyle\sum_{i=1}^N \lambda_i y_i \boldsymbol{x}_j \cdot \boldsymbol{x}_j\right\rbrace. \qquad(3.13)$$
+\max_{j|y_j=-1} \displaystyle\sum_{i=1}^N \lambda_i y_i \boldsymbol{x}_j \cdot \boldsymbol{x}_j\right\rbrace . \qquad(3.13)$$
 
 逐次最小問題最適化法の最悪計算時間は $O(n^3)$ だが、点 $\boldsymbol{x}_i$ を選ぶ際に、式 3.7に反する点を重視すると効率的である。
 
@@ -699,7 +699,7 @@ n = 0,1,2,\ldots,\infty. \qquad(3.15)$$
 無限次元の内積の計算量は無限で、写像 $\Phi$ の計算も困難である。しかし、**テイラー級数**を使えば、簡単に内積が求まる。
 
 $$\Phi_{\boldsymbol{x}_{i}} \cdot \Phi_{\boldsymbol{x}_{j}} =
-\exp \left\lbrace- \displaystyle\frac{1}{2\sigma^2} \displaystyle\sum_{d=1}^D \left\|\boldsymbol{x}_i-\boldsymbol{x}_j\right\|^2\right\rbrace
+\exp \left\lbrace - \displaystyle\frac{1}{2\sigma^2} \displaystyle\sum_{d=1}^D \left\|\boldsymbol{x}_i-\boldsymbol{x}_j\right\|^2\right\rbrace 
 \Leftarrow
 e^x = \displaystyle\sum_{n=0}^\infty \displaystyle\frac{x^n}{n!}. \qquad(3.16)$$
 
@@ -766,13 +766,13 @@ $$d(\boldsymbol{x},\boldsymbol{y}) = \left\|\boldsymbol{x}-\boldsymbol{y}\right\
 空間 $H$ で定義された任意の級数が、空間 $H$ の元に収束する場合に、空間 $H$ は**完備性**を満たし、**ヒルベルト空間**となる。
 正定値性を満たす適当な対称関数 $k$ を定義して、関数 $k$ の線型結合で式 3.24の空間 $H_0$ を作る。これを**線型包**と呼ぶ。
 
-$$H_0 = \mathrm{span}\left\lbrace\displaystyle\sum_{n=1}^n a_n k(\boldsymbol{x}_n,\cdot)|a_n \in \mathbb{R}\right\rbrace. \qquad(3.24)$$
+$$H_0 = \mathrm{span}\left\lbrace \displaystyle\sum_{n=1}^n a_n k(\boldsymbol{x}_n,\cdot)|a_n \in \mathbb{R}\right\rbrace . \qquad(3.24)$$
 
 空間 $H_0$ の元 $f,g$ に対し、内積を式 3.25の通りに定義する。証明は省くが、空間 $H_0$ はヒルベルト空間の条件を満たす。
 
 $$\left\langle f,g\right\rangle_{H_0} = \displaystyle\sum_{i=1}^I \displaystyle\sum_{j=1}^J a_i b_j k(\boldsymbol{x}_i,\boldsymbol{x}_j),
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 f(\boldsymbol{x}) &= \displaystyle\sum_{i=1}^I a_i k(\boldsymbol{x}_i,\boldsymbol{x}),\\
 g(\boldsymbol{x}) &= \displaystyle\sum_{j=1}^J b_j k(\boldsymbol{x}_j,\boldsymbol{x}).
@@ -788,7 +788,7 @@ $$f(\boldsymbol{x}) = \displaystyle\sum_{n=1}^N a_n k(\boldsymbol{x}_n,\boldsymb
 
 $$F(\boldsymbol{s}) = \int_{\Omega_t} k(\boldsymbol{s}, \boldsymbol{t}) f(\boldsymbol{t}) d\boldsymbol{t},
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \boldsymbol{s} &\in \Omega_s,\\
 \boldsymbol{t} &\in \Omega_t.
@@ -822,23 +822,23 @@ $$y \approx f(\boldsymbol{x}) =
 \begin{cases}
 0 & \text{if $\mathrm{wavy}(\boldsymbol{x}) = 1$} \\
 \text{otherwise}
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 & 0 && \text{if $\mathrm{rain}(\boldsymbol{x}) = 1$} \\
 & 1 && \text{if $\mathrm{rain}(\boldsymbol{x}) = 0$} \\
 \end{aligned}
-\right\rbrace
+\right\rbrace 
 & \text{if $\mathrm{wavy}(\boldsymbol{x}) = 0$} \\
 \end{cases} \qquad(4.1)$$
 
-決定木の学習では、意思決定の事例の集合 $\left\lbrace\boldsymbol{x},y\right\rbrace$ に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
+決定木の学習では、意思決定の事例の集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
 
 ### 4.1 情報源符号化定理
 
 理想的な決定木は、簡潔明瞭である。即ち、最低限の質問で、結論に至る。ここで、**情報源符号化**の概念を導入しよう。
 質問と条件分岐を繰り返す過程は、条件 $\boldsymbol{x}$ の情報を分解し、情報の断片に2進数の**符号語**を割り振る操作と等価である。
 
-$$C(\boldsymbol{x}) \colon \boldsymbol{x} \mapsto \boldsymbol{s} \in \left\lbrace0, 10, 11\right\rbrace. \qquad(4.2)$$
+$$C(\boldsymbol{x}) \colon \boldsymbol{x} \mapsto \boldsymbol{s} \in \left\lbrace 0, 10, 11\right\rbrace . \qquad(4.2)$$
 
 事象 $\boldsymbol{x}$ が従う確率分布 $p\left(\boldsymbol{x}\right)$ を仮定して、事象 $\boldsymbol{x}$ が伴う情報の価値 $I(\boldsymbol{x})$ を定義する。質問の妥当性に相当する量である。
 情報の価値とは、その事象の希少性である。即ち、価値 $I(\boldsymbol{x})$ は、確率 $p\left(\boldsymbol{x}\right)$ に対して単調減少であり、式 4.3を満たす。
@@ -868,7 +868,7 @@ $$G(Q) = H(X) - H(X|Q) = H(X) - \displaystyle\sum_{k=0}^{K-1} P\left(X_k\,\middl
 
 $$\overline{L(C)} = H(p,q) =
 -\displaystyle\sum_{\boldsymbol{x}} p\left(\boldsymbol{x}\right) \log \hat{p}\left(\boldsymbol{x}\right) =
--\displaystyle\sum_{\boldsymbol{x}} p\left(\boldsymbol{x}\right) \left\lbrace\log p\left(\boldsymbol{x}\right) - \log\displaystyle\frac{p\left(\boldsymbol{x}\right)}{\hat{p}\left(\boldsymbol{x}\right)}\right\rbrace =
+-\displaystyle\sum_{\boldsymbol{x}} p\left(\boldsymbol{x}\right) \left\lbrace \log p\left(\boldsymbol{x}\right) - \log\displaystyle\frac{p\left(\boldsymbol{x}\right)}{\hat{p}\left(\boldsymbol{x}\right)}\right\rbrace  =
 H(p) + D\!\left(p\|q\right) \geq H(p). \qquad(4.8)$$
 
 余分な質問の回数を表す $D\!\left(p\ \vert \hat{p}\right)$ を**カルバック・ライブラー情報量**と呼ぶ。これは、確率分布 $p,\hat{p}$ の差を表す量でもある。
@@ -881,7 +881,7 @@ H(p) + D\!\left(p\|q\right) \geq H(p). \qquad(4.8)$$
 trait Node[T] extends (Seq[Int] => T)
 ```
 
-次に、決定木の本体を実装する。引数は、決定木が学習する集合 $\left\lbrace\boldsymbol{x},y\right\rbrace$ と、決定木の末端の細分化を抑える閾値である。
+次に、決定木の本体を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、決定木の末端の細分化を抑える閾値である。
 決定木は再帰的に生成されるが、質問の情報量が微小の場合は、分布 $p\left(y\right)$ の最大値を与える $y$ を定数値として出力する。
 
 ```scala
@@ -895,7 +895,7 @@ case class Question[T](x: Seq[(Seq[Int], T)], limit: Double = 1e-5) extends Node
 }
 ```
 
-次に、条件分岐を実装する。引数は、決定木が学習する集合 $\left\lbrace\boldsymbol{x},y\right\rbrace$ と、条件 $\boldsymbol{x}$ を分割する軸と、分割を行う閾値である。
+次に、条件分岐を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、条件 $\boldsymbol{x}$ を分割する軸と、分割を行う閾値である。
 分割する軸と値は、式 4.7で議論した通り、質問の情報量を最大化する軸と値が選択される。これで決定木が完成した。
 
 ```scala
@@ -959,15 +959,15 @@ $$\hat{f}(\boldsymbol{x}) = \displaystyle\sum_{t=1}^T w_t \hat{f}_t(\boldsymbol{
 分類問題を想定し、式 4.13に示す**指数誤差**を最小化する。指数誤差の最小化は、関数 $\boldsymbol{f},\hat{\boldsymbol{f}}$ の値の内積の最大化である。
 
 $$E(\hat{\boldsymbol{f}}) =
-\exp \left\lbrace-{}^t\boldsymbol{f}(\boldsymbol{x}) \hat{\boldsymbol{f}}(\boldsymbol{x})\right\rbrace =
-\exp \left\lbrace-{}^t\boldsymbol{f}(\boldsymbol{x}) \displaystyle\sum_{t=1}^T w_t \hat{\boldsymbol{f}}_t(\boldsymbol{x})\right\rbrace \geq 0. \qquad(4.13)$$
+\exp \left\lbrace -{}^t\boldsymbol{f}(\boldsymbol{x}) \hat{\boldsymbol{f}}(\boldsymbol{x})\right\rbrace  =
+\exp \left\lbrace -{}^t\boldsymbol{f}(\boldsymbol{x}) \displaystyle\sum_{t=1}^T w_t \hat{\boldsymbol{f}}_t(\boldsymbol{x})\right\rbrace  \geq 0. \qquad(4.13)$$
 
 次に、特に分類問題を想定し、関数 $\hat{\boldsymbol{f}}$ が取り得る値に制約条件を設定する。関数 $\boldsymbol{f},\hat{\boldsymbol{f}}$ の値は、式 4.14の条件を満たす。
 
 $$\displaystyle\sum_{k=1}^K f(\boldsymbol{x},k) =
 \displaystyle\sum_{k=1}^K \hat{f}(\boldsymbol{x},k) = 1,
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \boldsymbol{f}(\boldsymbol{x}) =
 \begin{bmatrix}
@@ -991,10 +991,10 @@ $$f(\boldsymbol{x},k) =
 式 4.13を分解すると、式 4.16を得る。この関数 $q_T$ を確率分布として、弱学習器 $f_T$ が学習する集合を無作為に選ぶ。
 
 $$E(\hat{\boldsymbol{f}}) =
-q_T(\boldsymbol{x}) \exp \left\lbrace-\boldsymbol{f}(\boldsymbol{x}) w_T \hat{\boldsymbol{f}}_T(\boldsymbol{x})\right\rbrace,
+q_T(\boldsymbol{x}) \exp \left\lbrace -\boldsymbol{f}(\boldsymbol{x}) w_T \hat{\boldsymbol{f}}_T(\boldsymbol{x})\right\rbrace ,
 \enspace\mathrm{where}\enspace
 q_T(\boldsymbol{x}) =
-\exp \left\lbrace-\boldsymbol{f}(\boldsymbol{x}) \displaystyle\sum_{t=1}^{T-1} w_t \hat{\boldsymbol{f}}_t(\boldsymbol{x})\right\rbrace. \qquad(4.16)$$
+\exp \left\lbrace -\boldsymbol{f}(\boldsymbol{x}) \displaystyle\sum_{t=1}^{T-1} w_t \hat{\boldsymbol{f}}_t(\boldsymbol{x})\right\rbrace . \qquad(4.16)$$
 
 弱学習器 $f_T$ に対し、指数誤差 $E$ を最小化する加重 $w_T$ は、式 4.17で計算できる。**ラグランジュの未定乗数法**を使った。
 
@@ -1290,7 +1290,7 @@ x_D
 例えば、正規分布 $\mathcal{N}$ を仮定する場合は、平均 $\boldsymbol{\mu}$ と分散 $S$ が母数に該当する。ただし、分散 $S$ とは分散共分散行列を指す。
 
 $$\mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},S\right) =
-\displaystyle\frac{1}{\tilde{\mathcal{N}}\left(S\right)} \exp \left\lbrace-\displaystyle\frac{1}{2} {}^t(\boldsymbol{x}-\boldsymbol{\mu}) S^{-1} (\boldsymbol{x}-\boldsymbol{\mu})\right\rbrace,
+\displaystyle\frac{1}{\tilde{\mathcal{N}}\left(S\right)} \exp \left\lbrace -\displaystyle\frac{1}{2} {}^t(\boldsymbol{x}-\boldsymbol{\mu}) S^{-1} (\boldsymbol{x}-\boldsymbol{\mu})\right\rbrace ,
 \enspace\mathrm{where}\enspace
 \tilde{\mathcal{N}}\left(S\right) = \sqrt{(2\pi)^D\left|S\right|}. \qquad(6.2)$$
 
@@ -1400,12 +1400,12 @@ $$\displaystyle\frac{\partial }{\partial \boldsymbol{\mu}_k}\log\mathcal{L}\left
 加重と重心と分散の推定値 $\hat{w}_k,\hat{\boldsymbol{\mu}}_k,\hat{S}_k$ は式 6.11となる。加重のみ、式 6.3より、**ラグランジュの未定乗数法**で求めた。
 
 $$\hat{w_k} = \displaystyle\frac{N_k}{N},\;
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \hat{\boldsymbol{\mu}_k} &= \displaystyle\frac{1}{N_k} \displaystyle\sum_{n=1}^N \gamma_{nk} \boldsymbol{x}_n,\\
 \hat{S_k} &= \displaystyle\frac{1}{N_k} \displaystyle\sum_{n=1}^N \gamma_{nk} (\boldsymbol{x}_n - \hat{\boldsymbol{\mu}}_k) {}^t(\boldsymbol{x}_n - \hat{\boldsymbol{\mu}}_k),
 \end{aligned}
-\right\rbrace
+\right\rbrace 
 \enspace\mathrm{where}\enspace
 N_k = \displaystyle\sum_{n=1}^N \gamma_{nk}. \qquad(6.11)$$
 
@@ -1425,7 +1425,7 @@ Q(\gamma,\theta). \qquad(6.13)$$
 
 補助関数 $Q$ は、式 6.14に示す、変数 $\gamma,\theta$ の修正を交互に繰り返すと単調増加し、最終的に、有限な実数値に収束する。
 
-$$\left\lbrace
+$$\left\lbrace 
 \begin{aligned}
 \hat{\gamma}^{t+1} &= \mathrm{arg\,max}_{\gamma} Q(\gamma,\theta^t), \\
 \hat{\theta}^{t+1} &= \mathrm{arg\,max}_{\theta} Q(\gamma^t,\theta).
@@ -1437,13 +1437,13 @@ $$\left\lbrace
 
 $$\underset{z}{\mathbf{E}}\!\left[\,\log P\left(\boldsymbol{x},z\,\middle|\,\theta\right)\,\right] =
 \int_z P\left(z\,\middle|\,\boldsymbol{x},\theta\right) \log P\left(\boldsymbol{x},z\,\middle|\,\theta\right) dz =
-\displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K \gamma_{nk} \log \left\lbracew_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\right\rbrace. \qquad(6.15)$$
+\displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K \gamma_{nk} \log \left\lbrace w_k \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\right\rbrace . \qquad(6.15)$$
 
 式 6.11で変数 $\theta$ を修正する操作は、尤度を最大化する。これを*M-step*と呼び、両者を合わせて**期待値最大化法**と呼ぶ。
 なお、単位行列 $E$ と実数値 $\lambda$ を使って、分散を $\lambda E$ と置くと、極限 $\lambda\to0$ で式 6.16が成立し、変数 $\gamma_{nk}$ も $z_{nk}$ になる。
 
-$$\lim_{\lambda\to0} \lambda\log \left\lbracew \mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},\lambda E\right)\right\rbrace =
-\lim_{\lambda\to0} \left\lbrace\lambda\log w - \lambda\displaystyle\frac{D}{2} \log (2\pi\lambda) - \displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2\right\rbrace =
+$$\lim_{\lambda\to0} \lambda\log \left\lbrace w \mathcal{N}\left(\boldsymbol{x}\,\middle|\,\boldsymbol{\mu},\lambda E\right)\right\rbrace  =
+\lim_{\lambda\to0} \left\lbrace \lambda\log w - \lambda\displaystyle\frac{D}{2} \log (2\pi\lambda) - \displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2\right\rbrace  =
 -\displaystyle\frac{1}{2} \left\|\boldsymbol{x}-\boldsymbol{\mu}\right\|^2. \qquad(6.16)$$
 
 即ち、式 6.17が成立し、その最大化は式 6.5の最小化に帰結する。 $k$ -*means*は、期待値最大化法の特殊な例と言える。
@@ -1540,7 +1540,7 @@ D\!\left(\hat{p}\|p\right) \geq 0. \qquad(6.21)$$
 
 $$\hat{p}\left(z,\theta\right) = f(z)g(\theta),
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 \int f(z) dz &= 1,\\
 \int g(\theta) d\theta &= 1.
@@ -1566,7 +1566,7 @@ $$\log f(z) =
 関数 $f,g$ の最適値 $\hat{f},\hat{g}$ は、式 6.26となる。関数 $f,g$ を交互に修正すると、補助関数 $F$ が増加し、周辺尤度に収束する。
 式 6.26は、式 6.14の*E-step*と*M-step*に対応し、第6.2節で学んだ期待値最大化法に対し、**変分ベイズ法**と呼ばれる。
 
-$$\left\lbrace
+$$\left\lbrace 
 \begin{alignedat}{2}
 \hat{f}(z) &\propto \exp \int g(\theta) \log p\left(\boldsymbol{x},z,\theta\right) d\theta &&= \exp \underset{g}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,\theta\right)\,\right],\\
 \hat{g}(\theta) &\propto \exp \int f(z) \log p\left(\boldsymbol{x},z,\theta\right) dz &&= \exp \underset{f}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z,\theta\right)\,\right].
@@ -1612,7 +1612,7 @@ $$p\left(\boldsymbol{\mu}\,\middle|\,S\right) = \displaystyle\prod_{k=1}^K \math
 
 $$p\left(S\right) =
 \displaystyle\prod_{k=1}^K \mathcal{W}\left(S_k^{-1}\,\middle|\,W_k,\nu_k\right) =
-\displaystyle\prod_{k=1}^K \displaystyle\frac{1}{\tilde{\mathcal{W}}\left(W_k,\nu_k\right)} \left|S_k^{-1}\right|^{\frac{\nu_k-D-1}{2}} \exp\left\lbrace-\displaystyle\frac{1}{2}\mathrm{tr}\left(W_k^{-1}S_k^{-1}\right)\right\rbrace. \qquad(6.32)$$
+\displaystyle\prod_{k=1}^K \displaystyle\frac{1}{\tilde{\mathcal{W}}\left(W_k,\nu_k\right)} \left|S_k^{-1}\right|^{\frac{\nu_k-D-1}{2}} \exp\left\lbrace -\displaystyle\frac{1}{2}\mathrm{tr}\left(W_k^{-1}S_k^{-1}\right)\right\rbrace . \qquad(6.32)$$
 
 これは、分散 $W$ の $D$ 変量正規分布に従う $\nu$ 個の変数 $\boldsymbol{x}_n$ の直積 $\boldsymbol{x}_n{}^t\boldsymbol{x}_n$ の和の分布である。即ち、標本分散の分布である。
 
@@ -1644,7 +1644,7 @@ p\left(\boldsymbol{x}\,\middle|\,z,\boldsymbol{\mu},S\right) p\left(z\,\middle|\
 
 $$f(z) \propto
 \exp \underset{g}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] =
-\exp \displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K z_{nk} \left\lbrace\underset{w}{\mathbf{E}}\!\left[\,\log w_k\,\right] + \underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,\log \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\,\right]\right\rbrace \propto
+\exp \displaystyle\sum_{n=1}^N \displaystyle\sum_{k=1}^K z_{nk} \left\lbrace \underset{w}{\mathbf{E}}\!\left[\,\log w_k\,\right] + \underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,\log \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\,\right]\right\rbrace  \propto
 \displaystyle\prod_{n=1}^N \displaystyle\prod_{k=1}^K \gamma_{nk}^{z_{nk}}. \qquad(6.35)$$
 
 式 6.35に現れる、加重 $w$ の対数の期待値は、式 6.36となる。関数 $\psi$ は**ディガンマ関数**で、関数 $\Gamma$ の対数微分である。
@@ -1673,13 +1673,13 @@ $$\underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,{}^t(\boldsymbol{x}_n - \bo
 
 *M-step*を導く。事後確率 $\gamma$ を式 6.40に代入し、事前分布と事後分布の共役性に注意して、母数の事後分布を求めよう。
 
-$$g(\theta) \propto \exp\left\lbrace\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] + \log p\left(w) + \log p\left(\boldsymbol{\mu}\,\middle|\,S\right) + \log p(S\right)\right\rbrace. \qquad(6.40)$$
+$$g(\theta) \propto \exp\left\lbrace \underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] + \log p\left(w) + \log p\left(\boldsymbol{\mu}\,\middle|\,S\right) + \log p(S\right)\right\rbrace . \qquad(6.40)$$
 
 式 6.40で、変数 $\boldsymbol{x},z$ の結合確率の対数の期待値は、式 6.2の正規分布と式 6.29の多項分布より、式 6.41となる。
 
 $$\underset{z}{\mathbf{E}}\!\left[\,\log p\left(\boldsymbol{x},z\,\middle|\,w,\boldsymbol{\mu},S\right)\,\right] =
 - \displaystyle\frac{1}{2} \displaystyle\sum_{k=1}^K \displaystyle\sum_{n=1}^N \gamma_{nk}
-\left\lbraceD \log 2\pi + \left|S_k\right| + {}^t(\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) S_k^{-1} (\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) - 2 \log w_k\right\rbrace. \qquad(6.41)$$
+\left\lbrace D \log 2\pi + \left|S_k\right| + {}^t(\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) S_k^{-1} (\boldsymbol{x}_n-\hat{\boldsymbol{\mu}}_k) - 2 \log w_k\right\rbrace . \qquad(6.41)$$
 
 共役性より、母数 $\theta$ の事後分布は、事前分布の母数 $\phi$ を、推定値 $\hat{\phi}$ に置換した場合と等値であり、式 6.42が成立する。
 

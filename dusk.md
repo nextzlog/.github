@@ -429,7 +429,7 @@ Fig. 4.1 dense matrix multiplication,  $8192\times8192\times8192$ .
 
 $$\begin{alignedat}{1}
 
-w &= \left\lbraceN-1-\displaystyle\frac{1}{\rho b_{N-1}}\left(\displaystyle\sum_{n=0}^{N-1}b_n-N\right)\right\rbraceD,\\
+w &= \left\lbrace N-1-\displaystyle\frac{1}{\rho b_{N-1}}\left(\displaystyle\sum_{n=0}^{N-1}b_n-N\right)\right\rbrace D,\\
 b_n &= \displaystyle\sum_{k=0}^n\displaystyle\frac{(-1)^k}{k!}(n-k)^ke^{(n-k)\rho}\rho^k,\\
 \rho &= \lambda D.
 \end{alignedat} \qquad(4.1)$$

@@ -212,11 +212,11 @@ object WireWorldRule extends Rule[Char](ROI => (ROI(1)(1), ROI.flatten.count(_ =
 $$(q_{n+1},y_n,\lambda_n) = \delta(q_n,x_n),
 \enspace\mathrm{where}\enspace
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 q_n &\in Q,\\
 x_n,y_n &\in \Sigma,\\
-\lambda_n &\in \lbraceL,R\rbrace.
+\lambda_n &\in \lbrace L,R\rbrace .
 \end{aligned}
 \right. \qquad(2.2)$$
 
@@ -278,7 +278,7 @@ CUTM("0111111", "I0a0RI1a1Ra0a0Ra1a1Ra b Lb0c1Lb1b0Lb F1 c0c0Lc1c1Lc F R")('F').
 
 $$(q_{n+1},y^*_n) = \delta(q_n,\sigma_n,x_n),
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 q_n &\in Q,\\
 x_n &\in \Gamma,\\
@@ -359,7 +359,7 @@ $$\lambda x.\lambda y.(3x+7y) \enspace 2 \enspace 3 \mathrm{\enspace\xrightarrow
 
 $$n := \lambda sx.(s^{\circ n}x) \enspace \lambda x.(x+1) \enspace 0,
 \enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 a + b &:= \lambda ab.\lambda sx.as(bsx),\\
 a \times b &:= \lambda ab.\lambda sx.a(bs)x.
@@ -371,7 +371,7 @@ a \times b &:= \lambda ab.\lambda sx.a(bs)x.
 
 $$\mathrm{t} := \lambda xy.x, \enspace
 \mathrm{f} := \lambda xy.y, \enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 a \land b &:= \lambda ab.ab\mathrm{f},\\
 a \lor  b &:= \lambda ab.a\mathrm{t}b.
@@ -426,7 +426,7 @@ $$\displaystyle\frac{\begin{matrix}P \to Q & Q \to R\end{matrix}}{P \to R}. \qqu
 
 $$\Gamma \vdash P \to R,
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 P \to Q \in \Gamma, \\
 Q \to R \in \Gamma.
@@ -526,12 +526,12 @@ f(xx): \tau
 
 **形式言語**とは、定義が明確で、何らかの計算手順で処理できる言語である。まず、形式言語 $L$ は式 4.1で定義される。
 
-$$L(G) \subset \Sigma^* = \left\lbrace\langle\sigma_1,...,\sigma_n,...\rangle\mid\sigma_n\in\Sigma\right\rbrace. \qquad(4.1)$$
+$$L(G) \subset \Sigma^* = \left\lbrace \langle\sigma_1,...,\sigma_n,...\rangle\mid\sigma_n\in\Sigma\right\rbrace . \qquad(4.1)$$
 
 言語 $L$ は**文**の集合である。文とは、記号 $\sigma$ の列である。記号は有限集合 $\Sigma$ で定義され、集合 $\Sigma$ を**アルファベット**と呼ぶ。
 記号 $\sigma$ の出現には、明確な規則がある。この規則を**生成規則**と呼び、生成規則の集合を**文法**と呼ぶ。式 4.2に例を示す。
 
-$$P = \left\lbrace
+$$P = \left\lbrace 
 \begin{aligned}
 \mathtt{S} &\to \texttt{(S)},\\
 \mathtt{S} &\to \texttt{(f)},
@@ -560,7 +560,7 @@ $$G=(N,\Sigma,P,S),\enspace\mathrm{where}\enspace S\in N. \qquad(4.4)$$
 
 $$\alpha A \beta \to \alpha \gamma \beta,
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 A &\in N,\\
 \alpha,\beta &\in (N\cup\Sigma)^*,\\
@@ -573,7 +573,7 @@ A &\in N,\\
 
 $$A \to \alpha,
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 A &\in N,\\
 \alpha &\in (N\cup\Sigma)^*.
@@ -583,14 +583,14 @@ A &\in N,\\
 形式言語の中でも、文法の制約が強く、有限状態機械で処理可能な言語を**正規言語**と呼ぶ。その記法が正規表現である。
 有限状態機械では、無限の記憶を持てず、特に再帰的な生成規則を扱えず、生成規則は式 4.7に示す形式に制限される。
 
-$$\left\lbrace
+$$\left\lbrace 
 \begin{aligned}
 A &\to a,\\
 A &\to aB,
 \end{aligned}
 \right.
 \enspace\mathrm{where}\enspace
-\left\lbrace
+\left\lbrace 
 \begin{aligned}
 a &\in \Sigma,\\
 A,B &\in N.
