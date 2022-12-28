@@ -4,20 +4,14 @@ subtitle: Scala's Pattern Recognition & Machine Learning
 pdf: mine.pdf
 ---
 ## [1 初歩的な機械学習モデル](https://zenn.dev/nextzlog/articles/mine-chapter1)
-1 初歩的な機械学習モデル
-...
+
 ## [2 ニューラルネットワーク](https://zenn.dev/nextzlog/articles/mine-chapter2)
-2 ニューラルネットワーク
-...
+
 ## [3 サポートベクターマシン](https://zenn.dev/nextzlog/articles/mine-chapter3)
-3 サポートベクターマシン
-...
+
 ## [4 決定木の学習と汎化性能](https://zenn.dev/nextzlog/articles/mine-chapter4)
-4 決定木の学習と汎化性能
-...
+
 ## [5 潜在的ディリクレ配分法](https://zenn.dev/nextzlog/articles/mine-chapter5)
-5 潜在的ディリクレ配分法
-...
+
 ## [6 混合正規分布と最尤推定](https://zenn.dev/nextzlog/articles/mine-chapter6)
-6 混合正規分布と最尤推定
-...
+
