@@ -5,7 +5,6 @@ subtitle: Scala's Pattern Recognition & Machine Learning
 layout: page
 ---
 [PDF版はこちら](mine.pdf)。
-このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。
 * TOC
 {:toc}
 # 1 初歩的な機械学習モデル

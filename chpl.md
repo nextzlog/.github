@@ -5,7 +5,6 @@ subtitle: Chapel the Parallel Programming Language
 layout: page
 ---
 [PDF版はこちら](chpl.pdf)。
-このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。
 * TOC
 {:toc}
 # 1 はじめに

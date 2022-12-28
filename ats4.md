@@ -5,7 +5,6 @@ subtitle: Amateur-Radio Contest Administration System
 layout: page
 ---
 [PDF版はこちら](ats4.pdf)。
-このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。
 * TOC
 {:toc}
 # 1 はじめに

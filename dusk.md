@@ -5,7 +5,6 @@ subtitle: Parallel Work-Stealing Scheduler on D
 layout: page
 ---
 [PDF版はこちら](dusk.pdf)。
-このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。
 * TOC
 {:toc}
 # 1 並列スケジューラの概念

@@ -6,7 +6,7 @@ layout: page
 hide: true
 ---
 
-![WireWorld](https://raw.githubusercontent.com/nextzlog/book/master/wire/WIRE1.gif)
+無線部開発班は、コンテスト自動集計システムを手掛ける、東京大学アマチュア無線クラブのソフトウェア開発部門です。
 
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">
@@ -196,8 +196,6 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 		<a class="card-link" href="https://pafelog.net/chpl.pdf">記事</a>
 	</div>
 </div>
-
-![dusk](scales/dusk.dmm.rank8192.gran128.pad32.avx.xeon.e5.2699.v3.core36.svg)
 
 <div class="card my-1 my-md-5" itemscope itemtype="http://schema.org/DigitalDocument">
 	<div class="card-body">

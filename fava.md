@@ -5,7 +5,6 @@ subtitle: Computation Models & Compilers on Scala
 layout: page
 ---
 [PDF版はこちら](fava.pdf)。
-このページは独自のLaTeX処理系[TeXt](https://github.com/nextzlog/book/tree/master/text)で生成されたものです。
 * TOC
 {:toc}
 # 1 言語処理系を作る
