@@ -4,17 +4,25 @@ subtitle: Parallel Work-Stealing Scheduler on D
 pdf: dusk.pdf
 ---
 ## [1 並列スケジューラの概念](https://zenn.dev/nextzlog/articles/dusk-chapter1)
-**並列処理**とは、長時間を要する計算の内容を分割して複数のプロセッサに分担させ、処理速度の改善を図る技術を指す。
- ...
+### 1.1 データレベルの並列性
+### 1.2 タスクレベルの並列性
+### 1.3 粗粒度なタスクの分配
+### 1.4 ワークスティーリング
 ## [2 並列スケジューラの実装](https://zenn.dev/nextzlog/articles/dusk-chapter2)
-第1.4節で議論した、ワークスティーリングを実装する。第2章に掲載する実装を順番に結合すると、完全な実装になる。
- ...
+### 2.1 スケジューラ
+### 2.2 タスクの実装
+### 2.3 キューの実装
 ## [3 キャッシュ効率の最適化](https://zenn.dev/nextzlog/articles/dusk-chapter3)
-並列処理では、台数効果も重要だが、逐次処理の性能も重要である。特に、参照局所性を意識した最適化が、必須となる。
- ...
+### 3.1 キャッシュミス率の抑制
+### 3.2 キャッシュの競合の抑制
 ## [4 行列積の並列処理の評価](https://zenn.dev/nextzlog/articles/dusk-chapter4)
-第4章では、行列積の処理速度の計測を通じて、第2章で実装したスケジューラを利用した場合の**台数効果**を確認する。
- ...
+### 4.1 提案実装によるタスク並列化
+### 4.2 既存実装によるタスク並列化
+### 4.3 反復処理によるデータ並列化
+### 4.4 台数効果の評価と結果の解釈
 ## [5 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)
-第5章で解説するduskは、*non uniform memory access* (NUMA) 型の共有メモリ環境を指向したスケジューラである。
- ...
+### 5.1 利用方法
+# make build install -C dusk
+# ldconfig
+### 5.2 環境変数
+### 5.3 性能測定
