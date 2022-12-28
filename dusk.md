@@ -22,7 +22,5 @@ pdf: dusk.pdf
 ### 4.4 台数効果の評価と結果の解釈
 ## [5 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)
 ### 5.1 利用方法
-# make build install -C dusk
-# ldconfig
 ### 5.2 環境変数
 ### 5.3 性能測定
