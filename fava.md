@@ -317,12 +317,12 @@ Fig. 2.3 1 2 + 10 20 - *.
 ```scala
 object ArithStackMachine extends collection.mutable.Stack[Int]() {
 	def apply(program: String): Int = program.split(" +").map {
-		case "+" => push(((a: Int, b: Int) => b + a)(pop, pop))
-		case "-" => push(((a: Int, b: Int) => b - a)(pop, pop))
-		case "*" => push(((a: Int, b: Int) => b * a)(pop, pop))
-		case "/" => push(((a: Int, b: Int) => b / a)(pop, pop))
+		case "+" => push(((a: Int, b: Int) => b + a)(pop(), pop()))
+		case "-" => push(((a: Int, b: Int) => b - a)(pop(), pop()))
+		case "*" => push(((a: Int, b: Int) => b * a)(pop(), pop()))
+		case "/" => push(((a: Int, b: Int) => b / a)(pop(), pop()))
 		case num => this.push(num.toInt)
-	}.lastOption.map(_ => pop).last
+	}.lastOption.map(_ => pop()).last
 }
 ```
 
@@ -352,6 +352,8 @@ $$g := \lambda x.\lambda y.2x+3y+1. \qquad(3.2)$$
 
 $$\lambda x.\lambda y.(3x+7y) \enspace 2 \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} \lambda y.(6+7y) \enspace 3 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} 6+21 = 27. \qquad(3.3)$$
 
+### 3.1 万能性
+
 任意の自然数と演算は、自然数を枚挙する関数 $s$ と自然数 $0$ があれば、**ペアノの公理**で定義できる。式 3.4に例を示す。
 自然数は、2個の引数を取る関数で表す。変数 $x$ に自然数を渡せば、加算になる。変数 $s$ に自然数を渡せば、乗算になる。
 
@@ -376,45 +378,144 @@ a \lor  b &:= \lambda ab.a\mathrm{t}b.
 \end{aligned}
 \right. \qquad(3.5)$$
 
-関数 $f$ に対し、性質 $f(x)\!=\!x$ を満たす点 $x$ を**不動点**と呼ぶ。また、式 3.6の性質を満たす関数 $p$ を**不動点演算子**と呼ぶ。
+再帰計算は、任意の関数 $f$ の**不動点**を求める関数 $p$ が存在し、即ち式 3.6を満たす場合に、無名関数の形で表現できる。
 
 $$\forall f, \enspace f(p(f)) \equiv p(f). \qquad(3.6)$$
 
-関数 $p$ を利用すれば、再帰的な関数 $h(x)$ を式 3.7で定義できる。関数 $h$ は、再帰計算の実体を表す関数 $g$ を引数に取る。
+例えば、関数 $g$ を任意の再帰計算とし、式 3.7に示す関数 $h$ を定義すると、関数 $g$ は関数 $h$ と変数 $x$ を引数に受け取る。
 
-$$h := \lambda x.pgx, \enspace\mathrm{where}\enspace g := \lambda fy.E. \qquad(3.7)$$
-
-関数 $h$ が再帰的であるには、関数 $g$ の変数 $f$ が関数 $h$ を参照する必要がある。式 3.8の変形で、この要求は保証される。
-
-$$h
-\equiv \lambda x.(pg) x
+$$h := \lambda x.pgx
+\equiv \lambda x.(pg)x
 \equiv \lambda x.(g (pg)) x
-\equiv \lambda x.ghx. \qquad(3.8)$$
+\equiv \lambda x.ghx
+, \enspace\mathrm{where}\enspace g := \lambda fy.E. \qquad(3.7)$$
 
-式 3.8を**無名再帰**と呼ぶ。関数 $p$ が実装できれば、任意の再帰計算を実行できる。最も著名な実装例を式 3.9に示す。
+関数 $h$ を通じて、関数 $g$ が再帰的に参照される。任意の関数の不動点を与える関数 $p$ の、最も著名な例を式 3.8に示す。
 
-$$\mathbb{Y}{} := \lambda f.(\lambda x.f(xx))(\lambda x.f(xx)). \qquad(3.9)$$
+$$\mathbb{Y}{} := \lambda f.(\lambda x.f(xx))(\lambda x.f(xx)). \qquad(3.8)$$
 
-関数 $f$ に対し、式 3.9の関数 $\mathbb{Y}$ が式 3.6を満たす様子は、式 3.10で証明できる。ただし、無限再帰に注意を要する。
-関数 $\mathbb{Y}{}f$ を評価すると、同じ関数 $\mathbb{Y}{}f$ が右辺に出現する。無限再帰を防ぐには、関数 $\mathbb{Y}{}f$ の評価を遅延させる必要がある。
+関数 $f$ に対し、式 3.8の関数 $\mathbb{Y}$ が式 3.6を満たす様子は、式 3.9で証明できる。ただし、無限再帰に注意を要する。
+例えば、式 $\mathbb{Y}{}fx$ を評価すると、無限に式 3.9が展開される。対策として、第5章で解説する非正格評価が必要になる。
 
 $$\mathbb{Y}{}f
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} (\lambda x.f(xx))(\lambda x.f(xx))
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} f((\lambda x.f(xx))(\lambda x.f(xx)))
-\equiv f(\mathbb{Y}{}f). \qquad(3.10)$$
+\equiv f(\mathbb{Y}{}f). \qquad(3.9)$$
 
-または、式 3.11の関数 $\mathbb{Z}$ なら、関数 $\mathbb{Z}{}f$ の評価は停止する。関数 $\mathbb{Z}{}$ は、関数 $\mathbb{Y}$ に**イータ変換**の逆を施した関数である。
+関数 $\mathbb{Y}$ と等価な関数 $\mathbb{Z}$ を利用する方法もある。式 3.10に示す関数 $\mathbb{Z}{}$ は、関数 $\mathbb{Y}$ に**イータ変換**の逆を施した関数である。
 
-$$\mathrm{Z} := \lambda f.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy)). \qquad(3.11)$$
+$$\mathbb{Z}{} := \lambda f.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy)). \qquad(3.10)$$
 
-関数 $\mathbb{Z}{}f$ を評価すると、変数 $y$ を引数に取る関数が出現する。右辺の関数 $\mathbb{Z}{}f$ の展開が保留され、無限再帰は回避される。
+式 3.11を評価すると、右辺の関数が出現し、実際に引数 $y$ を渡すまで式 3.11の展開が保留され、無限再帰を防げる。
 
-$$\mathrm{Z}f
+$$\mathbb{Z}{}f
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} (\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy))
 \mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.(\lambda x.f(\lambda y.xxy))(\lambda x.f(\lambda y.xxy))y)
-\mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.\mathrm{Z}fy). \qquad(3.12)$$
+\mathrm{\enspace\xrightarrow[\beta]{}\enspace} f(\lambda y.\mathbb{Z}{}fy). \qquad(3.11)$$
 
-式 3.9の関数 $\mathbb{Z}$ を利用すれば、本書で自作する言語は、任意の計算を実行できる。第9章で実装を終えた後に実験する。
+以上で、算術や論理計算や再帰計算を含む、理論的な裏付けが揃った。第7章で言語処理系が完成したら、実験しよう。
+
+### 3.2 型推論
+
+**型付きラムダ計算**は、命題論理の規則に従って、式の型を推論し、型の矛盾や無限再帰を形式的に検出する体系である。
+簡単に命題論理を復習する。命題 $P$ が命題 $Q$ を、命題 $Q$ が命題 $R$ を含意する場合に、式 3.12の**三段論法**が成立する。
+
+$$\displaystyle\frac{\begin{matrix}P \to Q & Q \to R\end{matrix}}{P \to R}. \qquad(3.12)$$
+
+命題論理では、命題の妥当性は、演繹の累積で証明される。この過程は、命題の集合 $\Gamma$ を仮定して、式 3.13で表せる。
+
+$$\Gamma \vdash P \to R,
+\enspace\mathrm{where}\enspace
+\left\{
+\begin{aligned}
+P \to Q \in \Gamma, \\
+Q \to R \in \Gamma.
+\end{aligned}
+\right. \qquad(3.13)$$
+
+型付きラムダ計算では、集合 $\Gamma$ を**型環境**と呼ぶ。具体的には、変数や部分式に設定した型の情報を格納した配列である。
+曖昧な型は変数で表す。例えば、自由変数 $x$ の型は未知なので、変数 $\sigma$ が環境 $\Gamma$ に格納され、式 $x$ の型は $\sigma$ と推論される。
+
+$$\displaystyle\frac{\begin{matrix}\Gamma(x) := \sigma\end{matrix}}{\Gamma \vdash x: \sigma}. \qquad(3.14)$$
+
+関数 $f$ の型を推論しよう。過程を式 3.15に示す。関数は、含意の記号 $\to$ を利用して、定義域と値域の組で表現できる。
+
+$$\displaystyle\frac{\begin{matrix}x: \sigma \vdash E: \tau & f := \lambda x. E\end{matrix}}{\Gamma \vdash f: \sigma \to \tau} \qquad(3.15)$$
+
+式 3.15を含意 $\to$ の**導入規則**と呼ぶ。最後に、関数 $f$ の適用 $fx$ の型を推論する。式 3.16を含意 $\to$ の**除去規則**と呼ぶ。
+
+$$\displaystyle\frac{\begin{matrix}\Gamma \vdash f: \sigma \to \tau & \Gamma \vdash x: \sigma\end{matrix}}{\Gamma \vdash f x: \tau} \qquad(3.16)$$
+
+型推論の過程では、型変数が満たす制約条件の組が生成され、その全てを満たす型が解となる。式 3.17の例で考える。
+
+$$(\lambda x.xy)(zy). \qquad(3.17)$$
+
+推論の過程を式 3.18に示す。同じ変数には、同じ型変数を設定する。推論の過程で、型変数の制約条件が生成される。
+
+$$\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}x: \alpha & y: \beta\end{matrix}}{xy: \mu \mid \alpha = \beta \to \mu}
+\end{matrix}}{
+\lambda x.xy: \alpha \to \mu \mid \alpha = \beta \to \mu
+}
+&
+\displaystyle\frac{\begin{matrix}z: \gamma & y: \beta\end{matrix}}{zy: \nu \mid \gamma = \beta \to \nu}
+\end{matrix}}{
+(\lambda x.xy)(zy): \sigma
+\mid \alpha \to \mu = \nu \to \sigma
+\mid \alpha = \beta \to \mu
+\mid \gamma = \beta \to \nu
+} \qquad(3.18)$$
+
+代数学の要領で制約条件を消去し、解を得る作業を**単一化**と呼ぶ。特に、関数の型を分解する。式 3.19に過程を示す。
+
+$$\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha \to \mu = \nu \to \sigma\end{matrix}}{\mu = \sigma} & \alpha = \beta \to \mu\end{matrix}}{\alpha = \beta \to \sigma}
+&
+\displaystyle\frac{\begin{matrix}\displaystyle\frac{\begin{matrix}\alpha \to \mu = \nu \to \sigma\end{matrix}}{\alpha = \nu} & \gamma = \beta \to \nu\end{matrix}}{\gamma = \beta \to \alpha}
+\end{matrix}}{
+\gamma = \beta \to \beta \to \sigma
+} \qquad(3.19)$$
+
+式 3.19の例では、全ての制約条件を消去できた。それでも、型変数 $\beta,\sigma$ は任意の型になり得る。これを**多相型**と呼ぶ。
+なお、再帰関数の型推論では、式 3.20に示す**同値再帰型**が出現する。無闇に式 3.20を展開すると、無限再帰に陥る。
+
+$$\sigma = \sigma \to \tau. \qquad(3.20)$$
+
+式 3.9を例に考える。式 3.21に示す推論により、型 $\phi,\psi$ は再帰型と判明する。その時点で推論を終える必要がある。
+
+$$\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}x: \phi\end{matrix}}{xx: \mu \mid \phi = \phi \to \mu} & f: \eta
+\end{matrix}}{
+f(xx): \rho
+\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
+}
+\end{matrix}}{
+\lambda x.f(xx): \phi \to \rho
+\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
+}
+&
+\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}
+\displaystyle\frac{\begin{matrix}x: \psi\end{matrix}}{xx: \nu \mid \psi = \psi \to \nu} & f: \eta
+\end{matrix}}{
+f(xx): \tau
+\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+}
+\end{matrix}}{
+\lambda x.f(xx): \psi \to \tau
+\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+}
+\end{matrix}}{
+(\lambda x.f(xx))(\lambda x.f(xx)): \sigma
+\mid \phi \to \rho = (\psi \to \tau) \to \sigma
+\mid \eta = \mu \to \rho \mid \phi = \phi \to \mu
+\mid \eta = \nu \to \tau \mid \psi = \psi \to \nu
+} \qquad(3.21)$$
+
+同値再帰型を表す特殊な型変数を実装すれば、再帰関数の型推論も可能だが、誤った式に意図せず型が付く場合もある。
 
 ## 4 簡単なコンパイラ
 
@@ -651,9 +752,85 @@ object ArithPEGs extends PEGs {
 }
 ```
 
+### 4.4 簡単な言語処理系
+
+第4.3節の構文解析器でLISPを実装しよう。LISPは、簡素な文法ながら拡張性が高く、実用的な動的型付け言語である。
+LISPの式をS式と呼ぶ。変数の名前や数値を表す**アトム**と、構文木を形成する**リスト**で構成される。文法も簡潔である。
+
+```scala
+object LispPEGs extends PEGs {
+	def sexp: PEG[S] = list / quot / real / name
+	def list = "(" ~> (sexp.* ^ List) <~ ")" 
+	def real = "[0-9]+".r ^ (real => Real(BigDecimal(real)))
+	def name = """[^'`,@\(\)\s]+""".r ^ (name => Name(name))
+	def quot = "'" ~> sexp ^ (Seq(Name("quote"), _)) ^ List
+}
+```
+
+S式の実装を以下に示す。引数のexpは式の文字列である。evalは評価器で、後述する環境を参照して、式の値を返す。
+
+```scala
+abstract class S(val exp: String, eval: S => Env => S) {
+	override def toString = exp
+	def apply(env: Env): S = eval(this)(env)
+	def apply(env: Env)(args: Seq[S]): S = apply(env).asInstanceOf[Form].app(args, env)
+}
+```
+
+次にアトムを実装する。変数を表すName型と、実数値のReal型を以下に示す。他にも論理型や文字列型を実装しよう。
+
+```scala
+case class Name(name: String) extends S(name, v => env => env.apply(v))
+case class Real(real: BigDecimal) extends S(real.toString, v => _ => v)
+```
+
+次にリストを実装する。LISPのリストは関数適用として評価される。最初の要素が関数で、残りが引数のリストとなる。
+
+```scala
+case class List(list: Seq[S]) extends S(list.mkString("(", " ", ")"), _ => list.head(_)(list.tail))
+```
+
+次に演算子を実装する。Form型を継承して、関数の定義を表すLambda型と、**マクロ**の定義を表すSyntax型を実装する。
+関数の場合は、まず引数を評価して、引数を記憶した環境を生成し、最後に関数の値を評価する。これを**正格評価**と呼ぶ。
+
+```scala
+class Form(exp: String, val app: (Seq[S], Env) => S) extends S(exp, v => _ => v)
+class Lambda(p: List, v: S, e: Env) extends Form(s"(lambda $p $v)", (a, s) => v(Env(Some(e), p, s(a))))
+class Syntax(p: List, v: S, e: Env) extends Form(s"(syntax $p $v)", (a, s) => v(Env(Some(e), p, a))(s))
+```
+
+対照的にマクロの場合は、引数を評価せず、式のままマクロの内部に展開し、そのマクロを通常の式と同様に評価する。
+例えば、C言語の制御構文に相当するマクロも定義できる。次に、環境を実装する。環境は変数の名前と値を記憶する。
+
+```scala
+case class Env(out: Option[Env], params: List, args: Seq[S]) {
+	val map = params.list.zip(args).to(collection.mutable.Map)
+	def apply(name: S): S = {
+		if(map.isDefinedAt(name)) map(name)
+		else if(out.nonEmpty) out.get(name)
+		else sys.error(s"$name undeclared")
+	}
+	def apply(args: Seq[S]): Seq[S] = args.map(_.apply(this)) 
+}
+```
+
+最後に、お好みでForm型を継承し、組込み関数や構文を充実させよう。関数とマクロを定義する構文の例を以下に示す。
+
+```scala
+object LambdaForm extends Form("lambda", (a, s) => new Lambda(a.head.asInstanceOf[List], a(1), s)) 
+object SyntaxForm extends Form("syntax", (a, s) => new Syntax(a.head.asInstanceOf[List], a(1), s)) 
+```
+
+以上で、簡素ながら優れた拡張性と実用性を備えるLISPが完成した。階乗をdefunマクロで定義する例を以下に示す。
+
+```
+lisp$ (defun fact (x) (if (eq x 1) x (* x (fact (- x 1)))))
+(lambda (x) (if (eq x 1) x (* x (fact (- x 1)))))
+```
+
 ## 5 自作言語の仕様書
 
-本書で設計するfavaは**動的型付け**を行う言語である。データ型は、整数型と実数型と論理型と文字列型と関数型がある。
+favaは静的型付け言語である。組込み型には、整数型と実数型と論理型と文字列型と関数型があり、型推論が行われる。
 整数型は符号付き32 bit整数で、実数型はIEEE 754 (64 bit 2進数)浮動小数点数で、文字列はUTF-16で表現される。
 
 |-|-|
@@ -712,9 +889,9 @@ fava$ ((f)=>((x)=>f(x(x)))((x)=>f(x(x))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)
 3628800
 ```
 
-## 6 分岐命令の仕組み
+## 6 命令セットを作る
 
-逆ポーランド記法の計算機で条件分岐を行うには、指定された長さだけ命令列を読み進め、または遡る分岐命令を使う。
+第6章では、第2.4節で実装した計算機を拡張し、**分岐命令**を備えた**命令セット**を設計して、条件分岐や関数を実現する。
 以下に例を示す。まず、Push命令がスタックに値を積む。その値が偽なら、続くSkin命令が、3個の命令を読み飛ばす。
 
 ```
@@ -760,17 +937,64 @@ fava$ ((x,y)=>x()*x()+y())(()=>3+3,()=>3*3)
 45
 ```
 
-同じ引数を何度も参照する場合は、値を再利用すると効率的である。これを**必要呼び**と呼ぶ。詳細は第8.3節に述べる。
+同じ引数を何度も参照する場合は、値を再利用すると効率的である。これを**必要呼び**と呼ぶ。詳細は第6.6節に述べる。
 
 ```
 fava$ compile(((x)=>x)(5))
 Def(11,1) Load(0,0) Nil Skin(6) Ref Call(0) Load(0,0) Fix Set Get Ret Def(3,0) Push(5) Ret Arg Call(1)
 ```
 
-## 7 仮想計算機を作る
+### 6.1 命令の基本設計
 
-第7章では、第2.4節で実装した逆ポーランド記法の計算機を拡張し、第6章の分岐命令を備えた**仮想計算機**を実装する。
-FaVM型が仮想計算機の本体である。Fig. 6.1と同じ2個のスタックを備え、**プログラムカウンタ**が示す命令を実行する。
+命令は、Code型を継承する。FaVM型は、実行環境の本体である。命令は、所定の操作を実行し、変数pcを繰り上げる。
+
+```scala
+class Code(op: FaVM => Unit) {
+	def apply(vm: FaVM) = (op(vm), vm.pc += 1)
+}
+```
+
+変数pcは、**プログラムカウンタ**に相当する。これは、命令を実行する度に繰り上がり、次に実行する命令の位置を示す。
+
+### 6.2 関数の基本設計
+
+次に、関数の仕組みを実装する。関数は、関数の冒頭の位置と、引数の個数と、関数を生成した時点の環境を参照する。
+関数が参照する環境は、この関数を包み込む関数の引数を格納した環境である。関数閉包を実現するための布石である。
+
+```scala
+case class Closure(from: Int, narg: Int, out: Env)
+```
+
+遅延評価の仕組みも実装する。遅延評価は、関数の引数を包む関数と、その計算結果を格納する記憶領域で構成される。
+引数が計算済みの場合は、その値を使用し、何度も計算を繰り返す無駄を省く。計算を行う前の状態を**プロミス**と呼ぶ。
+
+```scala
+case class Promise(thunk: Closure, var cache: Any = null, var empty: Boolean = true)
+```
+
+最後に環境を実装する。環境は、関数適用の際に構築され、関数の引数を記憶する。遅延評価ではプロミスを管理する。
+関数閉包の機能を実現するため、環境は連鎖構造を持つ。環境は、関数の包含関係と連動し、**静的スコープ**を構成する。
+
+```scala
+case class Env(local: Seq[Any], out: Env = null) {
+	def apply(depth: Int, index: Int): Any = depth match {
+		case 0 => this.local(index)
+		case d => out(d - 1, index)
+	}
+}
+```
+
+関数の引数は、Load命令で取得する。現在の環境を起点に、環境の連鎖構造を辿り、指定された番号の引数を取り出す。
+
+```scala
+case class Load(nest: Int, id: Int) extends Code(vm => vm.data.push(vm.call.env(nest, id)))
+```
+
+以上で、関数や遅延評価の仕組みを整備した。実際に関数や遅延評価を実現する命令は、第6.5節や第6.6節で設計する。
+
+### 6.3 実行環境の設計
+
+以下のFaVM型が実行環境である。Fig. 6.1と同様に、2個のスタックを備え、引数で渡された命令列を順番に実行する。
 
 ```scala
 class FaVM(val codes: Seq[Code], var pc: Int = 0) {
@@ -791,23 +1015,85 @@ class Stack[E] extends collection.mutable.Stack[E] {
 }
 ```
 
-命令はCode型を継承する。仮想計算機の参照を受け取り、所定の操作を実行する。最後に命令を読み取る位置を進める。
+### 6.4 演算命令の設計
+
+第6.4節では、第2.4節で解説した逆ポーランド記法を参考に、四則演算や論理演算を含む各種の演算命令を充実させる。
+まず、Push命令を実装する。引数に指定された**即値**をスタックに積む命令である。特に、定数に相当する命令と言える。
 
 ```scala
-class Code(op: FaVM => Unit) {
-	def apply(vm: FaVM) = (op(vm), vm.pc += 1)
-}
+case class Push(v: Any) extends Code(vm => vm.data.push(v))
 ```
 
-**演算命令**は、値をスタックから取り出して、計算結果をスタックに積む。**算術演算**と**論理演算**と**関係演算**に分類できる。
-演算命令はALU型を継承する。演算命令は**型検査**も行う。部分関数の使用は型検査が目的で、型次第では例外を起こす。
+次に、複数の引数をスタックから取り出して、計算結果をスタックに戻す演算命令は、以下に示すArity型を継承する。
+ただし、引数の型を指定する必要がある場合は、Typed型を継承する。引数のopは、この命令に対応する演算子である。
 
 ```scala
-class ALU(n: Int, s: String, f: PartialFunction[Seq[Any], Any]) extends Code(vm => {
-	def err(v: Seq[_]) = v.map(s => s"$s: ${s.getClass}").mkString("(", ", ", ")")
-	vm.data.push(f.applyOrElse(vm.data.popN(n), (v: Seq[_]) => sys.error(err(v))))
-})
+class Arity(n: Int, f: Function[Seq[Any], Any]) extends Code(vm => vm.data.push(f(vm.data.popN(n))))
+class Typed(val n: Int, val op: String, val t: Type, f: Function[Seq[Any], Any]) extends Arity(n, f)
 ```
+
+Typed型を継承した命令は、以下のOp型で管理する。これは、演算子と命令を紐付け、検索を容易にする仕組みである。
+
+```scala
+class Op(op: Typed*)(val table: Map[(String, Type), Typed] = op.map(op => (op.op, op.t) -> op).toMap)
+```
+
+例えば、加減算や乗除算の命令をOp型にまとめ、管理する。演算子を指定すれば、対応する命令がtableから得られる。
+なお、第7章で実装するコンパイラは、この機能を利用して、加減算や乗除算の構文木を、対応する演算命令に変換する。
+
+```scala
+object AddOp extends Op(IAdd, DAdd, SAdd, ISub, DSub, SSub)()
+object MulOp extends Op(IMul, DMul, IDiv, DDiv, IMod, DMod)()
+object RelOp extends Op(IGt, DGt, ILt, DLt, IGe, DGe, ILe, DLe)()
+object EqlOp extends Op(IEq, DEq, SEq, BEq, INe, DNe, SNe, BNe)()
+object LogOp extends Op(IAnd, BAnd, IOr, BOr)()
+```
+
+さて、演算命令には、単項演算と2項演算がある。単項演算は被演算子が1個の命令で、符号の反転や論理の否定を行う。
+以下に、数値の符号を反転させるNeg命令の例を示す。Typed型を継承し、被演算子の型に応じて、何通りか実装する。
+
+```scala
+case object INeg extends Typed(1, "-", It, -_.head.asInstanceOf[I])
+case object DNeg extends Typed(1, "-", Dt, -_.head.asInstanceOf[D])
+```
+
+なお、第6.4節では、基本型に1文字ずつの別名を設定した。例えば、整数型はIで、これは演算命令の接頭辞でもある。
+
+```scala
+import java.lang.{String => S}, scala.{Any => A, Int => I, Double => D, Boolean => B}
+```
+
+さて、2項演算は、被演算子が2個の命令で、殆どの演算命令が該当する。以下に、加算を表すAdd命令の実装例を示す。
+
+```scala
+case object IAdd extends Typed(2, "+", It, v => v.head.asInstanceOf[I] + v.last.asInstanceOf[I])
+case object DAdd extends Typed(2, "+", Dt, v => v.head.asInstanceOf[D] + v.last.asInstanceOf[D])
+case object SAdd extends Typed(2, "+", St, v => v.head.asInstanceOf[S] + v.last.asInstanceOf[S])
+```
+
+以下に、除算を表すDiv命令の例を示す。なお、減算や除算を実装する際は、被演算子を取り出す順番に注意を要する。
+
+```scala
+case object IDiv extends Typed(2, "/", It, v => v.head.asInstanceOf[I] / v.last.asInstanceOf[I])
+case object DDiv extends Typed(2, "/", Dt, v => v.head.asInstanceOf[D] / v.last.asInstanceOf[D])
+```
+
+次に、関係演算命令を実装する。同値関係を調べる関係演算命令2種類と、順序関係を調べる関係演算命令4種類がある。
+
+```scala
+case object IGt extends Typed(2, ">", It, v => v.head.asInstanceOf[I] > v.last.asInstanceOf[I])
+case object DGt extends Typed(2, ">", Dt, v => v.head.asInstanceOf[D] > v.last.asInstanceOf[D])
+```
+
+最後に、2種類の論理演算命令を実装する。論理積と論理和である。整数値の場合は2進数の論理積と論理和を計算する。
+以上で、全ての算術演算と関係演算と論理演算の命令が揃った。殆どの命令は、誌面の都合で省略したが、適切に補おう。
+
+```scala
+case object IAnd extends Typed(2, "&", It, v => v.head.asInstanceOf[I] & v.last.asInstanceOf[I])
+case object BAnd extends Typed(2, "&", Bt, v => v.head.asInstanceOf[B] & v.last.asInstanceOf[B])
+```
+
+### 6.5 分岐命令の設計
 
 分岐命令はJump型を継承する。引数に渡された関数が整数を返す場合は、命令を読み取る位置を整数の位置に変更する。
 
@@ -815,96 +1101,7 @@ class ALU(n: Int, s: String, f: PartialFunction[Seq[Any], Any]) extends Code(vm 
 class Jump(op: FaVM => Option[Int]) extends Code(vm => op(vm).foreach(to => vm.pc = to - 1))
 ```
 
-次に、関数の仕組みを実装する。関数は、関数の冒頭の位置と、引数の個数と、関数を生成した時点の環境を参照する。
-関数が参照する環境は、この関数を包み込む関数の引数を格納した環境である。関数閉包を実現するための布石である。
-
-```scala
-case class Closure(from: Int, narg: Int, out: Env)
-```
-
-遅延評価の仕組みも実装する。引数の式を包む関数と、計算結果を格納する。これを**プロミス**と呼ぶ。以下に実装する。
-
-```scala
-case class Promise(thunk: Closure, var cache: Any = null, var empty: Boolean = true)
-```
-
-最後に環境を実装する。環境は、関数適用の際に構築され、関数の引数を記憶する。遅延評価ではプロミスを管理する。
-関数閉包の機能を実現するため、環境は連鎖構造を持つ。環境は、関数の包含関係と連動し、**静的スコープ**を構成する。
-
-```scala
-case class Env(args: Seq[Any], out: Env = null) {
-	def apply(nest: Int, index: Int): Any = if(nest > 0) out(nest - 1, index) else args(index)
-}
-```
-
-## 8 命令セットを作る
-
-第8章では、第7章に述べた仮想計算機に演算命令と分岐命令と遅延評価の命令を実装し、専用の**命令セット**を構築する。
-まず、最も基本的なPush命令を実装する。引数に指定された**即値**をスタックに積む。定数式はPush命令で実現できる。
-
-```scala
-case class Push(v: Any) extends Code(vm => vm.data.push(v))
-```
-
-機械語では、命令を**オペコード**と呼び、命令の引数を**オペランド**と呼ぶ。第8.2節の分岐命令にも、類似した引数がある。
-
-### 8.1 演算命令の設計
-
-演算命令には単項演算と2項演算がある。単項演算はスタックから値を1個だけ取り出し、計算結果をスタックに戻す。
-数値の符号を反転させるNeg命令の実装例を示す。他にはPos命令と論理演算のNot命令もあるが、誌面では省略する。
-
-```scala
-case object Neg extends ALU(1, "-", {
-	case Seq(v: I) => - v
-	case Seq(v: D) => - v
-})
-```
-
-演算命令は型検査も担当する。被演算子が部分関数に列挙するどの型とも異なる場合は、ALU型の内部で例外が起こる。
-なお、実装の本筋とは無関係だが、型検査の条件分岐の式を綺麗に揃える目的で、基本型に1文字ずつ別名を設定した。
-
-```scala
-import java.lang.{String=>S}, scala.{Any=>A, Int=>I, Double=>D, Boolean=>B}
-```
-
-2項演算は2個の値を取り出し、計算結果をスタックに戻す。最初に、Add命令を始め5種類の算術演算命令を実装する。
-減算や除算を実装する際は、被演算子の順序に注意を要する。演算子の左側の値がlhsに、右側の値がrhsに渡される。
-
-```scala
-case object Add extends ALU(2, "+", {
-	case Seq(lhs: I, rhs: I) => lhs + rhs
-	case Seq(lhs: I, rhs: D) => lhs + rhs
-	case Seq(lhs: D, rhs: I) => lhs + rhs
-	case Seq(lhs: D, rhs: D) => lhs + rhs
-	case Seq(lhs: S, rhs: A) => s"$lhs$rhs"
-	case Seq(lhs: A, rhs: S) => s"$lhs$rhs"
-})
-```
-
-次に、関係演算命令を実装する。同値関係を調べる関係演算命令2種類と、順序関係を調べる関係演算命令4種類がある。
-
-```scala
-case object Gt extends ALU(2, ">", {
-	case Seq(lhs: I, rhs: I) => lhs > rhs
-	case Seq(lhs: I, rhs: D) => lhs > rhs
-	case Seq(lhs: D, rhs: I) => lhs > rhs
-	case Seq(lhs: D, rhs: D) => lhs > rhs
-	case Seq(lhs: S, rhs: S) => lhs > rhs
-})
-```
-
-最後に、2種類の論理演算命令を実装する。論理積と論理和である。整数値の場合は2進数の論理積と論理和を計算する。
-
-```scala
-case object Or extends ALU(2, "|", {
-	case Seq(lhs: B, rhs: B) => lhs | rhs
-	case Seq(lhs: I, rhs: I) => lhs | rhs
-})
-```
-
-### 8.2 分岐命令の設計
-
-分岐命令は第6章に準拠する。Skip命令は、条件分岐で真の場合の処理を実行した後で、条件分岐を脱出する際に使う。
+Skip命令は、無条件分岐の命令で、指定された個数の命令を読み飛ばす。特に、条件分岐からの脱出で使う命令である。
 Skin命令は、値をスタックから取り出し、偽の場合は指定された個数の命令を読み飛ばす。条件分岐や遅延評価で使う。
 
 ```scala
@@ -936,22 +1133,16 @@ Call命令は、指定された個数の引数で環境を構築する。関数�
 case class Call(argc: Int) extends Jump(vm => Some {
 	val args = vm.data.popN(argc)
 	val func = vm.data.popAs[Closure]
+	require(args.length == func.narg)
 	vm.call.push(Env(args, func.out))
 	vm.data.push(vm.pc + 1)
-	if(args.size == func.narg) func.from
-	else sys.error(s"${func.narg} arguments required")
+	func.from
 })
 ```
 
-正格評価の場合は、第8.2節に実装した分岐命令と、第8.3節に実装するLoad命令があれば、任意の計算を実行できる。
+関数を正格評価する場合は、第6.2節に実装したLoad命令と、第6.4節の演算命令と、第6.5節の分岐命令で事足りる。
 
-### 8.3 遅延評価の設計
-
-最初に、関数の引数を参照するLoad命令を実装する。現在の環境の連鎖構造を辿り、指定された番号の引数を取り出す。
-
-```scala
-case class Load(nest: Int, id: Int) extends Code(vm => vm.data.push(vm.call.env(nest, id)))
-```
+### 6.6 遅延評価の設計
 
 Arg命令は、関数をスタックから取り出し、値が未定の引数とする。この命令は、関数適用の直前に実行する想定である。
 
@@ -969,33 +1160,37 @@ case object Ref extends Code(vm => vm.data.push(vm.data.topAs[Promise].thunk))
 ```
 
 Ref命令は、引数の実体である関数を取り出す。Ref命令を実行した直後にCall命令を実行すれば、引数の値が求まる。
-Set命令は、引数に値を設定する。Ref命令とCall命令で計算した結果を引数に設定すれば、非正格評価を実現できる。
+Set命令は、引数に値を設定する。Fix命令を実行すると、引数の値が確定する。以上の命令で、非正格評価を実現する。
 
 ```scala
 case object Set extends Code(vm => vm.data.popAs[Promise].cache = vm.data.pop)
 case object Fix extends Code(vm => vm.data.topAs[Promise].empty = false)
 ```
 
-## 9 コンパイラを作る
+## 7 コンパイラを作る
 
-第9章では、第5章の仕様に従って、式を第8章の命令列に翻訳する仕組みを作る。構文解析には第4.3節の実装を使う。
-最初に、第9.1節から第9.2節で、様々な構文木を実装する。構文木は、分割統治法によるコード生成器の役割を兼ねる。
+第7章では、第5章の仕様に従って、式を第6章の命令列に翻訳する仕組みを作る。構文解析には第4.3節の実装を使う。
+最初に、第7.1節から第7.2節で、様々な構文木を実装する。構文木は、命令列を生成する**コード生成器**の役割を兼ねる。
 
 ```scala
 trait AST {
-	def code(implicit env: DefST): Seq[Code]
+	def res(implicit env: Seq[DefST]): Type
+	def gen(implicit env: Seq[DefST]): Seq[Code]
+	def acc(unify: => Unit)(v: Type) = util.Try(unify).map(_ => v).get
 }
 ```
 
+resは、第7.3節で実装する型推論を実行して、式の型を決定する。genは、型推論の結果に従って、命令列を生成する。
 引数envは、その構文木が表す式を包む最も内側の関数を表す。関数の引数を探す場合は、関数を外向きに辿って探す。
 
-### 9.1 定数と演算の構文木
+### 7.1 定数と演算
 
 算術演算や関係演算や論理演算の式は、逆ポーランド記法の命令列に翻訳される。まず、定数を表す構文木を実装する。
 
 ```scala
 case class LitST(value: Any) extends AST {
-	def code(implicit env: DefST) = Seq(Push(value))
+	def res(implicit env: Seq[DefST]) = Atom(value.getClass)
+	def gen(implicit env: Seq[DefST]) = Seq(Push(value))
 }
 ```
 
@@ -1003,7 +1198,8 @@ case class LitST(value: Any) extends AST {
 
 ```scala
 case class StrST(string: String) extends AST {
-	def code(implicit env: DefST) = LitST(StringContext.processEscapes(string)).code
+	def res(implicit env: Seq[DefST]) = Atom(classOf[String])
+	def gen(implicit env: Seq[DefST]) = LitST(StringContext.processEscapes(string)).gen
 }
 ```
 
@@ -1011,50 +1207,44 @@ case class StrST(string: String) extends AST {
 
 ```scala
 case class UnST(op: String, expr: AST) extends AST {
-	def code(implicit env: DefST) = op match {
-		case "+" => expr.code :+ Pos
-		case "-" => expr.code :+ Neg
-		case "!" => expr.code :+ Not
-	}
+	def res(implicit env: Seq[DefST]) = acc(Form(v).unify(Form(expr.res)))(v)
+	def gen(implicit env: Seq[DefST]) = expr.gen :+ UnOp.table(op, v.prune)
+	val v = new Link
 }
 ```
 
-2項演算はBinST型で表す。まず左側の被演算子の、次に右側の被演算子の命令列を生成し、直後に演算命令を追加する。
+加減算の実装例を示す。2項演算では、まず左側の、次に右側の被演算子の命令列を生成し、直後に演算命令を追加する。
 
 ```scala
-case class BinST(op: String, e1: AST, e2: AST) extends AST {
-	def code(implicit env: DefST) = op match {
-		case "+"  => e1.code ++ e2.code :+ Add
-		case "-"  => e1.code ++ e2.code :+ Sub
-		case "*"  => e1.code ++ e2.code :+ Mul
-		case "/"  => e1.code ++ e2.code :+ Div
-		case "%"  => e1.code ++ e2.code :+ Mod
-		case "&"  => e1.code ++ e2.code :+ And
-		case "|"  => e1.code ++ e2.code :+ Or
-		case ">=" => e1.code ++ e2.code :+ Ge
-		case "<=" => e1.code ++ e2.code :+ Le
-		case ">"  => e1.code ++ e2.code :+ Gt
-		case "<"  => e1.code ++ e2.code :+ Lt
-		case "==" => e1.code ++ e2.code :+ Eq
-		case "!=" => e1.code ++ e2.code :+ Ne
-	}
+case class AddST(op: String, e1: AST, e2: AST) extends AST {
+	def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
+	def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ AddOp.table(op, v.prune)
+	val v = new Link
 }
 ```
 
-### 9.2 分岐と関数の構文木
+乗除算の実装例も示す。四則演算の演算子に対応する演算命令は、第6.4節で定義したAddOpやMulOpから取得できる。
+
+```scala
+case class MulST(op: String, e1: AST, e2: AST) extends AST {
+	def res(implicit env: Seq[DefST]) = acc(Form(v, v).unify(Form(e1.res, e2.res)))(v)
+	def gen(implicit env: Seq[DefST]) = e1.gen ++ e2.gen :+ MulOp.table(op, v.prune)
+	val v = new Link
+}
+```
+
+### 7.2 分岐と関数
 
 条件分岐の式はIfST型で表す。条件式と、真の場合に評価する式と、偽の場合に評価する式で、合計3個の引数を取る。
 条件分岐は、条件式の命令列の後に、Skin命令と、真の場合の命令列と、Skip命令と、偽の場合の命令列を配置する。
 
 ```scala
-case class IfST(cond: AST, vals: (AST, AST)) extends AST {
-	def code(implicit env: DefST) = {
-		val code1 = vals._1.code
-		val code2 = vals._2.code
-		val jmp1 = Skin(2 + code1.size) +: code1
-		val jmp2 = Skip(1 + code2.size) +: code2
-		cond.code ++ jmp1 ++ jmp2
-	}
+case class IfST(c: AST, e: (AST, AST)) extends AST {
+	def pos(pos: Seq[Code]) = (Skin(2 + pos.size) +: pos)
+	def neg(neg: Seq[Code]) = (Skip(1 + neg.size) +: neg)
+	def res(implicit env: Seq[DefST]) = acc(Form(Bt, v, v).unify(Form(c.res, e._1.res, e._2.res)))(v)
+	def gen(implicit env: Seq[DefST]) = c.gen ++ pos(e._1.gen) ++ neg(e._2.gen)
+	val v = new Link
 }
 ```
 
@@ -1062,41 +1252,38 @@ case class IfST(cond: AST, vals: (AST, AST)) extends AST {
 関数は、内容の命令列を生成して、命令の個数と引数の個数を指定したDef命令と、Ret命令を冒頭と最後に配置する。
 
 ```scala
-case class DefST(pars: Seq[String], body: AST) extends AST {
-	var out: DefST = null
-	def code(implicit env: DefST) = {
-		val codes = body.code((this.out = env, this)._2)
-		(Def(codes.size + 2, pars.size) +: codes :+ Ret)
-	}
+case class DefST(params: Seq[String], value: AST) extends AST {
+	val args = params.map(_ -> new Link).toMap
+	def get(name: String, depth: Int) = Load(depth, params.indexOf(name)) -> args(name)
+	def res(implicit env: Seq[DefST]) = Form(params.map(args) :+ value.res(env :+ this) :_*)
+	def gen(implicit env: Seq[DefST]) = tag(value.gen(env :+ this))
+	def tag(codes: Seq[Code]) = Def(codes.size + 2, params.size) +: codes :+ Ret
 }
 ```
 
-関数は、関数が定義された場所での、関数の包含関係を保持する。関数の包含関係は、変数を参照できる範囲を決定する。
-外側の関数は、命令列を生成する際に、引数で渡される。また、最も外側の関数は、便宜的に以下のRoot型を参照する。
-
-```scala
-object Root extends DefST(Seq(), null)
-```
-
 次に、識別子の構文木を実装する。正格評価の場合はStIdST型を使う。関数の包含構造を外向きに遡り、仮引数を探す。
+該当する仮引数が存在した場合は、関数の入れ子の深さを数え、Load命令を発行する。未定義の場合は、例外を投げる。
 
 ```scala
 case class StIdST(val name: String) extends AST {
-	def search(env: DefST, nest: Int = 0): Load = {
-		if(env.pars.contains(name)) Load(nest, env.pars.indexOf(name))
-		else if(env.out != null) search(env.out, nest + 1)
+	def resolve(env: Seq[DefST], nest: Int = 0): (Load, Link) = {
+		if(env.last.params.contains(name)) env.last.get(name, nest)
+		else if(env.size >= 2) resolve(env.init, nest + 1)
 		else sys.error(s"parameter $name is not declared")
 	}
-	def code(implicit env: DefST) = Seq(search(env))
+	def res(implicit env: Seq[DefST]) = resolve(env)._2.prune
+	def gen(implicit env: Seq[DefST]) = Seq(resolve(env)._1)
 }
 ```
 
 非正格評価の場合はLzIdSt型を使う。引数を取り出し、計算が必要なら計算し、引数の値を取り出す命令列を生成する。
+引数とは、第6.2節に述べたプロミスである。計算済みの場合は、その値を使用する。各命令の詳細は第6.6節に述べた。
 
 ```scala
 case class LzIdST(val name: StIdST) extends AST {
-	val (head, tail) = Seq(Nil, Skin(6), Ref, Call(0)) -> Seq(Fix, Set, Get)
-	def code(implicit env: DefST) = (name.code ++ head ++ name.code ++ tail)
+	def res(implicit env: Seq[DefST]) = name.res
+	def gen(implicit env: Seq[DefST]) = (name.gen ++ head ++ name.gen ++ tail)
+	val (head, tail) = List(Nil, Skin(6), Ref, Call(0)) -> List(Fix, Set, Get)
 }
 ```
 
@@ -1104,7 +1291,8 @@ case class LzIdST(val name: StIdST) extends AST {
 
 ```scala
 case class LzArgST(body: AST) extends AST {
-	def code(implicit env: DefST) = DefST(Seq(), body).code :+ Arg
+	def res(implicit env: Seq[DefST]) = body.res
+	def gen(implicit env: Seq[DefST]) = DefST(Seq(), body).gen :+ Arg
 }
 ```
 
@@ -1112,11 +1300,86 @@ CallST型は、関数適用を表す。まず、関数を参照する式の、�
 
 ```scala
 case class CallST(f: AST, args: Seq[AST]) extends AST {
-	def code(implicit env: DefST) = f.code ++ args.map(_.code).flatten :+ Call(args.size)
+	def res(implicit env: Seq[DefST]) = acc(Form(args.map(_.res) :+ v :_*).prune.unify(f.res))(v)
+	def gen(implicit env: Seq[DefST]) = f.gen ++ args.map(_.gen).flatten :+ Call(args.size)
+	val v = new Link
 }
 ```
 
-### 9.3 再帰下降構文解析器
+### 7.3 型推論規則
+
+第3章で議論した、型付きラムダ計算の型推論を実装する。手始めに、型変数や関数型の基底となるType型を実装する。
+unifyには、制約条件の右辺を渡す。再帰処理を通じて、制約条件を消去する。pruneは、型変数を型の値に変換する。
+
+```scala
+trait Type {
+	def prune = this
+	def unify(t: Type): Unit
+}
+```
+
+次に、具体的な型を表すAtom型を実装する。整数値や文字列など、型推論を始める時点で、型が明確な場合に使用する。
+
+```scala
+case class Atom(atom: Class[_]) extends Type {
+	def unify(t: Type) = t.prune match {
+		case t: Link => t.unify(this)
+		case t: Type => require(this == t)
+	}
+}
+```
+
+次に、関数型を表すForm型を実装する。引数のdomは、引数と関数の値の型を受け取る。式 3.15の推論規則に従う。
+
+```scala
+case class Form(dom: Type*) extends Type {
+	def unify(t: Type) = t.prune match {
+		case t: Form => t.align(this)
+		case t: Type => t.unify(this)
+	}
+	def align(t: Form) = {
+		require(this.dom.size == t.dom.size)
+		dom.zip(t.dom).map(_.prune.unify(_))
+	}
+}
+```
+
+次に、型変数を表すLink型を実装する。引数のtoは、型の値を表す。unifyを通じて確定し、pruneは、その値を返す。
+なお、関数型と型変数の比較では、再帰構造が現れると無限再帰に陥るので、同値再帰型に対応したLoop型で対策する。
+
+```scala
+class Link(var to: Option[Type] = None) extends Type {
+	def unify(t: Type) = t.prune match {
+		case t: Form => to = Some(Loop(t, this).prune)
+		case t: Type => to = Option.when(this != t)(t)
+	}
+	override def prune = to.map(_.prune).getOrElse(this)
+}
+```
+
+次に、同値再帰型を表すLoop型を実装する。linkに指定した型変数を展開すると、formの関数型が現れる様子を表す。
+厳密には、同値再帰型に限らず、型変数と関数型の対応関係を扱う型なので、pruneで再帰構造を検出する実装とした。
+
+```scala
+case class Loop(form: Form, link: Link) extends Type {
+	def unify(t: Type) = t match {
+		case t: Form => link.unify(t)
+		case t: Type => require(this == t)
+	}
+	override def prune = if(form.dom.contains(link)) this else form
+}
+```
+
+最後に、Atom型を継承し、第5章の基本型を定義する。関数型を除く、論理型と整数型と実数型と文字列型を定義する。
+
+```scala
+object Bt extends Atom(classOf[java.lang.Boolean])
+object It extends Atom(classOf[java.lang.Integer])
+object Dt extends Atom(classOf[java.lang.Double])
+object St extends Atom(classOf[java.lang.String])
+```
+
+### 7.4 構文解析器
 
 最後に、第4.3節で実装した解析表現文法の構文解析器を組み合わせ、再帰下降構文解析器を構築する。以下に実装する。
 第5章に掲載した文法の定義とほぼ同じ構造である。ただし、左結合の演算子はFold型を利用して、左再帰を回避した。
@@ -1125,12 +1388,12 @@ case class CallST(f: AST, args: Seq[AST]) extends AST {
 object FavaPEGs extends PEGs {
 	def expr: PEG[AST] = (cond / or) <~ ("//" ~ ".*$".r).?
 	def cond = (or <~ "?") ~ (expr ~ (":" ~> expr)) ^ IfST
-	def or   = new Fold(and, "|" ^ (op => BinST(op, _, _)))
-	def and  = new Fold(eql, "&" ^ (op => BinST(op, _, _)))
-	def eql  = new Fold(rel, """(!|=)=""".r ^ (op => BinST(op, _, _)))
-	def rel  = new Fold(add, """[<>]=?""".r ^ (op => BinST(op, _, _)))
-	def add  = new Fold(mul, """[\+\-]""".r ^ (op => BinST(op, _, _)))
-	def mul  = new Fold(unr, """[\*/%]""".r ^ (op => BinST(op, _, _)))
+	def or   = new Fold(and, "|" ^ (op => LogST(op, _, _)))
+	def and  = new Fold(eql, "&" ^ (op => LogST(op, _, _)))
+	def eql  = new Fold(rel, """(!|=)=""".r ^ (op => EqlST(op, _, _)))
+	def rel  = new Fold(add, """[<>]=?""".r ^ (op => RelST(op, _, _)))
+	def add  = new Fold(mul, """[\+\-]""".r ^ (op => AddST(op, _, _)))
+	def mul  = new Fold(unr, """[\*/%]""".r ^ (op => MulST(op, _, _)))
 	def unr  = ("+" / "-" / "!").* ~ call ^ ((o,e) => o.foldRight(e)(UnST))
 	def call = fact ~ args.* ^ ((f,a) => a.foldLeft(f)(CallST))
 	def args = "(" ~> new Sep(expr ^ LzArgST, ",") <~")"
@@ -1145,7 +1408,7 @@ object FavaPEGs extends PEGs {
 }
 ```
 
-使用例を以下に示す。構文解析を実行し、命令列に翻訳して第7章で実装した仮想計算機に渡すと、計算が実行される。
+使用例を以下に示す。構文解析を実行し、命令列に翻訳して第6章で実装した仮想計算機に渡すと、計算が実行される。
 
 ```scala
 println(new FaVM(FavaPEGs.expr("((x,y)=>x+y)(2,3)").get.m.code(Root)).data.pop)
@@ -1153,7 +1416,7 @@ println(new FaVM(FavaPEGs.expr("((x,y)=>x+y)(2,3)").get.m.code(Root)).data.pop)
 
 この構文解析器に、特殊な命令としてcompileを追加して、命令列を文字列で出力する機能を実装すれば、完成である。
 
-### 9.4 言語処理系を動かす
+### 7.5 ラムダ計算
 
 完成した言語処理系は、第3章に述べたラムダ計算の実験環境として利用できる。まず、式 3.4の自然数の演算を試す。
 自然数は帰納的に枚挙可能で、自然数の後続の自然数を求める関数と $0$ で表現できる。加算と乗算も、簡単に実装できる。
@@ -1174,14 +1437,14 @@ fava$ ((l,r)=>l((x,y)=>x,r))((x,y)=>x,(x,y)=>y)(true,false) // true | false
 true
 ```
 
-無名関数による再帰計算も可能である。式 3.9に述べた不動点演算子を利用する。 $10$ の階乗を求める例を以下に示す。
+無名関数でも、再帰計算を実現できる。式 3.8で議論した関数 $\mathbb{Y}{}$ を利用する。 $10$ の階乗を計算する例を、以下に示す。
 
 ```
 fava$ ((f)=>((x)=>f(x(x)))((x)=>f(x(x))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)
 3628800
 ```
 
-正格評価の言語では、無限再帰に陥る。代替手段として式 3.11の不動点演算子を利用すれば、再帰計算が可能になる。
+正格評価の場合は、無限再帰に陥る。代替手段として式 3.10に掲載した関数 $\mathbb{Z}{}$ を利用すれば、再帰計算が可能になる。
 
 ```
 fava$ ((f)=>((x)=>f((y)=>x(x)(y)))((x)=>f((y)=>x(x)(y))))((f)=>(n)=>(n==0)?1:n*f(n-1))(10)
