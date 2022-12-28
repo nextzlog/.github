@@ -3,38 +3,8 @@ title: D言語で実装する並列スケジューラ入門
 subtitle: Parallel Work-Stealing Scheduler on D
 pdf: dusk.pdf
 ---
-## [1 並列スケジューラの概念](https://zenn.dev/nextzlog/articles/dusk-chapter1)
-1 並列スケジューラの概念
-
-**並列処理**とは、長時間を要する計算の内容を分割して複数のプロセッサに分担させ、処理速度の改善を図る技術を指す。
-並列処理には、 ?に示す**データ並列**による方法と、 ?に示す**タスク並列**による方法の2種類がある。
-
-...
-## [2 並列スケジューラの実装](https://zenn.dev/nextzlog/articles/dusk-chapter2)
-2 並列スケジューラの実装
-
-第1.4節で議論した、ワークスティーリングを実装する。第2章に掲載する実装を順番に結合すると、完全な実装になる。
-並列処理を開始する際に、プロセッサに識別番号を割り当てる。冒頭で、その識別番号の**スレッド局所変数**を宣言する。
-
-...
-## [3 キャッシュ効率の最適化](https://zenn.dev/nextzlog/articles/dusk-chapter3)
-3 キャッシュ効率の最適化
-
-並列処理では、台数効果も重要だが、逐次処理の性能も重要である。特に、参照局所性を意識した最適化が、必須となる。
-
-### 3.1 キャッシュミス率の抑制
-...
-## [4 行列積の並列処理の評価](https://zenn.dev/nextzlog/articles/dusk-chapter4)
-4 行列積の並列処理の評価
-
-第4章では、行列積の処理速度の計測を通じて、第2章で実装したスケジューラを利用した場合の**台数効果**を確認する。
-具体的には、正方行列 $A,B$ の積だが、行列 $B$ のキャッシュミスを抑制するため、行列 $B$ を転置した $A{}^tB$ の形式とする。
-
-...
-## [5 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)
-5 高性能並列処理系の紹介
-
-第5章で解説するduskは、*non uniform memory access* (NUMA) 型の共有メモリ環境を指向したスケジューラである。
-
-### 5.1 利用方法
-...
+### [1 並列スケジューラの概念](https://zenn.dev/nextzlog/articles/dusk-chapter1)
+### [2 並列スケジューラの実装](https://zenn.dev/nextzlog/articles/dusk-chapter2)
+### [3 キャッシュ効率の最適化](https://zenn.dev/nextzlog/articles/dusk-chapter3)
+### [4 行列積の並列処理の評価](https://zenn.dev/nextzlog/articles/dusk-chapter4)
+### [5 高性能並列処理系の紹介](https://zenn.dev/nextzlog/articles/dusk-chapter5)
