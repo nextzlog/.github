@@ -30,7 +30,7 @@ $$\forall \boldsymbol{x},\boldsymbol{y},\boldsymbol{z} \in \mathbb{R}^D \colon
 \boldsymbol{x} = \boldsymbol{y} \Leftrightarrow d(\boldsymbol{x},\boldsymbol{y}) = 0. \qquad(1.2)$$
 
 最近傍法は、他の著名な教師あり学習の手法と比較して、事前の学習が不要である点が特徴的で、**遅延学習**と呼ばれる。
-以上の議論に基づき、最近傍法を実装しよう。引数は、参照する近傍点の個数 $K$ と、集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、距離関数 $d$ である。
+以上の議論に基づき、最近傍法を実装しよう。引数は、参照する近傍点の個数 $K$ と、集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  と、距離関数 $d$ である。
 
 ```scala
 class KNN[D,T](k: Int, data: Seq[(D,T)], d: (D,D)=>Double) {
@@ -76,7 +76,7 @@ $$\hat{\boldsymbol{w}} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}) = \bolds
 \enspace\mathrm{where}\enspace
 \eta \ll \left|\displaystyle\frac{\boldsymbol{w}}{\nabla E(\boldsymbol{w})}\right|. \qquad(1.6)$$
 
-定数 $\eta$ を**学習率**と呼ぶ。以上の議論に基づき、線型回帰を実装する。引数は、学習率 $\eta$ と、集合 $\left\lbrace x,y\right\rbrace $ と、基底 $\Phi$ である。
+定数 $\eta$ を**学習率**と呼ぶ。以上の議論に基づき、線型回帰を実装する。引数は、学習率 $\eta$ と、集合 $\left\lbrace x,y\right\rbrace$  と、基底 $\Phi$ である。
 
 ```scala
 class Regression(e: Double, data: Seq[(Double,Double)], p: Seq[Double=>Double], epochs: Int = 1000) {
@@ -90,7 +90,7 @@ Fig. 1.2は、多項式基底とガウス基底を利用して、各々の基底
 
 ![images/lbf.power.png](/images/lbf.power.png)
 
-(1)  $\left\lbrace x^3,x^2,x,1\right\rbrace $ 
+(1)  $\left\lbrace x^3,x^2,x,1\right\rbrace$  
 
 ![images/lbf.gauss.png](/images/lbf.gauss.png)
 

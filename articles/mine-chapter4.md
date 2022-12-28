@@ -20,7 +20,7 @@ $$y \approx f(\boldsymbol{x}) =
 & \text{if $\mathrm{wavy}(\boldsymbol{x}) = 0$} \\
 \end{cases} \qquad(4.1)$$
 
-決定木の学習では、意思決定の事例の集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
+決定木の学習では、意思決定の事例の集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
 
 ### 4.1 情報源符号化定理
 
@@ -70,7 +70,7 @@ H(p) + D\!\left(p\|q\right) \geq H(p). \qquad(4.8)$$
 trait Node[T] extends (Seq[Int] => T)
 ```
 
-次に、決定木の本体を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、決定木の末端の細分化を抑える閾値である。
+次に、決定木の本体を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  と、決定木の末端の細分化を抑える閾値である。
 決定木は再帰的に生成されるが、質問の情報量が微小の場合は、分布 $p\left(y\right)$ の最大値を与える $y$ を定数値として出力する。
 
 ```scala
@@ -84,7 +84,7 @@ case class Question[T](x: Seq[(Seq[Int], T)], limit: Double = 1e-5) extends Node
 }
 ```
 
-次に、条件分岐を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace $ と、条件 $\boldsymbol{x}$ を分割する軸と、分割を行う閾値である。
+次に、条件分岐を実装する。引数は、決定木が学習する集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  と、条件 $\boldsymbol{x}$ を分割する軸と、分割を行う閾値である。
 分割する軸と値は、式 4.7で議論した通り、質問の情報量を最大化する軸と値が選択される。これで決定木が完成した。
 
 ```scala
