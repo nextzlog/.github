@@ -59,16 +59,16 @@ $$\min \mathcal{D} =
 \enspace\mathrm{where}\enspace
 \hat{z}_{nk} =
 \begin{cases}
-1,& \text{if $\boldsymbol{x}_n     \in C_k$},\\
-0,& \text{if $\boldsymbol{x}_n \not\in C_k$}.
+1,& \text{if \(\boldsymbol{x}_n     \in C_k\)},\\
+0,& \text{if \(\boldsymbol{x}_n \not\in C_k\)}.
 \end{cases} \qquad(6.5)$$
 
 式 6.5の最適化は、逐次的に行う。まず、重心 $\boldsymbol{\mu}_k$ を乱数で初期化する。次に、式 6.6に従って、変数 $z_{nk}$ を修正する。
 
 $$\hat{z}_{nk} =
 \begin{cases}
-1,& \text{if $k=   \mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2$},\\
-0,& \text{if $k\neq\mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2$}.
+1,& \text{if \(k=   \mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)},\\
+0,& \text{if \(k\neq\mathrm{arg\,min}_j\left\|\boldsymbol{x}_n-\boldsymbol{\mu}_j\right\|^2\)}.
 \end{cases} \qquad(6.6)$$
 
 最後に、式 6.7により、重心 $\boldsymbol{\mu}_k$ を修正する。式 6.7は、変数 $z_{nk}$ を固定して、式 6.5を重心 $\boldsymbol{\mu}_k$ で微分すると導ける。

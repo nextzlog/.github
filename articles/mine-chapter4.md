@@ -9,15 +9,15 @@ published: true
 
 $$y \approx f(\boldsymbol{x}) =
 \begin{cases}
-0 & \text{if $\mathrm{wavy}(\boldsymbol{x}) = 1$} \\
+0 & \text{if \(\mathrm{wavy}(\boldsymbol{x}) = 1\)} \\
 \text{otherwise}
 \left\lbrace 
 \begin{aligned}
-& 0 && \text{if $\mathrm{rain}(\boldsymbol{x}) = 1$} \\
-& 1 && \text{if $\mathrm{rain}(\boldsymbol{x}) = 0$} \\
+& 0 && \text{if \(\mathrm{rain}(\boldsymbol{x}) = 1\)} \\
+& 1 && \text{if \(\mathrm{rain}(\boldsymbol{x}) = 0\)} \\
 \end{aligned}
 \right\rbrace 
-& \text{if $\mathrm{wavy}(\boldsymbol{x}) = 0$} \\
+& \text{if \(\mathrm{wavy}(\boldsymbol{x}) = 0\)} \\
 \end{cases} \qquad(4.1)$$
 
 決定木の学習では、意思決定の事例の集合 $\left\lbrace \boldsymbol{x},y\right\rbrace$  に対し、簡潔で解釈の容易な質問と条件分岐と、その順序を習得する。
@@ -173,8 +173,8 @@ f(\boldsymbol{x},k)
 
 $$f(\boldsymbol{x},k) =
 \begin{cases}
-1& \text{if $y=k$},\\
-\displaystyle\frac{1}{1-K}& \text{if $y\neq k$}.
+1& \text{if \(y=k\)},\\
+\displaystyle\frac{1}{1-K}& \text{if \(y\neq k\)}.
 \end{cases} \qquad(4.15)$$
 
 式 4.13を分解すると、式 4.16を得る。この関数 $q_T$ を確率分布として、弱学習器 $f_T$ が学習する集合を無作為に選ぶ。

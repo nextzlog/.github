@@ -40,8 +40,8 @@ y (\boldsymbol{w} \cdot \boldsymbol{x} + c) \geq 1 - \xi,
 \enspace\mathrm{where}\enspace
 \xi =
 \begin{cases}
-0 & \text{if $y(\boldsymbol{w} \cdot \boldsymbol{x} + c) > 1$}, \\
-\left|y - (\boldsymbol{w} \cdot \boldsymbol{x} + c)\right| \geq 0 & \text{if $y(\boldsymbol{w} \cdot \boldsymbol{x} + c) \leq 1$}.
+0 & \text{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) > 1\)}, \\
+\left|y - (\boldsymbol{w} \cdot \boldsymbol{x} + c)\right| \geq 0 & \text{if \(y(\boldsymbol{w} \cdot \boldsymbol{x} + c) \leq 1\)}.
 \end{cases} \qquad(3.4)$$
 
 式 3.4は、誤分類された点 $\boldsymbol{x}$ に対し、罰を与える役割がある。 $\xi$ を**ヒンジ損失**と呼ぶ。最終的に式 3.5を最小化する。
