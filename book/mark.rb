@@ -12,6 +12,8 @@ file = File.join(path, "#{name}.tex")
 text = TeXt.process([book, file].to_java(:String))
 text = text.gsub('```sample', '```')
 text = text.gsub('```chapel', '```')
+text = text.gsub(/\\{(\$)?/, '\\lbrace\1 ')
+text = text.gsub(/\\}(\$)?/, '\\rbrace\1 ')
 data = text.lines
 
 matter = data.index{|v| v.start_with?("---")}
