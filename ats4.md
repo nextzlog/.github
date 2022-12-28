@@ -283,7 +283,7 @@ Table 4.2 zLog binary file.
 |93   | 1    | item | band | 列挙型  | 右表参照                   |
 |94   | 1    | sent | watt | 列挙型  | P,L,M,H           |
 |160  | 15   | item | name | MS932   | 冒頭は文字列の長さ         |
-|175  | 67   | item | note | MS932   | 冒頭は文字列の長さ|
+|175  | 65   | item | note | MS932   | 冒頭は文字列の長さ|
 
 
 
