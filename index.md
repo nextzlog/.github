@@ -131,7 +131,7 @@ func onEditor(key int) {
 		</h4>
 		<p class="card-text" itemprop="headline">線型回帰からサポートベクターマシンまで主要な機械学習を手作りします。情報科学を究める喜び。</p>
 		<a class="card-link" href="https://pafelog.net/mine.pdf">記事</a>
-		<a class="card-link" href="https://github.com/nextzlog/book">実装</a>
+		<a class="card-link" href="https://github.com/nextzlog/mine">実装</a>
 	</div>
 </div>
 
