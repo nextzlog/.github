@@ -312,7 +312,7 @@ $$F(\hat{p}) =
 $$F(\hat{p}) \simeq
 \underset{f,g}{\mathbf{E}}\!\left[\,\log \displaystyle\frac{p\left(\boldsymbol{x},z\,\middle|\,\theta\right)}{f(z)}\,\right] - \displaystyle\frac{\hat{\left|\theta\right|}}{2} \log N + \log p\left(\hat{\theta}\right). \qquad(6.28)$$
 
-式 6.28には、疎な基底を学習し、母数の個数 $\left \vert \theta\right \vert $ を実質的に削減する**正則化**の効果があり、過学習の抑制が期待できる。
+式 6.28には、疎な基底を学習し、母数の個数 $\left \vert \theta\right \vert$ を実質的に削減する**正則化**の効果があり、過学習の抑制が期待できる。
 
 ### 6.5 母数の事前分布の設定
 
@@ -387,7 +387,7 @@ $$\underset{w}{\mathbf{E}}\!\left[\,\log w_k\,\right] =
 $$\underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,\log \mathcal{N}\left(\boldsymbol{x}_n\,\middle|\,\boldsymbol{\mu}_k,S_k\right)\,\right] =
 - \displaystyle\frac{1}{2} \underset{\boldsymbol{\mu},S}{\mathbf{E}}\!\left[\,D \log 2\pi + \log \left|S_k\right| + {}^t(\boldsymbol{x}_n - \boldsymbol{\mu}_k) S_k^{-1} (\boldsymbol{x}_n - \boldsymbol{\mu}_k)\,\right]. \qquad(6.37)$$
 
-式 6.37に現れる、行列式 $\left \vert S\right \vert $ の対数の期待値は、式 6.32の確率密度関数を母数 $\nu_k$ で偏微分すれば、式 6.38となる。
+式 6.37に現れる、行列式 $\left \vert S\right \vert$ の対数の期待値は、式 6.32の確率密度関数を母数 $\nu_k$ で偏微分すれば、式 6.38となる。
 
 $$\underset{S}{\mathbf{E}}\!\left[\,\log \left|S_k\right|\,\right] =
 2 \int \displaystyle\frac{\partial \tilde{\mathcal{W}}}{\partial \nu_k}\displaystyle\frac{\mathcal{W}}{\tilde{\mathcal{W}}} dS - 2 \int \displaystyle\frac{\partial \mathcal{W}}{\partial \nu_k} dS =
