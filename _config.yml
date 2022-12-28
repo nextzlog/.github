@@ -15,9 +15,9 @@ items:
   href: /dusk
 - name: 並列言語
   href: /chpl
-links:
 - name: ZyLO
-  href: https://zylo.pafelog.net
+  href: /zylo
+links:
 - name: GitHub
   href: https://github.com/nextzlog
   icon: fab fa-github

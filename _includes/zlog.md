@@ -1,9 +1,9 @@
 ### zLog令和版
 
-長年に渡り、コンテストを戦う数多の無線家に支持される。本格派が愛用するロギングソフトです。
+長年に渡り、コンテストを愛する数多の無線家に支持される。簡単な操作性のロギングソフトです。
 
-- [公式資料](https://zylo.pafelog.net)
-- [発表資料](zylo)
+- [公式情報](https://use.zlog.org)
+- [開発情報](https://dev.zlog.org)
 
 ```golang
 package main
