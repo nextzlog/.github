@@ -5,10 +5,8 @@ topics:
 - Scala
 - 機械学習
 - データマイニング
-summary: '機械学習とは、説明変数 $\boldsymbol{x}$ と目的変数 $\boldsymbol{y}$ の組 $\left(\boldsymbol{x},\boldsymbol{y}\right)$
+summary: 機械学習とは、説明変数 $\boldsymbol{x}$ と目的変数 $\boldsymbol{y}$ の組 $\left(\boldsymbol{x},\boldsymbol{y}\right)$
   の集合 $\mathbb{T}$ から、変数 $\boldsymbol{x},\boldsymbol{y}$ の関係を表す関数 $f$ を推定する方法である。
-
-  '
 chapters:
 - 1
 - 2
