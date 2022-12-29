@@ -1,7 +1,13 @@
 ---
 title: コンテスト運営を支援する自動集計システム
 subtitle: Amateur-Radio Contest Administration System
-topics: []
+topics:
+- アマチュア無線
+- コンテスト
+- 自動集計
+summary: '本稿で解説する**自動集計システム**は、アマチュア無線のコンテストの効率的な運営を支援する、**ウェブシステム**である。
+
+  '
 chapters:
 - 1
 - 2
