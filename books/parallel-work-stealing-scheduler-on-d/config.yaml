@@ -1,12 +1,12 @@
 ---
 title: D言語で実装する並列スケジューラ入門
 subtitle: Parallel Work-Stealing Scheduler on D
-:topics:
+topics:
 - D
-:chapters:
+chapters:
 - 1
 - 2
 - 3
 - 4
 - 5
-:published: true
+published: true

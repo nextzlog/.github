@@ -1,13 +1,13 @@
 ---
 title: Scalaで実装するパターン認識と機械学習
 subtitle: Scala's Pattern Recognition & Machine Learning
-:topics:
+topics:
 - Scala
-:chapters:
+chapters:
 - 1
 - 2
 - 3
 - 4
 - 5
 - 6
-:published: true
+published: true

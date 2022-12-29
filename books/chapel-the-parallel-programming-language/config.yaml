@@ -1,9 +1,9 @@
 ---
 title: うさぎさんでもわかる並列言語Chapel
 subtitle: Chapel the Parallel Programming Language
-:topics:
+topics:
 - Chapel
-:chapters:
+chapters:
 - 1
 - 2
 - 3
@@ -12,4 +12,4 @@ subtitle: Chapel the Parallel Programming Language
 - 6
 - 7
 - 8
-:published: true
+published: true
