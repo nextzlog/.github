@@ -1,6 +1,14 @@
 ---
 title: Scalaで自作するプログラミング言語処理系
 subtitle: Computation Models & Compilers on Scala
-pdf: fava.pdf
-web: https://zenn.dev/nextzlog/books/computation-models-compilers-on-scala
----
+:topics:
+- Scala
+:chapters:
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+:published: true
