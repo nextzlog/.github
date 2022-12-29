@@ -1,6 +1,6 @@
 ### zLog令和版
 
-長年に渡り、コンテストを愛する数多の無線家に支持される。簡単な操作性のロギングソフトです。
+{{site.briefs.zlog}}
 
 - [公式情報](https://use.zlog.org)
 - [開発情報](https://dev.zlog.org)

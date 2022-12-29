@@ -61,7 +61,7 @@ case class LstMD(lang: MD, body: String) extends LeafMD {
 }
 
 case class MatMD(body: TeX) extends LeafMD {
-	override def str(scope: MD) = s" $$${body.view}$$ ".replace("|", " \\vert ")
+	override def str(scope: MD) = " $%s$ ".format(body.view.replace("|", " \\vert ").trim)
 }
 
 case class DocMD(body: Seq[MD]) extends TreeMD(body: _*) {
@@ -109,7 +109,7 @@ case class Caption(args: DocMD) extends CmdBodyMD(args) {
 case class IncludeGraphics(args: DocMD) extends CmdBodyMD(args) {
 	override def str(scope: MD) = {
 		val sub = Counter.next("subfig")
-		val path = args.body.last.str(scope).replaceAll(".eps$", ".svg")
+		val path = args.body.last.str(scope).replaceAll(".eps$", ".png")
 		val cap = scope.cap(scope).headOption.getOrElse("")
 		val paren = scope match {
 			case SubFloat(_) => {
@@ -118,7 +118,7 @@ case class IncludeGraphics(args: DocMD) extends CmdBodyMD(args) {
 			}
 			case _ => ""
 		}
-		"![%s](%s)%s\n".format(path, path, paren)
+		"![%s](/%s)%s\n".format(path, path, paren)
 	}
 }
 

@@ -1,6 +1,6 @@
 ### D言語で実装する並列スケジューラ入門
 
-並列処理系を自作。私たちの生活に浸透したメニーコアプロセッサを極限まで使い切る技術を学ぶ。
+{{site.briefs.dusk}}
 
 - [記事](dusk) ([PDF](dusk.pdf))
 - [実装](https://github.com/nextzlog/dusk)

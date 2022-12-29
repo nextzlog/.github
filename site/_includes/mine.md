@@ -1,6 +1,6 @@
 ### Scalaで実装するパターン認識と機械学習
 
-線型回帰からサポートベクターマシンまで主要な機械学習を手作りします。情報科学を究める喜び。
+{{site.briefs.mine}}
 
 - [記事](mine) ([PDF](mine.pdf))
 - [実装](https://github.com/nextzlog/mine)

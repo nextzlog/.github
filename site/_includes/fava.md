@@ -1,6 +1,6 @@
 ### Scalaで自作するプログラミング言語処理系
 
-関数型言語を自作します。パーサコンビネータも手作り。計算論の基礎とチューリング機械を学ぶ。
+{{site.briefs.fava}}
 
 - [記事](fava) ([PDF](fava.pdf))
 - [実装](https://github.com/nextzlog/fava)

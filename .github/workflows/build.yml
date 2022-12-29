@@ -25,15 +25,22 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: jruby
-    - run: jruby book/mark.rb ${{matrix.book}}
+    - run: |
+        sudo apt install inkscape pdf2svg
+        jruby book/mark.rb ${{matrix.book}}
     - uses: actions/upload-artifact@v2
       with:
         name: ${{matrix.book}}
-        path: ${{matrix.book}}.md
+        path: ${{matrix.book}}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{matrix.book}}-images
+        path: images/${{matrix.book}}
   Publish:
     needs: Compile
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/checkout@v2
       with:
         repository: nextzlog/fava
@@ -44,13 +51,20 @@ jobs:
         path: mine
     - uses: actions/download-artifact@v2
       with:
-        path: book
+        path: site/books
     - run: |
-        cp book/*/*.md book/*.pdf site
-        cp fava/images/* site/images
-        cp mine/images/* site/images
+        mv book/*.pdf site
+        mv site/books/*/????.md site
+        mv site/books/*/* site/books
+        mv site/scales/* site/images
+        mv fava/images/* site/images
+        mv mine/images/* site/images
     - run: |
-        sudo apt install pdf2svg
+        sudo apt install inkscape pdf2svg
+        for f in images/*.svg
+        do
+          inkscape --export-png="${f%.*}.png" $f
+        done
         for p in {01..35}
         do
           pdf2svg zylo.pdf images/zylo.$p.svg $p

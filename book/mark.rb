@@ -1,31 +1,70 @@
 name = ARGV[0]
 
-require './text/build/libs/text.jar'
-java_import 'engine.TeXt'
+# zenn.dev
+HOST = 'https://zenn.dev/nextzlog/books'
 
 # source files
 path = File.dirname(__FILE__)
+root = File.dirname(path)
 book = File.join(path, 'book.cls')
 file = File.join(path, "#{name}.tex")
+post = File.join(path, "#{name}.pdf")
+
+# modules
+require 'yaml'
+require 'fileutils'
+require File.join(root, 'text/build/libs/text.jar')
+java_import 'engine.TeXt'
 
 # call TeXt to convert LaTeX into Markdown
 text = TeXt.process([book, file].to_java(:String))
 text = text.gsub('```sample', '```')
 text = text.gsub('```chapel', '```')
+text = text.gsub('```dlang', '```d')
 text = text.gsub(/\\{(\$)?/, '\\lbrace\1 ')
 text = text.gsub(/\\}(\$)?/, '\\rbrace\1 ')
-data = text.lines
+text = text.gsub('/scales/', '/images/')
+text = text.gsub(/\\text\{(.*)\$(.*)\$/, '\\text{\1\\(\2\\)')
+text = text.gsub(/\t/, '  ')
+subs = text.split(/^## /)[1..]
+conf = text.split(/^---/)[1].strip
+yaml = YAML.load(conf)
+path = File.join(name, yaml['subtitle'].downcase.gsub(/\W+/, '-'))
+desc = YAML.load(File.read(File.join(root, 'site/_config.yml')))['briefs'][name]
 
-matter = data.index{|v| v.start_with?("---")}
-data.insert(matter + 1, "pdf: #{name}.pdf")
-
-header = data.index{|v| v.start_with?("#")}
-unless header.nil?
-	data.insert(header + 0, '* TOC')
-	data.insert(header + 1, '{:toc}')
+# output abstract
+FileUtils.mkdir_p(name)
+File.open(File.join(name, sprintf('%s.md', name)), mode='w') do |file|
+	file.puts('---')
+	file.puts(conf)
+	file.puts("pdf: #{name}.pdf")
+	file.puts("web: #{HOST}/#{File.basename(path)}")
+	file.puts('---')
 end
 
-# output Markdown body
-File.open(sprintf('%s.md', name), mode='w') do |file|
-	data.each &file.method(:puts)
+exit if subs.empty?
+
+# output config
+FileUtils.mkdir_p(path)
+File.open(File.join(path, 'config.yaml'), mode='w') do |file|
+	YAML.dump(yaml.merge({
+		'topics' => yaml['topics'].split(','),
+		'summary' => desc,
+		'chapters' => (1..subs.size).map(&:to_s),
+		'published' => true,
+	}), file)
 end
+
+# output chapters
+subs.each.with_index(1) do |body, index|
+	File.open(File.join(path, sprintf('%d.md', index)), mode='w') do |file|
+		file.puts('---')
+		file.puts("title: #{body.lines.first.strip}")
+		file.puts('---')
+		file.puts("## #{body}")
+	end
+end
+
+# create cover
+system("pdf2svg #{post} cover.svg 1")
+system("inkscape --export-png=#{File.join(path, 'cover.png')} cover.svg")
