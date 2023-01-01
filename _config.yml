@@ -17,6 +17,10 @@ items:
   href: /chpl
 - name: 制御理論
   href: /wave
+- name: Haskell
+  href: /hask
+- name: GC
+  href: /noah
 - name: ZyLO
   href: /zylo
 links:
