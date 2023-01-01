@@ -3,7 +3,10 @@ title: うさぎさんでもわかる並列言語Chapel
 subtitle: Chapel the Parallel Programming Language
 topics:
 - Chapel
-- 並列プログラミング言語
+- 並列処理
+- 高性能計算
+- PGAS
+- HPC
 summary: "[Chapel](https://chapel-lang.org)は、型推論とテンプレートと区分化大域アドレス空間を特徴とし、高度に抽象化された\
   高生産性並列言語である。"
 chapters:

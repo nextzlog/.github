@@ -4,9 +4,9 @@ subtitle: Computation Models & Compilers on Scala
 topics:
 - Scala
 - 自作言語
-- パーサコンビネータ
 - 構文解析
-- PEG
+- 型推論
+- ラムダ計算
 summary: 本書では、ラムダ計算を理論的背景に持つ独自のプログラミング言語のインタプリタを自作して、計算論の基礎を学ぶ。
 chapters:
 - '1'

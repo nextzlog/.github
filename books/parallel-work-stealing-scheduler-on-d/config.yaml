@@ -3,7 +3,11 @@ title: D言語で実装する並列スケジューラ入門
 subtitle: Parallel Work-Stealing Scheduler on D
 topics:
 - D
+- D言語
 - 並列処理
+- 高性能計算
+- スレッド
+- HPC
 summary: 並列処理とは、長時間を要する計算の内容を分割して複数のプロセッサに分担させ、処理速度の改善を図る技術を指す。
 chapters:
 - '1'
