@@ -5,7 +5,7 @@ topics: アマチュア無線,コンテスト,自動集計
 pdf: ats4.pdf
 web: https://zenn.dev/nextzlog/books/amateur-radio-contest-administration-system
 ---
-{% for file in site.static_files %}
+{% for file in site.static_files | where: "thumbs" %}
 {% if file.basename contains 'ats4' and file.extname == '.svg' %}
 <img src="{{file.path}}" class="img-thumbnail img-fluid" width="100%">
 {% endif %}
