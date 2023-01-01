@@ -6,7 +6,7 @@
 \NewDocumentCommand\Env{m}{\Gamma \vdash #1}
 \DeclareMathOperator*{\app}{\enspace\xrightarrow[\beta]{}\enspace}
 
-\book{Scalaで自作するプログラミング言語処理系}{Computation Models {\&} Compilers on Scala}{2}{自作言語,パーサコンビネータ,構文解析,PEG}
+\book{Scalaで自作するプログラミング言語処理系}{Computation Models {\&} Compilers on Scala}{2}{Scala,自作言語,構文解析,型推論,ラムダ計算}
 
 \begin{document}
 \maketitle
@@ -356,7 +356,7 @@ println(ArithStackMachine("3 4 * 10 20 * +")) // 212
 
 この実装は、\chapref{math}で再び使用する。\chapref{math}では、中置記法の数式を逆ポーランド記法に変換するコンパイラを実装する。
 
-\chapter{ラムダ計算の理論\label{chap:lambda}}
+\chapter{型付きラムダ計算\label{chap:lambda}}
 
 実在する計算機を意識した\chapref{automata}の計算モデルに対し、関数の\textbf{評価}と\textbf{適用}による計算手順の抽象化がラムダ計算である。
 \chapref{lambda}では、任意の式を\textbf{ラムダ式}と呼ぶ。変数も、整数も、関数もラムダ式である。関数は、\eqref{abs}のように定義する。

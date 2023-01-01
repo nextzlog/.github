@@ -4,7 +4,7 @@
 \NewDocumentCommand\dusk{}{\texttt{dusk}}
 \NewDocumentCommand\CPU{}{Intel Xeon\textregistered E5-2699 v3}
 
-\book{D言語で実装する並列スケジューラ入門}{Parallel Work-Stealing Scheduler on D}{5}{並列処理}
+\book{D言語で実装する並列スケジューラ入門}{Parallel Work-Stealing Scheduler on D}{5}{D言語,並列処理,高性能計算,スレッド,HPC}
 
 \begin{document}
 \maketitle
@@ -338,7 +338,7 @@ void dmm_leaf(int i1, int i2, int j1, int j2, int k1, int k2) {
 }
 \end{Verbatim}
 
-\section{提案実装によるタスク並列化\label{sect:dmm:dawn}}
+\section{提案実装による並列化\label{sect:dmm:dawn}}
 
 行列を再帰的に分割し、部分行列を計算するタスクを分岐して、分割統治法とワークスティーリングで並列処理を行う。
 最長軸を分割し、部分行列が正方行列に近付くほど、同じ計算量でも参照が局所化され、キャッシュミスを抑制できる。
@@ -368,7 +368,7 @@ int dmm_dawn(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 }
 \end{Verbatim}
 
-\section{既存実装によるタスク並列化}
+\section{既存実装による並列化}
 
 提案実装と比較するため、D言語の標準ライブラリに含まれる\texttt{TaskPool}を利用して、同じ手順で行列積を並列化する。
 提案実装との比較により、\figref{fifo}の集中管理型の並列処理と、\figref{filo}の分散管理型の並列処理の、性能差を検証する。
@@ -403,7 +403,7 @@ void dmm_pool(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 }
 \end{Verbatim}
 
-\section{反復処理によるデータ並列化\label{sect:dmm:grid}}
+\section{反復処理による並列化\label{sect:dmm:grid}}
 
 再帰的な分割統治を実施せず、行列を3軸で末端粒度まで分割し、逐次的に暇なプロセッサに分配する方法を実装する。
 
@@ -435,7 +435,7 @@ void dmm_gr2d(int i1, int i2, int j1, int j2, int k1, int k2, int grain) {
 }
 \end{Verbatim}
 
-\section{台数効果の評価と結果の解釈}
+\section{台数効果の評価と解釈}
 
 最後に、\texttt{main}関数を実装する。行列積に含まれる乗算と加算の回数を処理時間で割ると、処理速度のflops値が求まる。
 
