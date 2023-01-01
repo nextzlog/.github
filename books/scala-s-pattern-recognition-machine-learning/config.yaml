@@ -7,8 +7,7 @@ topics:
 - PRML
 - 最尤推定
 - ベイズ推定
-summary: 機械学習とは、説明変数 $\boldsymbol{x}$ と目的変数 $\boldsymbol{y}$ の組 $\left(\boldsymbol{x},\boldsymbol{y}\right)$
-  の集合 $\mathbb{T}$ から、変数 $\boldsymbol{x},\boldsymbol{y}$ の関係を表す関数 $f$ を推定する方法である。
+summary: 線型回帰からカーネル法まで。決定木から変分ベイズ法まで。機械学習の理論を実践的に学びます。
 chapters:
 - '1'
 - '2'

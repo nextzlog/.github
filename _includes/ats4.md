@@ -1,6 +1,6 @@
 ### 書類受付・自動集計システム ATS-4
 
-アマチュア無線のコンテストの集計作業を自動化。様々なコンテストに対応。楽しく開催できます。
+{{site.briefs.ats4}}
 
 <img class='img-thumbnail img-fluid' src='images/ats4.list.svg' alt='ATS-4 UI'>
 
