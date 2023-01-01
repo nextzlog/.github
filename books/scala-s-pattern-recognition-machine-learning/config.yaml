@@ -5,7 +5,6 @@ topics:
 - Scala
 - 機械学習
 - PRML
-- 勾配法
 - 最尤推定
 - ベイズ推定
 summary: 機械学習とは、説明変数 $\boldsymbol{x}$ と目的変数 $\boldsymbol{y}$ の組 $\left(\boldsymbol{x},\boldsymbol{y}\right)$
