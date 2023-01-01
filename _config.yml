@@ -20,6 +20,8 @@ items:
 - name: ZyLO
   href: /zylo
 links:
+- name: Junks
+  href: https://junk.pafelog.net
 - name: GitHub
   href: https://github.com/nextzlog
   icon: fab fa-github
