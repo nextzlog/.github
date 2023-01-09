@@ -21,13 +21,13 @@ jobs:
       with:
         arguments: build
         gradle-version: current
-        build-root-directory: text
+        build-root-directory: texmd
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: jruby
     - run: |
         sudo apt install inkscape pdf2svg
-        jruby book/mark.rb ${{matrix.book}}
+        jruby books/mark.rb ${{matrix.book}}
     - uses: actions/upload-artifact@v2
       with:
         name: ${{matrix.book}}
@@ -51,14 +51,14 @@ jobs:
         path: mine
     - uses: actions/download-artifact@v2
       with:
-        path: site/books
+        path: pages/books
     - run: |
-        mv book/*.pdf site
-        mv site/books/*/????.md site
-        mv site/books/*/* site/books
-        mv site/scales/* site/images
-        mv fava/images/* site/images
-        mv mine/images/* site/images
+        mv books/*.pdf pages
+        mv pages/books/*/????.md pages
+        mv pages/books/*/* pages/books
+        mv pages/scales/* pages/images
+        mv fava/images/* pages/images
+        mv mine/images/* pages/images
     - run: sudo apt install inkscape pdf2svg
     - run: |
         for f in images/*.svg
@@ -70,10 +70,10 @@ jobs:
           pdf2svg $f images/"${f%.*}.page%02d.svg" all
         done
       working-directory:
-        site
+        pages
     - uses: peaceiris/actions-gh-pages@v3
       with:
         cname: pafelog.net
         enable_jekyll: true
         github_token: ${{secrets.GITHUB_TOKEN}}
-        publish_dir: site
+        publish_dir: pages

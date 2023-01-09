@@ -3,7 +3,7 @@ Journal of Hamradio Informatics
 
 ## Utilities
 
-- [LaTeX to Markdown Conversion Tool](text/)
+- [LaTeX to Markdown Conversion Tool](latex/)
 
 ## Contribution
 

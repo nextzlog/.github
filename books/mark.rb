@@ -13,7 +13,7 @@ post = File.join(path, "#{name}.pdf")
 # modules
 require 'yaml'
 require 'fileutils'
-require File.join(root, 'text/build/libs/text.jar')
+require File.join(root, 'texmd/build/libs/texmd.jar')
 java_import 'engine.TeXt'
 
 # call TeXt to convert LaTeX into Markdown
@@ -30,7 +30,7 @@ subs = text.split(/^## /)[1..]
 conf = text.split(/^---/)[1].strip
 yaml = YAML.load(conf)
 path = File.join(name, yaml['subtitle'].downcase.gsub(/\W+/, '-'))
-desc = YAML.load(File.read(File.join(root, 'site/_config.yml')))['briefs'][name]
+desc = YAML.load(File.read(File.join(root, 'pages/_config.yml')))['briefs'][name]
 
 # output abstract
 FileUtils.mkdir_p(name)

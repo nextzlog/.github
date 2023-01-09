@@ -17,7 +17,7 @@ a naive LaTeX processor written in Scala, for conversion from LaTeX to Markdown,
 
 ```sh
 $ gradle build
-$ java -jar build/libs/text.jar [cls file] [sty files] source.tex
+$ java -jar build/libs/texmd.jar [cls file] [sty files] source.tex
 ```
 
 ## Contribution
