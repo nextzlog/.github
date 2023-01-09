@@ -52,25 +52,28 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         path: pages/books
-    - run: |
-        mv books/*.pdf pages
-        mv pages/books/*/????.md pages
-        mv pages/books/*/* pages/books
-        mv pages/scales/* pages/images
-        mv fava/images/* pages/images
-        mv mine/images/* pages/images
     - run: sudo apt install inkscape pdf2svg
     - run: |
-        for f in images/*.svg
+        for f in */*.svg
         do
           inkscape --export-filename="${f%.*}.png" $f
         done
+      working-directory:
+        files
+    - run: |
         for f in *.pdf
         do
-          pdf2svg $f images/"${f%.*}.page%02d.svg" all
+          pdf2svg $f "${f%.*}.%02d.svg" all
         done
       working-directory:
-        pages
+        books
+    - run: |
+        mkdir pages/images
+        mv books/*.pdf pages
+        mv books/*.*.svg pages/images
+        mv files/*/*.png pages/images
+        mv pages/books/*/????.md pages
+        mv pages/books/*/* pages/books
     - uses: peaceiris/actions-gh-pages@v3
       with:
         cname: pafelog.net
