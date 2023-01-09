@@ -6,7 +6,7 @@ pdf: dusk.pdf
 web: https://zenn.dev/nextzlog/books/parallel-work-stealing-scheduler-on-d
 ---
 {% for file in site.static_files %}
-{% if file.basename contains 'dusk.' and file.extname == '.svg' %}
+{% if file.basename contains 'dusk.page' and file.extname == '.svg' %}
 <img src="{{file.path}}" class="img-thumbnail img-fluid" width="100%">
 {% endif %}
 {% endfor %}

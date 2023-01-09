@@ -6,7 +6,7 @@ pdf: mine.pdf
 web: https://zenn.dev/nextzlog/books/scala-s-pattern-recognition-machine-learning
 ---
 {% for file in site.static_files %}
-{% if file.basename contains 'mine.' and file.extname == '.svg' %}
+{% if file.basename contains 'mine.page' and file.extname == '.svg' %}
 <img src="{{file.path}}" class="img-thumbnail img-fluid" width="100%">
 {% endif %}
 {% endfor %}
