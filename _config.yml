@@ -22,7 +22,10 @@ items:
 links:
 - name: Junks
   href: https://junk.pafelog.net
-- name: GitHub
+- name: autodyne
+  href: https://github.com/autodyne
+  icon: fab fa-github
+- name: nextzlog
   href: https://github.com/nextzlog
   icon: fab fa-github
 - name: Issues
