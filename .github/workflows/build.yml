@@ -43,11 +43,11 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/checkout@v2
       with:
-        repository: nextzlog/fava
+        repository: autodyne/fava
         path: fava
     - uses: actions/checkout@v2
       with:
-        repository: nextzlog/mine
+        repository: autodyne/mine
         path: mine
     - uses: actions/download-artifact@v2
       with:
