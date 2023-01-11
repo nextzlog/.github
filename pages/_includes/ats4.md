@@ -2,8 +2,6 @@
 
 {{site.briefs.ats4}}
 
-<img class='img-thumbnail img-fluid' src='images/ats4.list.svg' alt='ATS-4 UI'>
-
 - [解説書](ats4.pdf)
 - [最新版](https://github.com/nextzlog/ats4)
 
