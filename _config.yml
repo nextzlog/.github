@@ -22,12 +22,6 @@ items:
 links:
 - name: Junks
   href: https://junk.pafelog.net
-- name: autodyne
-  href: https://github.com/autodyne
-  icon: fab fa-github
-- name: nextzlog
-  href: https://github.com/nextzlog
-  icon: fab fa-github
 - name: Issues
   href: https://github.com/nextzlog/todo/issues
   icon: fas fa-comments
@@ -36,6 +30,13 @@ links:
   icon: fab fa-twitter
 - name: 東大無線部
   href: https://ja1zlo.u-tokyo.org
+jumps:
+- name: autodyne
+  href: https://github.com/autodyne
+  icon: fab fa-github
+- name: nextzlog
+  href: https://github.com/nextzlog
+  icon: fab fa-github
 briefs:
   ats4: アマチュア無線のコンテストの集計作業を自動化。様々なコンテストに対応。楽しく開催できます。
   chpl: 型推論とテンプレートと区分化大域アドレス空間を特徴とした並列プログラミング言語の解説記事。
